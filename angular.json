@@ -88,10 +88,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "jewish-cal-client:build:production"
+              "buildTarget": "jewish-cal:build:production"
             },
             "development": {
-              "buildTarget": "jewish-cal-client:build:development"
+              "buildTarget": "jewish-cal:build:development"
             }
           },
           "defaultConfiguration": "development"
