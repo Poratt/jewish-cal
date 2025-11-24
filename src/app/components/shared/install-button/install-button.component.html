@@ -1,0 +1,112 @@
+@if (showInstallButton$ | async) {
+  <div class="install-container">
+    <p-button icon="pi pi-download" label="התקן אפליקציה" severity="success" [outlined]="true" class="install-btn"
+    (onClick)="installPWA()" pTooltip="התקן את האפליקציה על המכשיר שלך"></p-button>
+  </div>
+}
+
+@if (showIOSInstructions) {
+  <div class="install-container">
+    <div class="ios-banner" (click)="showIOSHelpDialog = true">
+      <div class="ios-install-content">
+        <i class="pi pi-mobile text-2xl text-white"></i>
+        <div class="ios-text">
+          <h4 class="text-sm font-bold mb-1">התקן את האפליקציה</h4>
+          <p class="text-xs text-white opacity-90">
+            לחץ כאן להוראות מפורטות
+          </p>
+        </div>
+        <button class="ios-close" (click)="dismissIOSBanner(); $event.stopPropagation()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<p-dialog header="התקן את האפליקציה" [(visible)]="showIOSHelpDialog"
+  [style]="{width: '95vw', maxWidth: '420px'}" [modal]="true" [closable]="true" [closeOnEscape]="true">
+  <div class="ios-install-guide">
+    <div class="step-container">
+      <div class="step-item">
+        <div class="step-icon-wrapper">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4L12 16M12 4L8 8M12 4L16 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17L4 19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21L18 21C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19L20 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>לחץ על כפתור השיתוף</h4>
+          <p>חפש את הסמל בתחתית המסך או בסרגל הכתובת</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-icon-wrapper">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 9L9 15M12 12L12 15M15 6L15 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>בחר "הוסף למסך הבית"</h4>
+          <p>גלול במלל של האפשרויות וחפש את האפשרות להוספה למסך הבית</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-icon-wrapper">
+          <svg class="step-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 11L12 14L22 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="step-content">
+          <h4>אשר את ההתקנה</h4>
+          <p>תוכל לערוך את השם ולחץ "הוסף" בפינה הימנית העליונה</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-message">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M8 12L11 15L16 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <h4>מוכן!</h4>
+        <p>האפליקציה תופיע על המסך הראשי שלך</p>
+      </div>
+    </div>
+  </div>
+</p-dialog>
+
+<p-dialog header="איך להתקין את האפליקציה?" [(visible)]="showHelpDialog" [style]="{width: '90vw', maxWidth: '400px'}"
+  [modal]="true" [closable]="true">
+  <div class="install-help">
+    @if (installService.isIOSSafari()) {
+      <div class="ios-instructions">
+        <h4>הוראות עבור iPhone/iPad:</h4>
+        <ol class="install-steps">
+          <li>לחץ על כפתור השיתוף <i class="pi pi-share-alt"></i></li>
+          <li>גלול למטה ובחר "הוסף למסך הבית"</li>
+          <li>הקלד שם לאפליקציה ולחץ "הוסף"</li>
+          <li>האפליקציה תופיע על המסך הראשי!</li>
+        </ol>
+      </div>
+    }
+    @if (!installService.isIOSSafari()) {
+      <div class="android-instructions">
+        <h4>הוראות עבור Android/Chrome:</h4>
+        <ol class="install-steps">
+          <li>לחץ על כפתור "התקן אפליקציה" למעלה</li>
+          <li>או: תפריט ← התקן אפליקציה</li>
+          <li>לחץ "התקן" בדיאלוג שיופיע</li>
+          <li>האפליקציה תותקן כמו אפליקציה רגילה!</li>
+        </ol>
+      </div>
+    }
+  </div>
+</p-dialog>

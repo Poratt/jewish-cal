@@ -1,0 +1,171 @@
+.tag {
+	width: fit-content;
+	padding: 1px 8px;
+	border-radius: 8px;
+	display: inline-flex;
+	gap: 4px;
+	align-items: center;
+	border: 1px solid transparent;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+
+	.label {
+		font-size: 11px;
+		font-weight: 500;
+	}
+	.icon {
+		font-size: 10px;
+		padding-top: 1px;
+	}
+
+
+
+	/* --- Filters Styles --- */
+	&.filter-chip,
+	&.filter-chip.occasion {
+		background-color: var(--grey-70);
+		cursor: pointer;
+
+		&:hover {
+			background-color: var(--grey-90);
+			border-color: var(--grey-200);
+		}
+
+		&.active {
+			background-color: var(--primary-90);
+			border-color: var(--primary-200);
+			color: var(--primary-800);
+			font-weight: 500;
+		}
+
+		&.occasion.active {
+			background-color: var(--secondary-100);
+			border-color: var(--secondary-300);
+			color: var(--secondary-800);
+		}
+
+		i {
+			font-size: 0.8rem;
+		}
+	}
+
+	/* --- Status Styles --- */
+
+	/* Pending Status - Yellow Palette */
+	&.status-pending {
+		background-color: var(--yellow-50);
+		color: var(--yellow-800);
+		// border-color: var(--yellow-300);
+
+		&:hover {
+			background-color: var(--yellow-70);
+			// border-color: var(--yellow-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Active Status - Green Palette */
+	&.status-active {
+		background-color: var(--green-50);
+		color: var(--green-800);
+		// border-color: var(--green-300);
+
+		&:hover {
+			background-color: var(--green-70);
+			// border-color: var(--green-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Suspended Status - Red Palette */
+	&.status-suspended {
+		background-color: var(--red-50);
+		color: var(--red-800);
+		// border-color: var(--red-300);
+
+		&:hover {
+			background-color: var(--red-70);
+			// border-color: var(--red-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Rejected Status - Grey Palette */
+	&.status-rejected {
+		background-color: var(--grey-50);
+		color: var(--grey-600);
+		// border-color: var(--grey-300);
+
+		&:hover {
+			background-color: var(--grey-70);
+			// border-color: var(--grey-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Inactive/Banned Status - Red Palette */
+	&.status-inactive {
+		background-color: var(--red-50);
+		color: var(--red-800);
+		// border-color: var(--red-300);
+
+		&:hover {
+			background-color: var(--red-70);
+			// border-color: var(--red-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* --- User Roles Styles --- */
+
+	/* Client - Primary Blue */
+	&.user-role-client {
+		background-color: var(--primary-50);
+		color: var(--primary-800);
+		// border-color: var(--primary-300);
+
+		&:hover {
+			background-color: var(--primary-70);
+			// border-color: var(--primary-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Shop - Green */
+	&.user-role-shop {
+		background-color: var(--green-50);
+		color: var(--green-800);
+		// border-color: var(--green-300);
+
+		&:hover {
+			background-color: var(--green-70);
+			// border-color: var(--green-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Courier - Yellow */
+	&.user-role-courier {
+		background-color: var(--yellow-50);
+		color: var(--yellow-800);
+		// border-color: var(--yellow-300);
+
+		&:hover {
+			background-color: var(--yellow-70);
+			// border-color: var(--yellow-400);
+			// transform: translateY(-1px);
+		}
+	}
+
+	/* Admin - Red */
+	&.user-role-admin {
+		background-color: var(--red-50);
+		color: var(--red-800);
+		// border-color: var(--red-300);
+
+		&:hover {
+			background-color: var(--red-70);
+			// border-color: var(--red-400);
+			// transform: translateY(-1px);
+		}
+	}
+}

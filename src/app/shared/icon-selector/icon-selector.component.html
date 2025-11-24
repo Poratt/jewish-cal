@@ -1,0 +1,43 @@
+<div class="icon-selector-wrapper" [class.disabled]="disabled">
+
+    <!-- Preview Selected Icon -->
+    <div class="selected-preview">
+        <div class="preview-box">
+            @if (value()) {
+                <i [class]="value()" class="selected-icon"></i>
+            } @else {
+                <span class="empty-text">אין</span>
+            }
+        </div>
+        <span class="label-text">
+            {{ value() ? value() : 'לא נבחר אייקון' }}
+        </span>
+    </div>
+
+    <!-- Tabs & Grid (Angular Material) -->
+    <div class="tabs-container">
+
+        <mat-tab-group class="custom-tabs xs" dir="rtl" disableRipple="true" >
+            @for (category of categories; track category.name) {
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <div class="tab-label-wrapper">
+                        <i class="icon" [ngClass]="category.categoryIcon"></i>
+                        <span class="label">{{ category.label }}</span>
+                    </div>
+                </ng-template>
+
+                <div class="icons-grid">
+                    @for (icon of category.icons; track icon) {
+                    <button type="button" class="icon-btn" [class.active]="value() === icon" (click)="selectIcon(icon)"
+                        [pTooltip]="icon" tooltipPosition="top">
+                        <i [class]="icon"></i>
+                    </button>
+                    }
+                </div>
+            </mat-tab>
+            }
+        </mat-tab-group>
+
+    </div>
+</div>

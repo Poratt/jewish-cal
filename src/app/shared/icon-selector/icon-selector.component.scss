@@ -1,0 +1,88 @@
+.icon-selector-wrapper {
+	&.disabled {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+
+	.selected-preview {
+		margin-bottom: 12px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 8px;
+		border: 1px solid var(--grey-100);
+		border-radius: 6px;
+		background-color: var(--grey-10);
+
+		.preview-box {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-radius: 9999px;
+			width: 2.5rem;
+			height: 2.5rem;
+			border: 1px solid var(--grey-70);
+			background-color: var(--grey-20);
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+            .selected-icon {
+                font-size: 1.25rem; /* text-xl */
+                color: var(--primary-500);
+            }
+
+            .empty-text {
+                font-size: 0.75rem; /* text-xs */
+                color: var(--grey-400);
+            }
+		}
+
+        .label-text {
+            font-size: 0.875rem; /* text-sm */
+            color: var(--grey-600);
+        }
+	}
+
+	.tabs-container {
+		overflow: hidden;
+		border-radius: 0.5rem;
+        border: 1px solid var(--grey-100);
+		background-color: var(--grey-10);
+        
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 0.5rem;
+            padding: 0 4px 4px 4px;
+            min-height: 195px;
+            align-items: center;
+            
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid transparent;
+                background-color: transparent;
+                color: var(--grey-600);
+                transition: all 0.2s;
+                font-size: 1.1rem;
+                cursor: pointer;
+            
+                &:hover {
+                    background-color: var(--grey-40);
+                    color: var(--primary-600);
+                    transform: scale(1.1);
+                }
+            
+                &.active {
+                    background-color: var(--primary-50);
+                    border-color: var(--primary-200);
+                    color: var(--primary-600);
+                    box-shadow: 0 2px 4px rgba(var(--primary-500), 0.1);
+                }
+            }
+        }
+	}    
+}

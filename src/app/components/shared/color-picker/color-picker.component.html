@@ -1,0 +1,34 @@
+<div class="color-picker-container">
+  <!-- Preset color palette -->
+  <div class="preset-colors">
+    @for (c of presetColors(); track c) {
+      <button
+        class="color-button"
+        [class.selected]="c === internalColor()"
+        [style.background-color]="c"
+        (click)="pickColor(c)"
+      ></button>
+    }
+  </div>
+
+  <!-- Full color picker & Reset -->
+<div class="color-input-wrapper">
+  <label class="color-input-label" for="customColor">
+    <input
+      id="customColor"
+      type="color"
+      [(ngModel)]="internalColor"
+      (input)="colorChanged()"
+      class="color-input-hidden"
+    >
+    <div class="color-input-display">
+      <i class="pi pi-palette"></i>
+    </div>
+  </label>
+  
+  <button (click)="reset()" class="reset-button">
+    <i class="pi pi-refresh"></i>
+    <span>Reset</span>
+  </button>
+</div>
+</div>

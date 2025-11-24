@@ -1,0 +1,266 @@
+<!-- Print View Container -->
+@if (isPrintingMode()) {
+<div class="print-container print-preview-mode">
+    @for (monthData of printMonthsData; track monthData) {
+    <div class="print-month-page">
+        <div class="calender-wrapper" 
+            [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+            [style.--shabbat-holiday-color]="shabbatHolidayColor()"
+            [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity()">
+            <!-- Calendar Header for Print -->
+            <div class="header-wrapper">
+                <div class="header-contents">
+                    <div class="header-group">
+                        <div class="header-date-block">
+                            <span class="header-item">{{ monthData.gregorianHeader.split(' ')[0] }}</span>
+                            <span class="header-item">{{ monthData.gregorianHeader.split(' ')[1] }}</span>
+                        </div>
+                    </div>
+                    <div class="header-group">
+                        <div class="header-date-block">
+                            <span class="header-item">{{ monthData.hebrewHeader }}</span>
+                            <span class="header-item">{{ monthData.hebrewYear }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Days Names -->
+            <div class="days-titles">
+                @for (dayName of daysNames; track dayName) {
+                <div class="day-name">{{ dayName.letter }}</div>
+                }
+            </div>
+            <!-- Days -->
+            <div class="days">
+                @for (dayObj of monthData.days; track dayObj) {
+                <div class="day" [ngClass]="{
+                    'other-month': dayObj.ge.month !== monthData.month, 
+                    'saturday': dayObj.ge.day === 6,
+                    'friday': dayObj.ge.day === 5,
+                    'shabbat-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
+                    'friday-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
+                    'holiday-bg': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
+                    'holiday-eve-bg': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
+                    'chol-hamoed-bg': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
+                }">
+                    <div class="day-header">
+                        <div class="hebrew-date-container">
+                            <div class="flex flex-col gap-1 w-full">
+                                <p class="day-hebrew-date">{{ sliceHebDate(dayObj.he.fullDate) }}</p>
+                                @for(ev of dayObj.events; track ev) {
+                                @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
+                                <span class="badge mevarchim-badge">שבת מברכים</span>
+                                }
+                                }
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            @if (contentSettings().includeRoshChodesh && isRoshHodesh(dayObj.he.fullDate)) {
+                            <span class="badge rosh-hodesh-badge">ר״ח</span>
+                            }
+                            @if (contentSettings().showHallel && dayObj.hallel) {
+                            <span class="badge hallel-badge">{{ dayObj.hallel }}</span>
+                            }
+                            @for(ev of dayObj.events; track ev) {
+                            @if (contentSettings().showOmer && ev.categories.includes('omer')) {
+                            <span class="badge omer-badge">{{ev.hebName}}</span>
+                            }
+                            }
+                        </div>
+                        <p class="day-gregorian-date">{{dayObj.ge.date}}</p>
+                    </div>
+                    <div class="day-body">
+                        <div class="day-events">
+                            @for (ev of dayObj.events; track ev) {
+                            @if (ev.categories.includes('holiday')) {
+                            <p class="event holiday">
+                                {{ev.emoji}}
+                                {{ev.hebName}}
+                            </p>
+                            }
+                            }
+                            @if (dayObj.leyning && dayObj.ge.day == 6) {
+                            <p class="event parasha">
+                                {{dayObj.leyning.name.he}}</p>
+                            }
+                        </div>
+                        <div class="day-extra-content">
+                        </div>
+
+                        <div class="flex w-full justify-between items-end pl-1">
+                            <div class="day-zmanim">
+                                @for (ev of dayObj.events; track ev) {
+                                @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
+                                <span class="event zman">
+                                    <span class="hidden sm:block">{{ev.emoji}}</span>
+                                    <span>{{ev.hebName | slice : 0:-5}}</span>
+                                    <span class="time">{{ev.hebName | slice : -5}}</span>
+                                </span>
+                                }
+                                }
+                            </div>
+                            @for(ev of dayObj.events; track ev) {
+                            @if (contentSettings().showMolad && ev.categories.includes('molad')) {
+                            <span class="badge molad-badge">{{extractMoladTime(ev.hebName)}}
+                                <span class="custom-tooltip">{{ev.hebName}}</span>
+                            </span>
+                            }
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
+</div>
+}
+<!-- Main Interactive View Container -->
+@if (!isPrintingMode()) {
+<div class="calender-wrapper" 
+    [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+    [style.--shabbat-holiday-color]="shabbatHolidayColor()"
+    [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity()">
+    <!-- Calendar Header -->
+    <div class="header-wrapper" (wheel)="onMouseWheel($event)">
+        <div class="header-contents">
+            <div class="header-group">
+                <p-button class="no-print sm-icon" severity="secondary"  [rounded]="true" icon="pi pi-angle-right" (click)="changeMonth(-1)" aria-label="Previous Month"></p-button>
+                <div class="header-date-block">
+                    <span class="header-item">{{ monthsNames[calenderDate.getMonth()].he }}</span>
+                    <span class="header-item">{{ calenderDate | date : 'yyyy' }}</span>
+                </div>
+            </div>
+            <div class="header-group">
+                @if (!isCurrentMonth()) {
+                <p-button @slideDown class="no-print sm-icon" severity="secondary"  [rounded]="true" icon="pi pi-calendar" (click)="goToToday()" aria-label="Go to Today"></p-button>
+                }
+                <p-button class="no-print sm-icon" severity="secondary"  [rounded]="true" icon="pi pi-cog" (click)="toggleSettings()" styleClass="settings-toggle-button" aria-label="Toggle Settings"></p-button>
+                <div class="header-date-block justify-center">
+                    <span class="header-item">{{ hebrewMonthRange }}</span>
+                    <span class="header-item">{{ getHebYear(calenderDate) }}</span>
+                </div>
+                <p-button class="no-print sm-icon" severity="secondary"  [rounded]="true" icon="pi pi-angle-left" (click)="changeMonth(1)" aria-label="Next Month"></p-button>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-menu-wrapper" 
+         [class.show]="showSettings()"
+         (mousedown)="isSliding.set(true)" 
+         (mouseup)="isSliding.set(false)">
+        <app-settings-menu></app-settings-menu>
+    </div>
+
+    <!-- Days Names -->
+    <div class="days-titles">
+        @for (dayName of daysNames; track dayName) {
+        <div class="day-name">{{ dayName.letter }}</div>
+        }
+    </div>
+    <!-- Days -->
+    <div class="days" #daysContainer>
+        @for (monthPart of displayedDays; track monthPart) {
+        @for (dayObj of monthPart; track dayObj; let i = $index) {
+        <div (click)="onDayClick(dayObj)" class="day" role="button" tabindex="0"
+            [attr.data-date]="dayObj.ge.year + '-' + (dayObj.ge.month + 1) + '-' + dayObj.ge.date" [ngClass]="{
+                    'other-month': dayObj.ge.month !== calenderDate.getMonth() || dayObj.ge.year !== calenderDate.getFullYear(), 
+                    'saturday': dayObj.ge.day === 6,
+                    'friday': dayObj.ge.day === 5,
+                    'today': isToday(dayObj),
+                    'shabbat-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
+                    'friday-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
+                    'holiday-bg': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
+                    'holiday-eve-bg': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
+                    'chol-hamoed-bg': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
+                 }">
+            <div class="day-header">
+                <div class="hebrew-date-container">
+                    <div class="flex flex-col gap-1 w-full">
+                        <p class="day-hebrew-date">{{sliceHebDate(dayObj.he.fullDate)}}</p>
+                        @for(ev of dayObj.events; track ev) {
+                        @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
+                        <span class="badge mevarchim-badge">שבת מברכים</span>
+                        }
+                        }
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                    @if (contentSettings().includeRoshChodesh && isRoshHodesh(dayObj.he.fullDate)) {
+                    <span class="badge rosh-hodesh-badge">ר״ח</span>
+                    }
+                    @if (contentSettings().showHallel && dayObj.hallel) {
+                    <span class="badge hallel-badge">{{ dayObj.hallel }}</span>
+                    }
+                    @for(ev of dayObj.events; track ev) {
+                    @if (contentSettings().showOmer && ev.categories.includes('omer')) {
+                    <span class="badge omer-badge">{{ev.hebName}}</span>
+                    }
+                    }
+                </div>
+                <p class="day-gregorian-date">{{dayObj.ge.date}}</p>
+            </div>
+            <div class="day-body">
+                <div class="day-events">
+                    @for (ev of dayObj.events; track ev) {
+                    @if (ev.categories.includes('holiday')) {
+                    <span class="event holiday">
+                        <span class="hidden sm:block">{{ev.emoji}}</span>
+                        <span class="label">{{ev.hebName}}</span>
+                    </span>
+                    }
+                    }
+                    @if (dayObj.leyning && dayObj.ge.day == 6) {
+                    <p class="event parasha">
+                        {{dayObj.leyning.name.he}}</p>
+                    }
+                </div>
+
+                <div class="day-extra-content">
+                    <div class="grid grid-cols-2 items-start">
+                        <div class="day-other-zmanim">
+                            @for (zman of ZmanimEnumData; track zman.key) {
+                            @if (contentSettings().zmanimVisibility[zman.key] && getZman(dayObj, zman.key)) {
+                            <span>{{ zman.hebName }}: {{ getZman(dayObj, zman.key)?.time }}</span>
+                            }
+                            }
+                        </div>
+                        <div class="day-learning">
+                            @for (learn of LearningEnumData; track learn.key) {
+                            @if (contentSettings().dailyLearningVisibility[learn.key] && getLearning(dayObj, learn.key)) {
+                            <span class="" [innerHTML]="getLearning(dayObj, learn.key)"></span>
+                            }
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="flex w-full justify-between items-end pl-1">
+                    <div class="day-zmanim">
+                        @for (ev of dayObj.events; track ev) {
+                        @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
+                        <span class="event zman">
+                            <span class="hidden sm:block">{{ev.emoji}}</span>
+                            <span>{{ev.hebName | slice : 0:-5}}</span>
+                            <span class="time">{{ev.hebName | slice : -5}}</span>
+                        </span>
+                        }
+                        }
+                    </div>
+                    @for(ev of dayObj.events; track ev) {
+                    @if (contentSettings().showMolad && ev.categories.includes('molad')) {
+                    <span class="badge molad-badge">{{extractMoladTime(ev.hebName)}}
+                        <span class="custom-tooltip">{{ev.hebName}}</span>
+                    </span>
+                    }
+                    }
+                </div>
+            </div>
+        </div>
+        }
+        }
+    </div>
+</div>
+}

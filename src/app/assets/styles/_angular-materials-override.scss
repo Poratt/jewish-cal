@@ -1,0 +1,118 @@
+/* Angular materials  */
+
+/* Slide toggle */
+.mat-mdc-slide-toggle {
+	--mdc-switch-track-width: 42px;
+	--mdc-switch-track-height: 22px;
+	--mat-switch-with-icon-handle-size: 14px;
+	--mat-switch-pressed-handle-size: 14px;
+	--mat-switch-unselected-with-icon-handle-horizontal-margin: 0 4px;
+	--mat-switch-unselected-pressed-handle-horizontal-margin: 0 4px;
+	--mat-switch-selected-with-icon-handle-horizontal-margin: 0 24px;
+	--mat-switch-selected-pressed-handle-horizontal-margin: 0 24px;
+}
+
+.mdc-switch--unselected .mdc-switch__icon,
+.mdc-switch--selected .mdc-switch__icon {
+	--mdc-switch-selected-icon-size: 12px;
+	--mdc-switch-unselected-icon-size: 12px;
+}
+
+/* Tabs */
+.mat-mdc-tab-group {
+	
+	&.custom-tabs {
+		gap: 10px;
+
+		.mdc-tab {
+			min-width: 0 !important;
+		}
+
+		.tab-label-wrapper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+
+		&.sm {
+			.tab-label-wrapper {
+				gap: 4px;
+				padding: 0 4px;
+
+				.icon {
+					font-size: 12px;
+				}
+
+				.label {
+					font-size: 12px;
+					font-weight: 600;
+				}
+			}
+		}
+
+		&.xs {
+			.tab-label-wrapper {
+				gap: 2px;
+				padding: 0 4px;
+				.icon {
+					font-size: 12px;
+				}
+
+				.label {
+					font-size: 10px;
+					font-weight: 400;
+				}
+			}
+		}
+	}
+
+	&.no-labels .mat-mdc-tab-header {
+		display: none !important;
+	}
+}
+
+/* mat-chip */
+button.mdc-evolution-chip__action.mat-mdc-chip-action.mdc-evolution-chip__action--primary {
+	width: 100%;
+}
+
+.mdc-evolution-chip__graphic {
+	flex: unset !important;
+}
+
+.mat-mdc-chip-set .mdc-evolution-chip-set__chips {
+	padding: 6px 4px;
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 4px;
+	margin-left: 0px !important;
+	margin-right: 0px !important;
+}
+
+.mat-mdc-chip-set .mdc-evolution-chip {
+	margin-left: 0px !important;
+	margin-right: 0px !important;
+	margin: 0 !important;
+}
+
+@media (max-width: 600px) {
+	.mdc-evolution-chip__action.mat-mdc-chip-action.mdc-evolution-chip__action--primary {
+		padding-left: 0;
+	}
+
+	.mat-mdc-standard-chip {
+		height: fit-content !important;
+	}
+
+	.mdc-evolution-chip__action {
+		flex-direction: column;
+	}
+
+	.mdc-evolution-chip__cell.mdc-evolution-chip__cell--primary {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+}

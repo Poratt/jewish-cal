@@ -1,0 +1,133 @@
+@if(dayObj(); as day) {
+<div class="day-details-container">
+    <div class="day-details-header">
+        <p-button severity="secondary" size="small" rounded="true" icon="pi pi-angle-right" (click)="onPrevDay()"></p-button>
+
+        <div class="header-text">
+            <h3 class="hebrew-date">{{ day.he.fullDate }}</h3>
+            <h2 class="gregorian-date">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
+        </div>
+        <p-button severity="secondary" size="small" rounded="true" icon="pi pi-angle-left" (click)="onNextDay()"></p-button>
+
+    </div>
+
+    @if(day.events && day.events.length > 0) {
+    <div class="details-section">
+        <h4>
+            <i class="pi pi-star-fill"></i>
+            אירועים וחגים
+        </h4>
+        <ul>
+            <!-- Display combined fast day info first -->
+            @if(fastDayInfo) {
+            <li>
+                {{ fastDayInfo.name }}
+                @if(fastDayInfo.start || fastDayInfo.end) {
+                <span class="verses">
+                    @if(fastDayInfo.start) {
+                    <span>{{ fastDayInfo.start.hebName }}</span>
+                    }
+                    @if(fastDayInfo.start && fastDayInfo.end) {
+                    <span> - </span>
+                    }
+                    @if(fastDayInfo.end) {
+                    <span>{{ fastDayInfo.end.hebName }}</span>
+                    }
+                </span>
+                }
+            </li>
+            }
+
+            <!-- Display other events that are not related to the fast -->
+            @for(event of day.events; track event.desc) {
+            @if(!event.categories.includes('fast')) {
+            <li>{{ event.emoji }} {{ event.hebName }}</li>
+            }
+            }
+        </ul>
+    </div>
+    }
+
+    @if(day.leyning) {
+    <div class="details-section">
+        <h4>
+            <i class="pi pi-book"></i>
+            קריאת התורה
+        </h4>
+        @if(day.leyning.name.he) {
+        <p><strong>{{ isLeyningWithFullKriyah(day.leyning) ? 'פרשה' : 'קריאה' }}:</strong>
+            {{ day.leyning.name.he }}</p>
+        }
+        @if(isLeyningWithFullKriyah(day.leyning) && day.leyning.haftara) {
+        <p>
+            <strong>הפטרה:</strong>
+            {{ getHaftaraBook(day.leyning.haftara) }}
+            <span class="text-grey-xs">{{ getHaftaraVerses(day.leyning.haftara) }}</span>
+        </p>
+        }
+
+        @if(isLeyningWithFullKriyah(day.leyning)) {
+        <div class="leyning-details">
+            <h5>סדר קריאה</h5>
+            <ul>
+                @for(reading of day.leyning.fullkriyah | keyvalue; track reading.key) {
+                <li>
+                    <strong>{{ aliyotMap[reading.key] || reading.key }}:</strong>
+                    {{ translate(reading.value.k) }}
+                    <span class="text-grey-xs pr-4">{{ formatAliyahVerses(reading.value) }}</span>
+                </li>
+                }
+            </ul>
+        </div>
+        }
+        @if(isLeyningWithWeekday(day.leyning)) {
+        <div class="leyning-details">
+            <h5>סדר קריאה</h5>
+            <ul>
+                @for(reading of day.leyning.weekday | keyvalue; track reading.key) {
+                <li>
+                    <strong>{{ aliyotMap[reading.key] || reading.key }}:</strong>
+                    {{ translate(reading.value.k) }}
+                    <span class="text-grey-xs pr-4">{{ formatAliyahVerses(reading.value) }}</span>
+                </li>
+                }
+            </ul>
+        </div>
+        }
+    </div>
+    }
+
+    @if(day.zmanim) {
+    <div class="details-section">
+        <h4>
+            <i class="pi pi-clock"></i>
+            זמני היום
+        </h4>
+        <ul class="zmanim-grid">
+            @for(zman of dayObj()?.zmanim; track zman.name) {
+            <li><strong>{{ zman.hebName }}:</strong> {{ zman.time }}</li>
+            }
+        </ul>
+    </div>
+    }
+
+    @if(hasLearningContent()) {
+    <div class="details-section">
+        <h4>
+            <i class="pi pi-graduation-cap"></i>
+            לימוד יומי
+        </h4>
+        <ul class="zmanim-grid">
+            @for (learn of LearningEnumData; track learn.key) {
+            @if (getLearning(day, learn.key)) {
+            <li>
+                <strong [pTooltip]="learn.desc">{{ learn.hebName }}:</strong>
+                <span class="verses" [innerHtml]="getLearning(day, learn.key)"> </span>
+            </li>
+            }
+            }
+        </ul>
+    </div>
+    }
+</div>
+}
