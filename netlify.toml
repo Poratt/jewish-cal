@@ -1,0 +1,11 @@
+[build]
+  publish = "dist/jewish-cal/browser"
+  command = "ng build --configuration production"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "18"
