@@ -1,36 +1,12 @@
 
 export interface Zman {
-    key: keyof ZmanimVisibility; // Add key for easier filtering and tracking
+    key: keyof ZmanimVisibility;
     name: string;
     hebName: string;
     time: string | Date;
 }
 
-// ZmanimModel is now defined as an array of Zman objects.
 export type ZmanimModel = Zman[];
-
-// export interface ZmanimModel {
-//     date: string;
-//     hebDate: string;
-//     sunrise: Zman,
-//     // sunset: Zman,
-//     dawn: Zman,
-//     dusk: Zman,
-//     eveningTime: Zman
-//     chatzot: Zman,
-//     chatzotNightTime: Zman,
-//     alotHaShachar: Zman,
-//     misheyakir: Zman,
-//     misheyakirMachmir: Zman,
-//     sofZmanShma: Zman,
-//     sofZmanTfilla: Zman,
-//     minchaGedola: Zman,
-//     minchaKetana: Zman,
-//     plagHaMincha: Zman,
-//     tzeitHaKochavim: Zman,
-//     neitzHaChama: Zman,
-//     shkiah: Zman,
-// }
 
 
 export interface ZmanimVisibility {
@@ -77,18 +53,15 @@ export const ZMANIM: HebKeyLabel<ZmanimVisibility>[] = [
 
 
 
-import { EnumMetadata } from "./enumData";
+import { EnumData } from "./enumData";
 import { HebKeyLabel } from "./hebrew-key-label";
 
 export interface Zman {
-    key: keyof ZmanimVisibility; // Add key for easier filtering and tracking
+    key: keyof ZmanimVisibility; // for easier filtering and tracking
     name: string;
     hebName: string;
     time: string | Date;
 }
-
-// ZmanimModel is now defined as an array of Zman objects.
-
 
 
 
@@ -113,7 +86,7 @@ export enum ZmanimEnum {
 }
 
 
-export const ZmanimEnumData: EnumMetadata[] = [
+export const ZmanimEnumData: EnumData[] = [
 	{ enumValue: ZmanimEnum.ChatzotNightTime, key: 'chatzotNightTime', hebName: 'חצות הלילה', visibility: true },
 	{ enumValue: ZmanimEnum.AlotHaShachar, key: 'alotHaShachar', hebName: 'עלות השחר', visibility: true },
 	{ enumValue: ZmanimEnum.Misheyakir, key: 'misheyakir', hebName: 'משיכיר', visibility: true },
@@ -132,52 +105,3 @@ export const ZmanimEnumData: EnumMetadata[] = [
 	{ enumValue: ZmanimEnum.TzeitHaKochavim, key: 'tzeitHaKochavim', hebName: 'דמדומי חמה', visibility: true },
 	{ enumValue: ZmanimEnum.EveningTime, key: 'eveningTime', hebName: 'זמן ערב', visibility: true },
 ];
-
-
-
-
-
-// export const ZMANIM: HebKeyLabel<ZmanimVisibility>[] = [
-//     { key: 'chatzotNightTime', hebName: 'חצות הלילה' },
-//     { key: 'alotHaShachar', hebName: 'עלות השחר' },
-//     { key: 'misheyakir', hebName: 'משיכיר' },
-//     { key: 'misheyakirMachmir', hebName: 'משיכיר מחמיר' },
-//     { key: 'dawn', hebName: 'אור ראשון' },
-//     { key: 'neitzHaChama', hebName: 'נץ החמה' },
-//     { key: 'sunrise', hebName: 'זריחה' },
-//     { key: 'sofZmanShma', hebName: 'סו״ז ק״ש' },
-//     { key: 'sofZmanTfilla', hebName: 'סו״ז תפילה' },
-//     { key: 'chatzot', hebName: 'חצות היום' },
-//     { key: 'minchaGedola', hebName: 'מנחה גדולה' },
-//     { key: 'minchaKetana', hebName: 'מנחה קטנה' },
-//     { key: 'plagHaMincha', hebName: 'פלג המנחה' },
-//     { key: 'shkiah', hebName: 'שקיעה' },
-//     { key: 'dusk', hebName: 'צאת הכוכבים' },
-//     { key: 'tzeitHaKochavim', hebName: 'דמדומי חמה' },
-//     { key: 'eveningTime', hebName: 'זמן ערב' },
-// ];
-
-
-
-// export interface ZmanimModel {
-//     date: string;
-//     hebDate: string;
-//     sunrise: Zman,
-//     // sunset: Zman,
-//     dawn: Zman,
-//     dusk: Zman,
-//     eveningTime: Zman
-//     chatzot: Zman,
-//     chatzotNightTime: Zman,
-//     alotHaShachar: Zman,
-//     misheyakir: Zman,
-//     misheyakirMachmir: Zman,
-//     sofZmanShma: Zman,
-//     sofZmanTfilla: Zman,
-//     minchaGedola: Zman,
-//     minchaKetana: Zman,
-//     plagHaMincha: Zman,
-//     tzeitHaKochavim: Zman,
-//     neitzHaChama: Zman,
-//     shkiah: Zman,
-// }

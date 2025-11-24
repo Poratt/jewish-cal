@@ -153,6 +153,7 @@
 				position: absolute;
 				inset: 0;
 				background-color: var(--shabbat-holiday-color);
+				
 				opacity: var(--shabbat-bg-opacity, 0.04);
 				z-index: -1;
 			}

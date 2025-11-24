@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "jewish-cal-client": {
+    "jewish-cal": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {

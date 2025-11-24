@@ -1,12 +1,9 @@
-// src/app/core/services/userSettingsService.service.ts
-
 import { DOCUMENT } from '@angular/common';
 import { Injectable, signal, effect, WritableSignal, inject, Signal } from '@angular/core';
-
 import { getLocationNames, groupCitiesByCountry } from './hebcal-helpers';
 import { GeolocationService } from './geolocation.service';
 import { City, GroupedCity } from '../models/city';
-import { ContentSettings, ContentSettingsDefault } from '../models/content-settings';
+import { ContentSettings, ContentSettingsDefault, ViewSettingType } from '../models/content-settings';
 import { DailyLearningVisibility, LearningEnumData } from '../models/learning';
 import { ZmanimVisibility, ZmanimEnumData } from '../models/zman';
 
@@ -28,7 +25,6 @@ export class UserSettingsService {
 	private readonly SHABBAT_BG_OPACITY_KEY = 'calendar_shabbat_bg_opacity';
 
 
-	// --- Source Signals (private writable) ---
 	private contentSettingsSource: WritableSignal<ContentSettings>;
 	private selectedLocationSource: WritableSignal<City | null>;
 	private groupedCitiesSource: WritableSignal<GroupedCity[]>;
@@ -38,7 +34,7 @@ export class UserSettingsService {
 	private shabbatBackgroundOpacitySource: WritableSignal<number>;
 	private printRequestSource: WritableSignal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
-	// --- Read-only Signals for Public Consumption ---
+
 	public readonly contentSettingsSignal: Signal<ContentSettings>;
 	public readonly selectedLocationSignal: Signal<City | null>;
 	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
@@ -49,58 +45,47 @@ export class UserSettingsService {
 	public readonly printRequestSignal: Signal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
 	constructor() {
-		// Initialize private writable signals
+
 		this.contentSettingsSource = signal(this.loadContentSettings());
 		this.selectedLocationSource = signal(this.loadSelectedLocation());
 		this.groupedCitiesSource = signal<GroupedCity[]>([]);
 		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_BRIGHTNESS_KEY, 85));
 		this.shabbatHolidayColorSource = signal(this.loadFromStorage(this.SHABBAT_HOLIDAY_COLOR_KEY, '#3b82f6'));
 		this.selectedFontSource = signal(this.loadFromStorage(this.FONT_KEY, this.APP_FONT_FAMILY));
-		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.SHABBAT_BG_OPACITY_KEY, 0.04)); // New
+		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.SHABBAT_BG_OPACITY_KEY, 0.04));
 		this.printRequestSource = signal(null);
 
-		// Initialize public readonly signals from the private ones
+
 		this.contentSettingsSignal = this.contentSettingsSource.asReadonly();
 		this.selectedLocationSignal = this.selectedLocationSource.asReadonly();
 		this.groupedCitiesSignal = this.groupedCitiesSource.asReadonly();
 		this.borderBrightnessSignal = this.borderBrightnessSource.asReadonly();
 		this.shabbatHolidayColorSignal = this.shabbatHolidayColorSource.asReadonly();
 		this.selectedFontSignal = this.selectedFontSource.asReadonly();
-		this.shabbatBackgroundOpacitySignal = this.shabbatBackgroundOpacitySource.asReadonly(); // New
+		this.shabbatBackgroundOpacitySignal = this.shabbatBackgroundOpacitySource.asReadonly();
 		this.printRequestSignal = this.printRequestSource.asReadonly();
 
-		// Run initialization logic
 		this.initializeCitiesAndLocation();
 		this.setupPersistenceEffects();
 		this.setupFontEffect();
 	}
 
-	// --- Update Methods ---
 	public updateContentSettings(newSettings: ContentSettings): void {
 		this.contentSettingsSource.set(newSettings);
 	}
 
-	public updateSelectedLocation(newLocation: City): void {
-		this.selectedLocationSource.set(newLocation);
-	}
 
-	public updateBorderBrightness(brightness: number): void {
-		this.borderBrightnessSource.set(brightness);
+	public updateSettings(type: ViewSettingType, value: any): void {
+		switch (type) {
+			case 'location': this.selectedLocationSource.set(value); break;
+			case 'borderBrightness': this.borderBrightnessSource.set(value); break;
+			case 'shabbatColor': this.shabbatHolidayColorSource.set(value); break;
+			case 'shabbatOpacity': this.shabbatBackgroundOpacitySource.set(value); break;
+			case 'font': this.selectedFontSource.set(value); break;
+			default: console.warn('Unknown setting type:', type); break;
+		}
 	}
-
-	public updateShabbatHolidayColor(color: string): void {
-		this.shabbatHolidayColorSource.set(color);
-	}
-
-	public updateSelectedFont(font: string): void {
-		this.selectedFontSource.set(font);
-	}
-
-	public updateShabbatBackgroundOpacity(opacity: number): void {
-		this.shabbatBackgroundOpacitySource.set(opacity);
-	}
-
-	public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {
+	public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {	
 		this.printRequestSource.set(data);
 	}
 
@@ -108,7 +93,7 @@ export class UserSettingsService {
 		this.printRequestSource.set(null);
 	}
 
-	// --- Initialization and Persistence ---
+
 	private async initializeCitiesAndLocation(): Promise<void> {
 		const allLocations = getLocationNames();
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
@@ -155,7 +140,7 @@ export class UserSettingsService {
 			const loadedSettings = JSON.parse(saved);
 			const mergedSettings = { ...defaultSettings, ...loadedSettings };
 
-			// Securely merge nested visibility objects
+
 			mergedSettings.dailyLearningVisibility = this.mergeVisibility(
 				defaultSettings.dailyLearningVisibility,
 				loadedSettings.dailyLearningVisibility || {}
@@ -199,8 +184,8 @@ export class UserSettingsService {
 	}
 
 	private getDefaultContentSettings(): ContentSettings {
-		// Return a deep copy of the default settings to avoid mutation.
-		// Using JSON.parse(JSON.stringify(...)) is a simple way to deep copy.
+
+
 		return JSON.parse(JSON.stringify(ContentSettingsDefault));
 	}
 }

@@ -5,10 +5,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 
 import Aura from '@primeng/themes/aura';
 import { providePrimeNG } from 'primeng/config';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { definePreset } from '@primeng/themes';
 import { MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+
+import localeHe from '@angular/common/locales/he';
+import { registerLocaleData } from '@angular/common';
+
+registerLocaleData(localeHe);
 
 
 

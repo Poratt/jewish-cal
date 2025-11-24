@@ -6,7 +6,7 @@ import { LeyningWeekday, LeyningShabbatHoliday } from '@hebcal/leyning';
 import { TooltipModule } from "primeng/tooltip";
 import { ButtonModule } from 'primeng/button';
 import { DayObject } from '../../core/models/day-object';
-import { EnumMetadata } from '../../core/models/enumData';
+import { EnumData } from '../../core/models/enumData';
 import { EventInfo } from '../../core/models/event-info';
 import { LearningEnumData, Learning } from '../../core/models/learning';
 import { aliyotMap } from '../../core/models/leyning';
@@ -35,7 +35,7 @@ export class DayDetailsComponent {
 	public readonly hebcalService = inject(HebcalService);
 	private readonly dialogNavService = inject(DialogNavigationService);
 
-	public readonly LearningEnumData: EnumMetadata[] = LearningEnumData;
+	public readonly LearningEnumData: EnumData[] = LearningEnumData;
 	public readonly translate = translate;
 	public readonly getHaftaraBook = getHaftaraBook
 	public readonly getHaftaraVerses = getHaftaraVerses

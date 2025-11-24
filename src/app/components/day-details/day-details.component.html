@@ -1,13 +1,13 @@
 @if(dayObj(); as day) {
 <div class="day-details-container">
     <div class="day-details-header">
-        <p-button severity="secondary" size="small" rounded="true" icon="pi pi-angle-right" (click)="onPrevDay()"></p-button>
+        <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" (click)="onPrevDay()"></p-button>
 
         <div class="header-text">
             <h3 class="hebrew-date">{{ day.he.fullDate }}</h3>
             <h2 class="gregorian-date">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
         </div>
-        <p-button severity="secondary" size="small" rounded="true" icon="pi pi-angle-left" (click)="onNextDay()"></p-button>
+        <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" (click)="onNextDay()"></p-button>
 
     </div>
 

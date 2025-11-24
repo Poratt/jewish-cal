@@ -17,14 +17,13 @@
                         </label>
                         <p-select #locationDropdown
                             [ngModel]="selectedLocation()"
-                            (ngModelChange)="onLocationUpdated($event)"
+                            (ngModelChange)="onSettingUpdate('location', $event)"
                             [options]="groupedCities()"
                             optionLabel="cityHeb"
                             [group]="true"
                             [filter]="true"
                             filterBy="cityHeb" 
                             placeholder="בחר עיר" 
-                            dropdownIcon="pi pi-search"
                             icon
                             class="w-full">
                             <ng-template pTemplate="selectedItem">
@@ -34,16 +33,7 @@
                                 </div>
                                 }
                             </ng-template>
-                            <ng-template pTemplate="filter" let-options="options">
-                                <div class="flex items-center gap-2 p-2">
-                                    <i class="pi pi-search"></i>
-                                    <input type="text" 
-                                        [value]="options.filter" 
-                                        (input)="options.filterCallback($event)" 
-                                        placeholder="הכנס שם עיר.."
-                                        class="flex-1 p-inputtext">
-                                </div>
-                            </ng-template>
+
                             <ng-template let-group pTemplate="group">
                                 <div class="flex items-center country-group">
                                     <span class="flag"
@@ -67,15 +57,15 @@
                         <div class="form-group">
                             <label>בהירות גבולות</label>
                             <p-slider [ngModel]="borderBrightness()"
-                                (onChange)="onBorderBrightnessUpdated($event)" [min]="0" [max]="100"></p-slider>
+                                (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
                         </div>
                         <div class="form-group">
                             <label>צבעי שבת וחג</label>
                             <div class="color-options-container">
-                                @for (color of shabbatHolidayColorOptions; track color) {
+                                @for (color of colors(); track color) {
                                 <div class="color-swatch" [style.background-color]="color"
                                     [ngClass]="{'selected': shabbatHolidayColor() === color}"
-                                    (click)="onShabbatHolidayColorUpdated(color)">
+                                    (click)="onSettingUpdate('shabbatColor', color)">
                                 </div>
                                 }
                             </div>
@@ -85,7 +75,7 @@
                                 class="flex"
                                 size="small"
                                 [ngModel]="settings.showShabbatBackgrounds"
-                                (ngModelChange)="onContentSettingChange($event, 'showShabbatBackgrounds')"
+                                (ngModelChange)="onContentSettingChange($event, 'showShabbatBackgrounds', 'general')"
                                 [binary]="true"
                                 inputId="shabbatBgCheck">
                             </p-checkbox>
@@ -94,14 +84,14 @@
                         <div class="form-group">
                             <label>שקיפות רקע</label>
                             <p-slider [ngModel]="shabbatBackgroundOpacity()"
-                                (onChange)="onShabbatBackgroundOpacityUpdated($event)" 
+                                (onChange)="onSettingUpdate('shabbatOpacity', $event.value)" 
                                 [min]="0.005" [max]="0.04" [step]="0.000001"></p-slider>
                         </div>
                         <div class="form-group">
                             <label>פונט</label>
                             <p-select [ngModel]="selectedFont()"
-                                (ngModelChange)="onFontUpdated($event)"
-                                [options]="fontOptions" optionLabel="name"
+                                (ngModelChange)="onSettingUpdate('font', $event)"
+                                [options]="fontOptions()" optionLabel="name"
                                 optionValue="value"
                                 placeholder="בחר פונט" styleClass="w-full font-selector">
                                 <ng-template pTemplate="item" let-option>
@@ -136,11 +126,11 @@
                             <span>הצגת אירועים</span>
                         </label>
                         <div class="content-settings-grid">
-                            @for(item of ContentSettingsEnumData; track item.key) {
+                            @for(item of ContentSettingsEnumData(); track item.key) {
                             <div class="form-group-row">
                                 <p-checkbox size="small" class="flex"
                                     [ngModel]="settings[item.key]"
-                                    (ngModelChange)="onContentSettingChange($event, item.key)"
+                                    (ngModelChange)="onContentSettingChange($event, item.key, 'general')"
                                     [binary]="true" [inputId]="item.key">
                                 </p-checkbox>
                                 <label [for]="item.key">{{item.hebName}}</label>
@@ -158,25 +148,24 @@
                                 <span class="pi pi-book"></span>
                                 <span>לימוד יומי</span>
                             </label>
-                            @if(learningSelectionError()) {
-                            <div @slideDown class="zmanim-error-message">
-                                {{ learningSelectionError() }}
-                            </div>
-                            }
+                            <span class="text-xxs text-grey-500"> בחר עד {{maxLearningToShow()}} נושאי לימוד</span>
                         </div>
                         <div class="content-settings-grid">
-                            @for(learn of LearningEnumData; track learn.key) {
+                            @for(learn of LearningEnumData(); track learn.key) {
                             <div class="form-group-row">
                                 <p-checkbox 
                                     class="flex"
                                     size="small"
-                                    [ngModel]="settings.dailyLearningVisibility[learn.key]" 
-                                    (ngModelChange)="onDailyLearningVisibilityChange($event, learn.key)"
+                                    [disabled]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()"
+                                    [ngModel]="settings.dailyLearningVisibility[learn.key]"
+                                    (ngModelChange)="onContentSettingChange($event, learn.key, 'dailyLearning')"
                                     [binary]="true"                                        
-                                    [inputId]="'learnCheck-' + learn.key"
-                                    [disabled]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow">
+                                    [inputId]="'learnCheck-' + learn.key">
                                 </p-checkbox>
-                                <label [for]="'learnCheck-' + learn.key">{{learn.hebName}}</label>
+                                <label [for]="'learnCheck-' + learn.key" 
+                                       [class.opacity-50]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()">
+                                    {{learn.hebName}}
+                                </label>
                             </div>
                             }
                             
@@ -192,23 +181,24 @@
                                 <span class="pi pi-clock"></span>
                                 <span>זמני היום</span>
                             </label>
-                            @if(zmanimSelectionError()) {
-                            <div @slideDown class="zmanim-error-message">
-                                {{ zmanimSelectionError() }}
-                            </div>
-                            }
+                            <span class="text-xxs text-grey-500"> בחר עד {{maxZmanimToShow()}} זמנים</span>
                         </div>
                         <div class="content-settings-grid">
-                            @for(zman of ZmanimEnumData; track zman.key) {
+                            @for(zman of ZmanimEnumData(); track zman.key) {
                             <div class="form-group-row">
-                                <p-checkbox size="small" class="flex"
+                                <p-checkbox 
+                                    size="small" 
+                                    class="flex"
+                                    [disabled]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()"
                                     [ngModel]="settings.zmanimVisibility[zman.key]"
-                                    (ngModelChange)="onZmanimVisibilityChange($event, zman.key)"
+                                    (ngModelChange)="onContentSettingChange($event, zman.key, 'zmanim')"
                                     [binary]="true"
-                                    [inputId]="'zmanCheck-' + zman.key"
-                                    [disabled]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow">
+                                    [inputId]="'zmanCheck-' + zman.key">
                                 </p-checkbox>
-                                <label [for]="'zmanCheck-' + zman.key">{{zman.hebName}}</label>
+                                <label [for]="'zmanCheck-' + zman.key"
+                                       [class.opacity-50]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()">
+                                    {{zman.hebName}}
+                                </label>
                             </div>
                             }
                         </div>

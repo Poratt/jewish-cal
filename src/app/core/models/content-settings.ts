@@ -1,11 +1,11 @@
-// src/app/common/models/content-settings.ts
-
-import { YerushalmiYomiConfig } from "@hebcal/learning";
-import { EnumMetadata } from "./enumData";
+import { EnumData } from "./enumData";
 import { DailyLearningVisibility } from "./learning";
 import { ZmanimVisibility } from "./zman";
 
 export type YerushalmiYomiEdition = 'vilna' | 'schottenstein';
+export type ViewSettingType = 'location' | 'borderBrightness' | 'shabbatColor' | 'shabbatOpacity' | 'font';
+export type ContentSettingsSections = 'general' | 'dailyLearning' | 'zmanim';
+
 
 export interface ContentSettings {
 	[key: string]: any;
@@ -35,11 +35,11 @@ export enum ContentSettingsEnum {
 	IncludeMinorFasts,
 	IncludeRoshChodesh,
 	IncludeHolidays,
-	ZmanimVisibility,
-	DailyLearningVisibility,
+	// ZmanimVisibility,
+	// DailyLearningVisibility,
 }
 
-export const ContentSettingsEnumData: EnumMetadata[] = [
+export const ContentSettingsEnumData: EnumData[] = [
 	{ enumValue: ContentSettingsEnum.ShowOmer, key: 'showOmer', hebName: 'ספירת העומר', visibility: true },
 	{ enumValue: ContentSettingsEnum.ShowMolad, key: 'showMolad', hebName: 'מולד', visibility: true },
 	{ enumValue: ContentSettingsEnum.ShowMevarchim, key: 'showMevarchim', hebName: 'שבת מברכים', visibility: true },
@@ -50,8 +50,8 @@ export const ContentSettingsEnumData: EnumMetadata[] = [
 	{ enumValue: ContentSettingsEnum.IncludeMinorFasts, key: 'includeMinorFasts', hebName: 'תעניות קטנות', visibility: true },
 	{ enumValue: ContentSettingsEnum.IncludeRoshChodesh, key: 'includeRoshChodesh', hebName: 'ראש חודש', visibility: true },
 	{ enumValue: ContentSettingsEnum.IncludeHolidays, key: 'includeHolidays', hebName: 'חגים ומועדים', visibility: true },
-	{ enumValue: ContentSettingsEnum.ZmanimVisibility, key: 'zmanimVisibility', hebName: 'זמני היום', visibility: true },
-	{ enumValue: ContentSettingsEnum.DailyLearningVisibility, key: 'dailyLearningVisibility', hebName: 'לימוד יומי', visibility: true },
+	// { enumValue: ContentSettingsEnum.ZmanimVisibility, key: 'zmanimVisibility', hebName: 'זמני היום', },
+	// { enumValue: ContentSettingsEnum.DailyLearningVisibility, key: 'dailyLearningVisibility', hebName: 'לימוד יומי', },
 ];
 
 export const ContentSettingsDefault: ContentSettings = {
@@ -67,20 +67,18 @@ export const ContentSettingsDefault: ContentSettings = {
     includeHolidays: true,
     showShabbatBackgrounds: true,
 
-    yerushalmiYomiType: 'vilna',
-
     zmanimVisibility: {
       chatzotNightTime: false,
       alotHaShachar: true,
       misheyakir: false,
       misheyakirMachmir: false,
       dawn: false,
-      neitzHaChama: true,
+      neitzHaChama: false,
       sunrise: false,
-      sofZmanShma: true,
+      sofZmanShma: false,
       sofZmanTfilla: false,
       chatzot: false,
-      minchaGedola: true,
+      minchaGedola: false,
       minchaKetana: false,
       plagHaMincha: false,
       shkiah: true,
@@ -97,15 +95,13 @@ export const ContentSettingsDefault: ContentSettings = {
       shemiratHaLashon: false,
       dailyPsalms: false,
       dafWeekly: false,
-
-      // New visibility flags
-      perekYomi: true,
-      pirkeiAvot: true,
-      dailyRambam3: true,
-      arukhHaShulchanYomi: true,
-      seferHaMitzvot: true,
-      kitzurShulchanAruch: true,
-      yerushalmiYomiV: true,
-      yerushalmiYomiS: true,
+      perekYomi: false,
+      pirkeiAvot: false,
+      dailyRambam3: false,
+      arukhHaShulchanYomi: false,
+      seferHaMitzvot: false,
+      kitzurShulchanAruch: false,
+      yerushalmiYomiV: false,
+      yerushalmiYomiS: false,
     }
 }

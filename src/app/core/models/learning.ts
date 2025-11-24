@@ -10,7 +10,7 @@ import {
 	ShemiratHaLashonReading,
 	YerushalmiReading
 } from '@hebcal/learning';
-import { EnumMetadata } from "./enumData";
+import { EnumData } from "./enumData";
 import { PerekYomi } from '@hebcal/learning/perekYomiBase';
 
 export interface Learning {
@@ -71,7 +71,7 @@ export enum DailyLearningEnum {
 	YerushalmiYomiS,
 }
 
-export const LearningEnumData: EnumMetadata[] = [
+export const LearningEnumData: EnumData[] = [
 	{ enumValue: DailyLearningEnum.DafYomi, key: 'dafYomi', hebName: 'דף יומי', visibility: true, desc: 'לימוד דף אחד ביום במסכת הש"ס לפי מחזור הדף היומי' },
 	{ enumValue: DailyLearningEnum.MishnaYomi, key: 'mishnaYomi', hebName: 'משנה יומית', visibility: true, desc: 'לימוד שתי משניות ביום, לפי סדר מסודר עד סיום שישה סדרי משנה' },
 	{ enumValue: DailyLearningEnum.NachYomi, key: 'nachYomi', hebName: 'נ"ך יומי', visibility: true, desc: 'לימוד יומי בנביאים וכתובים, לסיום התנ"ך במחזוריות קבועה' },

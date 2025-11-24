@@ -15,7 +15,7 @@ import { LearningEnumData, Learning } from '../../core/models/learning';
 import { ZmanimEnumData, Zman } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
 import { UserSettingsService } from '../../core/services/userSettingsService.service';
-import { EnumMetadata } from '../../core/models/enumData';
+import { EnumData } from '../../core/models/enumData';
 import { daysNames, monthsNames, HEBREW_LOCALE } from '../../core/constants/namesInfo';
 import { DayObject } from '../../core/models/day-object';
 import { PrintMonthData } from '../../core/models/print';
@@ -44,10 +44,9 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   public readonly daysNames = daysNames;
   public readonly monthsNames = monthsNames;
   
-  public readonly LearningEnumData: EnumMetadata[] = LearningEnumData;
-  public readonly ZmanimEnumData: EnumMetadata[] = ZmanimEnumData;
+  public readonly LearningEnumData: EnumData[] = LearningEnumData;
+  public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 
-  // Read state from the service
   public contentSettings = this.userSettingsService.contentSettingsSignal;
   public selectedLocation = this.userSettingsService.selectedLocationSignal;
   public groupedCities = this.userSettingsService.groupedCitiesSignal;
@@ -75,7 +74,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   @ViewChild(SettingsMenuComponent, { read: ElementRef }) settingsMenuRef!: ElementRef;
 
   constructor() {
-    // Effect for handling next/prev day navigation from dialog
     effect(() => {
       if (this.dialogNavService.nextDaySignal() > 0 && this.ref) {
         this.navigateToNextDay();
@@ -87,7 +85,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Effect for reacting to state changes from the service
     effect(() => {
       const location = this.selectedLocation();
       const settings = this.contentSettings();
@@ -98,7 +95,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
       }
     });
     
-    // Effect for handling print requests
     effect(() => {
       const request = this.userSettingsService.printRequestSignal();
       if (request) {
