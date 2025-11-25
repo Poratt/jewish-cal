@@ -89,11 +89,13 @@
                         </div>
                         <div class="form-group">
                             <label>פונט</label>
-                            <p-select [ngModel]="selectedFont()"
+                            <p-select 
+                                appendTo="body"
+                                [ngModel]="selectedFont()"
                                 (ngModelChange)="onSettingUpdate('font', $event)"
                                 [options]="fontOptions()" optionLabel="name"
                                 optionValue="value"
-                                placeholder="בחר פונט" styleClass="w-full font-selector">
+                                placeholder="בחר פונט" class="w-full font-selector">
                                 <ng-template pTemplate="item" let-option>
                                     <div class="font-option">
                                         <div class="font-name">{{ option.name }}</div>

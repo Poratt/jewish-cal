@@ -404,7 +404,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     return (day.learn as Learning)[stringKey];
   }
 
-  extractMoladTime(moladText: string): string {
+extractMoladTime(moladText: string, short: boolean = false): string {
     const monthMatch = moladText.match(/מוֹלָד הָלְּבָנָה\s+(\S+)/);
     const month = monthMatch ? monthMatch[1] : '';
 
@@ -418,7 +418,12 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     const chalakim = chalakimMatch ? chalakimMatch[1] : '0';
 
     const seconds = Math.round((parseInt(chalakim) * 10) / 3);
+    const timeStr = `${hour}:${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-    return `מוֹלָד הָלְּבָנָה ${hour}:${minutes}:${seconds.toString().padStart(2, '0')}`;
-  }
+    if (short) {
+        return timeStr;
+    }
+
+    return `מוֹלָד הָלְּבָנָה ${timeStr}`;
+}
 }

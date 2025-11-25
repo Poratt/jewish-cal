@@ -17,6 +17,7 @@ export class UserSettingsService {
 
 
 	private readonly APP_FONT_FAMILY = "'Fredoka', sans-serif";
+	
 	private readonly BORDER_BRIGHTNESS_KEY = 'calendar_border_brightness';
 	private readonly SHABBAT_HOLIDAY_COLOR_KEY = 'calendar_shabbat_holiday_color';
 	private readonly CONTENT_SETTINGS_KEY = 'calendar_content_settings';
@@ -52,6 +53,7 @@ export class UserSettingsService {
 		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_BRIGHTNESS_KEY, 85));
 		this.shabbatHolidayColorSource = signal(this.loadFromStorage(this.SHABBAT_HOLIDAY_COLOR_KEY, '#3b82f6'));
 		this.selectedFontSource = signal(this.loadFromStorage(this.FONT_KEY, this.APP_FONT_FAMILY));
+		
 		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.SHABBAT_BG_OPACITY_KEY, 0.04));
 		this.printRequestSource = signal(null);
 
