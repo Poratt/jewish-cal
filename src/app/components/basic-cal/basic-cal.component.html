@@ -4,7 +4,7 @@
     <div class="print-month-page">
         <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
             [style.--shabbat-holiday-color]="shabbatHolidayColor()"
-            [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity()">
+            [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
             <!-- Calendar Header for Print -->
             <div class="header-wrapper">
                 <div class="header-contents">
@@ -136,7 +136,7 @@
 <!-- Main Interactive View Container -->
 @if (!isPrintingMode()) {
 <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-    [style.--shabbat-holiday-color]="shabbatHolidayColor()" [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity()">
+    [style.--shabbat-holiday-color]="shabbatHolidayColor()" [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
     <!-- Calendar Header -->
     <div class="header-wrapper" (wheel)="onMouseWheel($event)">
         <div class="header-contents">

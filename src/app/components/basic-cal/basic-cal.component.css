@@ -137,37 +137,25 @@
 			&.saturday,
 			&.holiday-bg {
 				color: var(--shabbat-holiday-color);
+				background: color-mix(in srgb, var(--shabbat-holiday-color) var(--shabbat-bg-opacity), white);
 			}
 
 			&.friday,
 			&.holiday-eve-bg,
 			&.chol-hamoed-bg {
 				color: color-mix(in srgb, var(--shabbat-holiday-color) 60%, white);
-			}
+				--mixed-bg-color: color-mix(in srgb, var(--shabbat-holiday-color) var(--shabbat-bg-opacity), white);
 
-			&.shabbat-bg::before,
-			&.holiday-bg::before {
-				content: '';
-				position: absolute;
-				inset: 0;
-				background-color: var(--shabbat-holiday-color);
+				/* 2. Use it in a gradient (Color -> Transparent) */
+				background-image: linear-gradient(to bottom, var(--mixed-bg-color), white);
 
-				opacity: var(--shabbat-bg-opacity, 0.04);
-				z-index: -1;
-			}
+				/* 3. Restrict it to the bottom 50% of the cell */
+				background-size: 100% 50%;
+				background-repeat: no-repeat;
+				background-position: top;
 
-			&.friday-bg::before,
-			&.holiday-eve-bg::before,
-			&.chol-hamoed-bg::before {
-				content: '';
-				position: absolute;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				height: 50%;
-				background: linear-gradient(to top, var(--shabbat-holiday-color), transparent);
-				opacity: var(--shabbat-bg-opacity, 0.04);
-				z-index: -1;
+				-webkit-print-color-adjust: exact !important;
+				print-color-adjust: exact !important;
 			}
 
 			.day-header {
@@ -202,13 +190,12 @@
 				font-size: clamp(10px, 1vw, 13px);
 				line-height: clamp(10px, 0.75vw, 11px);
 
-				
 				.day-events,
 				.day-extra-content {
 					display: flex;
 					flex-direction: column;
 				}
-				
+
 				.day-extra-content {
 					font-size: clamp(0.6rem, 0.875vw, 0.7rem);
 					display: flex;
