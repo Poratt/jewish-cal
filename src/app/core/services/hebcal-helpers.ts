@@ -1,3 +1,5 @@
+
+
 import { gematriya, HDate, HebrewCalendar, Locale } from '@hebcal/core';
 import { Aliyah } from "@hebcal/leyning";
 import { HebrewMonths } from '../constants/namesInfo';
@@ -9,6 +11,7 @@ import { MISHNAH, MishnahTractate } from '../data/dictionaries/mishnah';
 import { RAMBAM_HALACHA_MAP, RAMBAM_HALACHA } from '../data/dictionaries/rambam';
 import { SHMIRAT_HALASHON, ShmiratHalashonEnum } from '../data/dictionaries/shmirat-halashon';
 import { City } from '../models/city';
+import { CITIES_WITH_FLAGS } from '../data/cities';
 
 export function toGematriya(n: number | string): string {
 	if (n === null || n === undefined) return '';
@@ -90,6 +93,10 @@ function formatVerses(verses: string): string {
 			return formatVersesFromParts(start, end || start);
 		})
 		.join(', ');
+}
+
+export function getLocationNames(): City[] {
+	return CITIES_WITH_FLAGS;
 }
 
 export function groupCitiesByCountry(cities: City[]): {countryHeb: string; items: City[] }[] {
