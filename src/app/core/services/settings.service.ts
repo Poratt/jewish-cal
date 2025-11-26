@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { Injectable, signal, effect, WritableSignal, inject, Signal } from '@angular/core';
-import { getLocationNames, groupCitiesByCountry } from './hebcal-helpers';
+import { groupCitiesByCountry } from './hebcal-helpers';
 import { GeolocationService } from './geolocation.service';
 import { City, GroupedCity } from '../models/city';
 import { ContentSettings, ContentSettingsDefault, ViewSettingType } from '../models/content-settings';
@@ -94,8 +94,11 @@ export class SettingsService {
 	}
 
 
-	private async initializeCitiesAndLocation(): Promise<void> {
-		const allLocations = getLocationNames();
+private async initializeCitiesAndLocation(): Promise<void> {
+        // Dynamic import - This splits the cities code into a separate chunk!
+        const citiesModule = await import('../data/cities');
+		const allLocations = citiesModule.CITIES_WITH_FLAGS;
+        
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
 
 		if (!this.selectedLocationSource()) {
