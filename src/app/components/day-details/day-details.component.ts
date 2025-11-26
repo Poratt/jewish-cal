@@ -14,6 +14,7 @@ import { Zman } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
 import { translate, getHaftaraBook, getHaftaraVerses, formatAliyahVerses } from '../../core/services/hebcal-helpers';
 import { HebcalService } from '../../core/services/hebcal.service';
+import { SettingsService } from '../../core/services/settings.service';
 
 @Component({
 	selector: 'app-day-details',
@@ -34,6 +35,8 @@ export class DayDetailsComponent {
 	public readonly config = inject(DynamicDialogConfig);
 	public readonly hebcalService = inject(HebcalService);
 	private readonly dialogNavService = inject(DialogNavigationService);
+	public readonly userSettingsService = inject(SettingsService);
+
 
 	public readonly LearningEnumData: EnumData[] = LearningEnumData;
 	public readonly translate = translate;
@@ -47,7 +50,7 @@ export class DayDetailsComponent {
 	public fastDayInfo: { name: string, start?: EventInfo, end?: EventInfo } | null = null;
 
 	constructor() {
-		this.dayObj = this.config.data.dayObjSignal;
+		this.dayObj = this.config.data.dayObj;
 
 		// Re-run logic whenever the day object signal changes
 		effect(() => {

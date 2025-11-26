@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 /* Settings Control Styles */
 .settings-control-container {
 	background: transparent;
@@ -13,6 +15,7 @@
 		gap: 8px;
 		max-height: calc(100vh - 120px);
 		overflow: auto;
+		
 	}
 
 	.tab-label {
@@ -35,7 +38,7 @@
 		flex-grow: 1;
 		gap: 0.5rem;
 		padding: clamp(0.25rem, 1.5vw, 1rem);
-		background-color: rgba(0, 0, 0, 0.025);
+		background-color: var(--grey-30); 
 		border-radius: 8px;
 		margin: 12px 0;
 	}
@@ -70,21 +73,21 @@
 		height: 24px;
 		border-radius: 50%;
 		cursor: pointer;
-		border: 2px solid #fff;
+		border: 2px solid white;
 		box-shadow: 0 1px 3px var(--grey-50);
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
 		outline: 2px solid transparent;
 		outline-offset: 2px;
-		
+
 		&:hover {
 			transition: transform 0.2s ease, box-shadow 0.2s ease;
 			transform: scale(1.1);
-			box-shadow: 0 0  2px 2px var(--primary-400);
+			box-shadow: 0 0 2px 2px var(--primary-400);
 		}
-		
+
 		&.selected {
 			/* outline-color: var(--primary-500); */
-			box-shadow: 0 0  3px 3px var(--primary-500);
+			box-shadow: 0 0 3px 3px var(--primary-500);
 		}
 	}
 
@@ -114,7 +117,7 @@
 	}
 
 	.zmanim-error-message {
-		color: #b91c1c;
+		color: var(--red-600); 
 		font-size: 11px;
 		text-align: center;
 		font-weight: 500;
@@ -153,7 +156,7 @@
 			width: 100%;
 		}
 
-		&.disabled{
+		&.disabled {
 			opacity: 0.5;
 			pointer-events: none;
 		}
@@ -174,9 +177,9 @@
 	}
 
 	.print-error-message {
-		color: rgb(220, 38, 38);
-		background-color: rgb(254, 226, 226);
-		border: 1px solid rgb(248, 113, 113);
+		color: var(--red-600); 
+		background-color: var(--red-100); 
+		border: 1px solid var(--red-300); 
 		border-radius: clamp(0.35rem, 0.75vw, 0.5rem);
 		padding: clamp(0.5rem, 1vw, 0.75rem);
 		text-align: center;
@@ -191,7 +194,7 @@
 		height: fit-content;
 		gap: 8px;
 		width: 80%;
-		background-color: rgb(59, 130, 246);
+		background-color: var(--primary-500); 
 		color: white;
 		font-weight: 500;
 		font-size: 14px;
@@ -204,18 +207,16 @@
 		cursor: pointer;
 
 		&:hover {
-			background-color: rgb(37, 99, 235);
+			background-color: var(--primary-600); 
 			box-shadow: 0 10px 15px -3px var(--grey-50), 0 4px 6px -4px var(--grey-50);
 			transform: translateY(-2px);
 		}
 	}
 }
 
-
-
 .country-group {
 	font-weight: 500;
-	background-color: #f0f0f0;
+	background-color: var(--grey-50); 
 	padding: clamp(0.35rem, 0.75vw, 0.5rem);
 	display: flex;
 	align-items: center;
@@ -225,7 +226,89 @@
 
 .font-option .font-preview {
 	font-size: 12px;
-	background-color: rgba(0, 0, 0, 0.088);
+	background-color: var(--grey-30); 
 	padding: 0 4px;
 	border-radius: 3px;
+}
+
+.desktop-only-overlay {
+	position: absolute;
+	inset: -8px;
+	z-index: 10;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	border-radius: 10px;
+
+	/* Hidden by default (on desktop) */
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+
+	/* Mobile/Tablet State: Make visible */
+	@media (max-width: $xl) {
+		visibility: visible;
+		opacity: 1;
+		pointer-events: auto;
+
+		background-color: rgba(255, 255, 255, 0.5); 
+		-webkit-backdrop-filter: blur(0.375rem);
+		backdrop-filter: blur(4px);
+
+		/* Animation runs when media query activates */
+		animation: fadeInBlur 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+
+		.icon {
+			font-size: 1.5rem;
+			color: var(--primary-500); 
+			animation: slideUpFade 0.5s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+		}
+
+		.content {
+			text-align: center;
+			padding-left: 1rem;
+			padding-right: 1rem;
+			animation: slideUpFade 0.5s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+
+			.title {
+				font-size: 1rem;
+				font-weight: 600;
+				color: var(--grey-800); 
+				margin-bottom: 0.25rem;
+			}
+
+			.description {
+				font-size: 0.875rem;
+				color: var(--grey-600); 
+			}
+		}
+	}
+}
+
+
+
+/* --- Animations --- */
+@keyframes fadeInBlur {
+	from {
+		opacity: 0;
+		backdrop-filter: blur(0);
+	}
+	to {
+		opacity: 1;
+		backdrop-filter: blur(4px);
+	}
+}
+
+@keyframes slideUpFade {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }

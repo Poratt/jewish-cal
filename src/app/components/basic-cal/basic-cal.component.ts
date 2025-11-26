@@ -14,7 +14,7 @@ import { SettingsMenuComponent } from '../settings-menu/settings-menu.component'
 import { LearningEnumData, Learning } from '../../core/models/learning';
 import { ZmanimEnumData, Zman } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
-import { UserSettingsService } from '../../core/services/userSettingsService.service';
+import { SettingsService } from '../../core/services/settings.service';
 import { EnumData } from '../../core/models/enumData';
 import { daysNames, monthsNames, HEBREW_LOCALE } from '../../core/constants/namesInfo';
 import { DayObject } from '../../core/models/day-object';
@@ -26,7 +26,7 @@ import { HolidayFlags } from '../../core/constants/holiday-flags';
   standalone: true,
   imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule],
   templateUrl: './basic-cal.component.html',
-  styleUrls: ['./basic-cal.component.css'],
+  styleUrls: ['./basic-cal.component.scss'],
   providers: [DialogService],
   animations: [slideDown]
 })
@@ -37,7 +37,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
   private dialogService = inject(DialogService);
   private dialogNavService = inject(DialogNavigationService);
-  private userSettingsService = inject(UserSettingsService);
+  private settingsService = inject(SettingsService);
 
   private ref: DynamicDialogRef | undefined;
 
@@ -47,13 +47,13 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   public readonly LearningEnumData: EnumData[] = LearningEnumData;
   public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 
-  public contentSettings = this.userSettingsService.contentSettingsSignal;
-  public selectedLocation = this.userSettingsService.selectedLocationSignal;
-  public groupedCities = this.userSettingsService.groupedCitiesSignal;
-  public borderBrightness = this.userSettingsService.borderBrightnessSignal;
-  public shabbatHolidayColor = this.userSettingsService.shabbatHolidayColorSignal;
-  public currentFont = this.userSettingsService.selectedFontSignal;
-  public shabbatBackgroundOpacity = this.userSettingsService.shabbatBackgroundOpacitySignal;
+  public contentSettings = this.settingsService.contentSettingsSignal;
+  public selectedLocation = this.settingsService.selectedLocationSignal;
+  public groupedCities = this.settingsService.groupedCitiesSignal;
+  public borderBrightness = this.settingsService.borderBrightnessSignal;
+  public shabbatHolidayColor = this.settingsService.shabbatHolidayColorSignal;
+  public currentFont = this.settingsService.selectedFontSignal;
+  public shabbatBackgroundOpacity = this.settingsService.shabbatBackgroundOpacitySignal;
 
   public currentDate = new Date();
   public calenderDate = new Date();
@@ -64,7 +64,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   private currentDayIndex: number = -1;
 
   private dialogCloseSubscription: Subscription | undefined;
-  private dayObjSignal: WritableSignal<DayObject | null> = signal(null);
+  private dayObj: WritableSignal<DayObject | null> = signal(null);
 
   public isPrintingMode = signal<boolean>(false);
   public printMonthsData: PrintMonthData[] = [];
@@ -96,10 +96,10 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     });
     
     effect(() => {
-      const request = this.userSettingsService.printRequestSignal();
+      const request = this.settingsService.printRequestSignal();
       if (request) {
         this.prepareAndPrint(request);
-        this.userSettingsService.resetPrintRequest();
+        this.settingsService.resetPrintRequest();
       }
     });
   }
@@ -278,22 +278,10 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     const isInsideOverlay = target.closest('.p-select-overlay, .p-datepicker-mask, .custom-datepicker-panel');
 
     if (isInsideSettings || isInsideOverlay) {
-      // Don't scroll the calendar if scrolling inside the settings menu or an overlay
+      // Don't scroll the calendar when mouse in settings menu or an overlay
       return; 
     }
     
-    // Check for inner scrollable content within the calendar day itself
-    const innerScrollable = target.closest('.day-learning, .day-other-zmanim');
-    if (innerScrollable) {
-      const scrollContainer = innerScrollable as HTMLElement;
-      const atTop = scrollContainer.scrollTop === 0;
-      const atBottom = scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight;
-
-      if (!((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom))) {
-        return; // Allow inner scrolling
-      }
-    }
-
     this.changeMonth(event.deltaY > 0 ? 1 : -1);
   }
 
@@ -310,14 +298,16 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   }
 
   onDayClick(dayObj: DayObject): void {
+    console.log(dayObj);
+    
     if(this.showSettings()) this.showSettings.set(true);
     this.currentDayIndex = this.displayedDays[0].findIndex(d => d.ge.fullDate.getTime() === dayObj.ge.fullDate.getTime());
-    this.dayObjSignal.set(dayObj);
+    this.dayObj.set(dayObj);
     this.dialogCloseSubscription?.unsubscribe();
 
     const dialogRef = this.dialogService.open(DayDetailsComponent, {
       ...DialogConfigWide,
-      data: { dayObjSignal: this.dayObjSignal.asReadonly() }
+      data: { dayObj: this.dayObj.asReadonly() }
     });
     
     if (dialogRef) {
@@ -390,7 +380,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   private updateDialogDay(): void {
     if (this.currentDayIndex > -1 && this.currentDayIndex < this.displayedDays[0].length) {
       const newDayObj = this.displayedDays[0][this.currentDayIndex];
-      this.dayObjSignal.set(newDayObj);
+      this.dayObj.set(newDayObj);
     }
   }
 

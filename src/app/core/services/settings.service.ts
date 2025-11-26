@@ -10,7 +10,7 @@ import { ZmanimVisibility, ZmanimEnumData } from '../models/zman';
 @Injectable({
 	providedIn: 'root'
 })
-export class UserSettingsService {
+export class SettingsService {
 
 	private geoService = inject(GeolocationService);
 	private document = inject(DOCUMENT);

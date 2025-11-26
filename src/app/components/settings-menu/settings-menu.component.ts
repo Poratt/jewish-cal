@@ -1,4 +1,4 @@
-import { Component, signal, effect, inject, computed } from '@angular/core';
+import { Component, signal, effect, inject, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -12,7 +12,7 @@ import { ContentSettingsEnumData, ContentSettings, ViewSettingType, ContentSetti
 import { EnumData } from '../../core/models/enumData';
 import { LearningEnumData } from '../../core/models/learning';
 import { ZmanimEnumData } from '../../core/models/zman';
-import { UserSettingsService } from '../../core/services/userSettingsService.service';
+import { SettingsService } from '../../core/services/settings.service';
 import { FontOptions } from '../../core/constants/font-options';
 import { Colors } from '../../core/models/colors';
 
@@ -29,18 +29,20 @@ interface FontOption {
     InputNumberModule, SelectModule, SliderModule
   ],
   templateUrl: './settings-menu.component.html',
-  styleUrls: ['./settings-menu.component.css'],
+  styleUrls: ['./settings-menu.component.scss'],
   animations: [slideDown]
 })
 export class SettingsMenuComponent {
-  private userSettingsService = inject(UserSettingsService);
-  public contentSettings = this.userSettingsService.contentSettingsSignal;
-  public selectedLocation = this.userSettingsService.selectedLocationSignal;
-  public groupedCities = this.userSettingsService.groupedCitiesSignal;
-  public borderBrightness = this.userSettingsService.borderBrightnessSignal;
-  public shabbatHolidayColor = this.userSettingsService.shabbatHolidayColorSignal;
-  public selectedFont = this.userSettingsService.selectedFontSignal;
-  public shabbatBackgroundOpacity = this.userSettingsService.shabbatBackgroundOpacitySignal;
+
+  private settingsService = inject(SettingsService);
+
+  public contentSettings = this.settingsService.contentSettingsSignal;
+  public selectedLocation = this.settingsService.selectedLocationSignal;
+  public groupedCities = this.settingsService.groupedCitiesSignal;
+  public borderBrightness = this.settingsService.borderBrightnessSignal;
+  public shabbatHolidayColor = this.settingsService.shabbatHolidayColorSignal;
+  public selectedFont = this.settingsService.selectedFontSignal;
+  public shabbatBackgroundOpacity = this.settingsService.shabbatBackgroundOpacitySignal;
 
   public printRangeError = signal<string | null>(null);
   public printSets = signal<number>(1);
@@ -100,11 +102,11 @@ export class SettingsMenuComponent {
         return;
     }
 
-    this.userSettingsService.updateContentSettings(newSettings);
+    this.settingsService.updateContentSettings(newSettings);
   }
 
   public onSettingUpdate(type: ViewSettingType, value: any): void {
-    this.userSettingsService.updateSettings(type, value)
+    this.settingsService.updateSettings(type, value)
   }
 
   public prepareAndPrint(): void {
@@ -122,8 +124,11 @@ export class SettingsMenuComponent {
       return;
     }
 
-    this.userSettingsService.triggerPrint({ startDate, endDate, sets: this.printSets() });
+    this.settingsService.triggerPrint({ startDate, endDate, sets: this.printSets() });
   }
+
+
+
 
 
 }

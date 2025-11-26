@@ -11,6 +11,7 @@ import { ContentSettings } from '../models/content-settings';
 import { DayObject } from '../models/day-object';
 import { EventInfo } from '../models/event-info';
 import { CITIES_WITH_FLAGS } from '../data/cities';
+import { HolidayFlags } from '../constants/holiday-flags';
 
 @Injectable({
   providedIn: 'root'
@@ -44,18 +45,18 @@ export class HebcalService {
       noRoshChodesh: !contentSettings.includeRoshChodesh, noModern: !contentSettings.includeModernHolidays,
       candlelighting: true, useElevation: true,
     };
-    this.calendarEvents = HebrewCalendar.calendar(calenderSettings).map(ev => this.createEventInfo(ev));
+    this.calendarEvents = HebrewCalendar.calendar(calenderSettings).map(ev => {
+      if (ev.getFlags() & HolidayFlags.MOLAD) {
+        return this.createMoladEventInfo(ev);
+      }
+      return this.createEventInfo(ev);
+    });
     return this.calendarEvents;
   }
 
   private createEventInfo(ev: Event): EventInfo {
     const hdate = new HDate(ev.date);
     let date = hdate.greg();
-    if (ev.getDesc() === 'Molad') {
-      const moladEvent = ev as MoladEvent;
-      date = new HDate(1, moladEvent.molad.getMonth(), moladEvent.molad.getYear()).greg();
-      date.setDate(date.getDate() - 1);
-    }
     return {
       dateStr: date.toLocaleDateString(), hebDate: hdate.renderGematriya(), hebName: ev.render('he'),
       hebNoNikud: ev.render('he-x-NoNikud'), event: ev,
@@ -63,7 +64,7 @@ export class HebcalService {
       mask: ev.mask, flags: ev.getFlags(), categories: ev.getCategories(), desc: ev.getDesc(),
     };
   }
-  
+
   private createMoladEventInfo(ev: Event): EventInfo {
     const moladEvent = ev as MoladEvent;
     const molad = moladEvent.molad;
@@ -95,7 +96,7 @@ export class HebcalService {
     if (dayObj.events?.length === 0) delete dayObj.events;
     if (!dayObj.leyning) delete dayObj.leyning;
     if (!dayObj.hallel) delete dayObj.hallel;
-    
+
     return dayObj;
   }
 
