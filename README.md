@@ -61,7 +61,7 @@ This app handles complex date conversions, daily Zmanim (Halachic times) based o
 
 | Monthly View (Desktop) | Settings & Theming | Mobile View |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/1f6cf12f-50e2-4903-9588-40310ecfcdde" width="100%" alt="Desktop View"> | <img src="https://github.com/user-attachments/assets/dd85558c-9c02-48ee-b294-b475bf2bfcde" width="100%" alt="Settings"><br><br><img src="https://github.com/user-attachments/assets/db5471cf-a7e1-45ed-8cbb-2d06b7fda786" width="100%" alt="Themes"> | <img src="https://github.com/user-attachments/assets/5479ffbf-6621-47e3-81ce-e008f86fb0fe" width="100%" alt="Mobile View"> |
+| <img src="https://github.com/user-attachments/assets/1f6cf12f-50e2-4903-9588-40310ecfcdde" width="100%" alt="Desktop View"> | <img src="https://github.com/user-attachments/assets/dd85558c-9c02-48ee-b294-b475bf2bfcde" width="100%" alt="Settings"><br><br><img src="https://github.com/user-attachments/assets/db5471cf-a7e1-45ed-8cbb-2d06b7fda786" width="100%" alt="Themes"><br><br><img width="242" height="359" alt="image" src="https://github.com/user-attachments/assets/7203239a-ad75-4bf7-9300-e99540f084e4" /> | <img src="https://github.com/user-attachments/assets/5479ffbf-6621-47e3-81ce-e008f86fb0fe" width="100%" alt="Mobile View"> |
 
 ---
 
