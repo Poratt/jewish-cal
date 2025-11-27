@@ -71,7 +71,6 @@ This app handles complex date conversions, daily Zmanim (Halachic times) based o
     ```bash
     git clone https://github.com/poratt/jewish-cal.git
     ```
-    *(Make sure to double check the URL above matches your actual repo URL)*
 
 2.  **Install dependencies:**
     ```bash
