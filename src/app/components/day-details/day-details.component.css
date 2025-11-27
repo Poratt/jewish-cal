@@ -92,7 +92,7 @@
 	h4 {
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: color-mix(in srgb, var(--shabbat-holiday-color) 25%, var(--grey-500));
+		color: color-mix(in srgb, var(--theme-color) 25%, var(--grey-500));
 		margin: 0 0 0.5rem;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;

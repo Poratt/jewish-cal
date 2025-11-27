@@ -5,12 +5,11 @@ import { getLeyningOnDate } from '@hebcal/leyning';
 import { HebcalZmanimService } from './hebcal-zmanim.service';
 import { HebcalLearningService } from './hebcal-learning.service';
 import { getHallelStatus, translate } from './hebcal-helpers';
-import { schottenstein, vilna } from '@hebcal/learning';
 import { City } from '../models/city';
 import { ContentSettings } from '../models/content-settings';
 import { DayObject } from '../models/day-object';
 import { EventInfo } from '../models/event-info';
-import { CITIES_WITH_FLAGS } from '../data/cities';
+import { CITIES } from '../data/cities';
 import { HolidayFlags } from '../constants/holiday-flags';
 
 @Injectable({
@@ -24,7 +23,7 @@ export class HebcalService {
   private location!: Location;
 
   constructor() {
-    const telAviv = CITIES_WITH_FLAGS.find(c => c.city === 'Tel Aviv');
+    const telAviv = CITIES.find(c => c.city === 'Tel Aviv');
     if (telAviv) this.setLocation(telAviv);
   }
 

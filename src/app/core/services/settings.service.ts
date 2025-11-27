@@ -16,13 +16,13 @@ export class SettingsService {
 	private document = inject(DOCUMENT);
 
 
-	private readonly APP_FONT_FAMILY = "'Fredoka', sans-serif";
-	private readonly BORDER_BRIGHTNESS_KEY = 'calendar_border_brightness';
-	private readonly SHABBAT_HOLIDAY_COLOR_KEY = 'calendar_shabbat_holiday_color';
-	private readonly CONTENT_SETTINGS_KEY = 'calendar_content_settings';
-	private readonly FONT_KEY = 'calendar_font';
-	private readonly LOCATION_KEY = 'calendar_location';
-	private readonly SHABBAT_BG_OPACITY_KEY = 'calendar_shabbat_bg_opacity';
+	private readonly DEFAULT_FONT = "'Fredoka', sans-serif";
+	private readonly BORDER_OPACITY = 'border_brightness';
+	private readonly THEME = 'theme_color';
+	private readonly CONTENT_SETTINGS = 'content_settings';
+	private readonly SELECTED_FONT = 'selected-font';
+	private readonly LOCATION = 'location';
+	private readonly BG_OPACITY = 'bg_opacity';
 
 
 	private contentSettingsSource: WritableSignal<ContentSettings>;
@@ -49,10 +49,10 @@ export class SettingsService {
 		this.contentSettingsSource = signal(this.loadContentSettings());
 		this.selectedLocationSource = signal(this.loadSelectedLocation());
 		this.groupedCitiesSource = signal<GroupedCity[]>([]);
-		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_BRIGHTNESS_KEY, 85));
-		this.shabbatHolidayColorSource = signal(this.loadFromStorage(this.SHABBAT_HOLIDAY_COLOR_KEY, '#3b82f6'));
-		this.selectedFontSource = signal(this.loadFromStorage(this.FONT_KEY, this.APP_FONT_FAMILY));
-		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.SHABBAT_BG_OPACITY_KEY, 4));
+		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_OPACITY, 85));
+		this.shabbatHolidayColorSource = signal(this.loadFromStorage(this.THEME, '#3b82f6'));
+		this.selectedFontSource = signal(this.loadFromStorage(this.SELECTED_FONT, this.DEFAULT_FONT));
+		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.BG_OPACITY, 4));
 		this.printRequestSource = signal(null);
 
 
@@ -113,12 +113,12 @@ export class SettingsService {
 
 
 	private setupPersistenceEffects(): void {
-		effect(() => this.saveToStorage(this.CONTENT_SETTINGS_KEY, this.contentSettingsSource()));
-		effect(() => this.saveToStorage(this.LOCATION_KEY, this.selectedLocationSource()));
-		effect(() => this.saveToStorage(this.BORDER_BRIGHTNESS_KEY, this.borderBrightnessSource()));
-		effect(() => this.saveToStorage(this.SHABBAT_HOLIDAY_COLOR_KEY, this.shabbatHolidayColorSource()));
-		effect(() => this.saveToStorage(this.FONT_KEY, this.selectedFontSource()));
-		effect(() => this.saveToStorage(this.SHABBAT_BG_OPACITY_KEY, this.shabbatBackgroundOpacitySource()));
+		effect(() => this.saveToStorage(this.CONTENT_SETTINGS, this.contentSettingsSource()));
+		effect(() => this.saveToStorage(this.LOCATION, this.selectedLocationSource()));
+		effect(() => this.saveToStorage(this.BORDER_OPACITY, this.borderBrightnessSource()));
+		effect(() => this.saveToStorage(this.THEME, this.shabbatHolidayColorSource()));
+		effect(() => this.saveToStorage(this.SELECTED_FONT, this.selectedFontSource()));
+		effect(() => this.saveToStorage(this.BG_OPACITY, this.shabbatBackgroundOpacitySource()));
 	}
 
 	private setupFontEffect(): void {
@@ -129,7 +129,7 @@ export class SettingsService {
 	}
 
 	private loadContentSettings(): ContentSettings {
-		const saved = localStorage.getItem(this.CONTENT_SETTINGS_KEY);
+		const saved = localStorage.getItem(this.CONTENT_SETTINGS);
 		const defaultSettings = this.getDefaultContentSettings();
 
 		if (!saved) {
@@ -169,7 +169,7 @@ export class SettingsService {
 	}
 
 	private loadSelectedLocation(): City | null {
-		return this.loadFromStorage<City | null>(this.LOCATION_KEY, null);
+		return this.loadFromStorage<City | null>(this.LOCATION, null);
 	}
 
 	private loadFromStorage<T>(key: string, defaultValue: T): T {

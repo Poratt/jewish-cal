@@ -2,9 +2,10 @@
 <div class="print-container print-preview-mode">
     @for (monthData of printMonthsData; track monthData) {
     <div class="print-month-page">
-        <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-            [style.--shabbat-holiday-color]="shabbatHolidayColor()"
-            [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
+        <div class="calender-wrapper" 
+            [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+            [style.--theme-color]="shabbatHolidayColor()"
+            [style.--bg-opacity]="shabbatBackgroundOpacity() + '%'">
             <!-- Calendar Header for Print -->
             <div class="header-wrapper">
                 <div class="header-contents">
@@ -136,7 +137,7 @@
 <!-- Main Interactive View Container -->
 @if (!isPrintingMode()) {
 <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-    [style.--shabbat-holiday-color]="shabbatHolidayColor()" [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
+    [style.--theme-color]="shabbatHolidayColor()" [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
     <!-- Calendar Header -->
     <div class="header-wrapper" (wheel)="onMouseWheel($event)">
         <div class="header-contents">
@@ -285,3 +286,10 @@
     </div>
 </div>
 }
+
+
+
+
+
+
+
