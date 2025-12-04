@@ -86,7 +86,7 @@
 
 		.day {
 			direction: rtl;
-			// border: 1px solid var(--grid-border-color);
+			border: 1px solid transparent;
 			display: flex;
 			flex-direction: column;
 			padding: clamp(2px, 0.75vw, 4px);
@@ -98,22 +98,13 @@
 			overscroll-behavior: contain;
 			position: relative;
 			outline: 1px solid var(--grid-border-color);
-    		outline-offset: -2px;
+			outline-offset: -2px;
 			border-radius: 5px;
-			
-&:hover {
-    border-color: color-mix(in srgb, var(--theme-color) 35%, white);
-    animation: expand-shadow 1.5s ease-in-out infinite alternate;
-}
 
-@keyframes expand-shadow {
-    0% {
-        box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);	
-    }
-    100% {
-        box-shadow: inset 0 0 20px 5px color-mix(in srgb, var(--theme-color) 20%, white);
-    }
-}
+			&:hover {
+				border-color: color-mix(in srgb, var(--theme-color) 15%, white);
+				box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);
+			}
 
 			&:first-child {
 				border-top-left-radius: clamp(0.5rem, 1vw, 0.75rem);
@@ -139,16 +130,25 @@
 			}
 
 			&.today {
-				box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 35%, white);
-				border-color: color-mix(in srgb, var(--theme-color) 45%, white);
+				border-color: color-mix(in srgb, var(--theme-color) 25%, white);
 				border-radius: 4px;
-				z-index: 11;
-
-				.day-gregorian-date {
-					font-weight: 600;
-					color: color-mix(in srgb, var(--theme-color) 60%, black);
+				animation: expand-shadow 1.5s ease-in-out infinite alternate;
+				@keyframes expand-shadow {
+					0% {
+						box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);
+					}
+					100% {
+						box-shadow: inset 0 0 20px 5px color-mix(in srgb, var(--theme-color) 20%, white);
+					}
 				}
 			}
+
+
+			.day-gregorian-date {
+				font-weight: 600;
+				color: color-mix(in srgb, var(--theme-color) 60%, black);
+			}
+
 			@media print {
 				&.today {
 					background-color: transparent;
