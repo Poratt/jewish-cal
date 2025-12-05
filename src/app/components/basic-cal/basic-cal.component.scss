@@ -143,7 +143,6 @@
 				}
 			}
 
-
 			.day-gregorian-date {
 				font-weight: 600;
 				color: color-mix(in srgb, var(--theme-color) 60%, black);
@@ -169,9 +168,9 @@
 				background: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
 			}
 
-			&.friday,
-			&.holiday-eve-bg,
-			&.chol-hamoed-bg {
+			&.friday:not(.saturday, .holiday-bg),
+			&.holiday-eve-bg:not(.saturday, .holiday-bg),
+			&.chol-hamoed-bg:not(.saturday, .holiday-bg) {
 				color: color-mix(in srgb, var(--theme-color) 60%, white);
 				--mixed-bg-color: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
 
@@ -317,11 +316,14 @@
 	}
 
 	.print-container .days {
-		border: 1px solid var(--grid-border-color);
+		// border: 1px solid var(--grid-border-color);
 	}
 	.print-preview-mode .day,
 	.print-container .day {
-		border: 1px solid var(--grid-border-color) !important;
+		// border: 1px solid var(--grid-border-color) !important;
+		outline: 1px solid var(--grid-border-color);
+		outline-offset: -2px;
+		border-radius: 5px;
 	}
 
 	.calender-wrapper .days .day .day-content {

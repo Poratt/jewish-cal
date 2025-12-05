@@ -11,6 +11,27 @@
 
 @use 'primeicons/primeicons.css';
 
+
+@media (hover: none) {
+	* {
+		pointer-events: auto !important;
+	}
+
+	*:hover {
+		background: inherit !important;
+		color: inherit !important;
+		transform: none !important;
+		opacity: inherit !important;
+		/* מוסיף עוד properties שאתה משתמש בהם ב-hover */
+	}
+}
+// @media (hover: none) {
+// 	*:hover {
+// 		all: revert !important;
+// 	}
+// }
+
+
 .custom-tooltip {
 	opacity: 0;
 	position: absolute;
