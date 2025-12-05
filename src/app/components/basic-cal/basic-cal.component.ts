@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PrimeNG } from 'primeng/config';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogModule, DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Subscription } from 'rxjs';
 import { slideDown } from '../../core/constants/animations';
@@ -24,7 +25,7 @@ import { HolidayFlags } from '../../core/constants/holiday-flags';
 @Component({
   selector: 'app-basic-cal',
   standalone: true,
-  imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule],
+  imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule, TooltipModule],
   templateUrl: './basic-cal.component.html',
   styleUrls: ['./basic-cal.component.scss'],
   providers: [DialogService],

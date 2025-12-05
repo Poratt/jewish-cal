@@ -260,14 +260,16 @@
                     @if (contentSettings().showMolad && ev.categories.includes('molad')) {
                     <span class="badge molad-badge">
                         <!-- Desktop -->
-                        <span class="md:flex hidden">{{extractMoladTime(ev.hebName)}}</span>
+                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent" tooltipPosition="top" >{{extractMoladTime(ev.hebName)}}</span>
 
                         <!-- Mobile -->
                         <span class="md:hidden flex items-center gap-1">
                             <span class="pi pi-moon text-xxs!"></span>
                             <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
                         </span>
-                        <span class="custom-tooltip">{{ev.hebName}}</span>
+                        <ng-template #moladTooltipContent >
+                            <span class="custom-tooltip">{{ev.hebName}}</span>
+                        </ng-template>
                     </span>
                     }
                     @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {

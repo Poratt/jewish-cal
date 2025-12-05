@@ -41,7 +41,7 @@ export enum ContentSettingsEnum {
 
 export const ContentSettingsEnumData: EnumData[] = [
 	{ enumValue: ContentSettingsEnum.ShowOmer, key: 'showOmer', hebName: 'ספירת העומר', visibility: true },
-	{ enumValue: ContentSettingsEnum.ShowMolad, key: 'showMolad', hebName: 'מולד', visibility: true },
+	{ enumValue: ContentSettingsEnum.ShowMolad, key: 'showMolad', hebName: 'מולד הלבנה', visibility: true },
 	{ enumValue: ContentSettingsEnum.ShowMevarchim, key: 'showMevarchim', hebName: 'שבת מברכים', visibility: true },
 	{ enumValue: ContentSettingsEnum.ShowYizkor, key: 'showYizkor', hebName: 'יזכור', visibility: true },
 	{ enumValue: ContentSettingsEnum.ShowYomKippurKatan, key: 'showYomKippurKatan', hebName: 'יום כיפור קטן', visibility: true },

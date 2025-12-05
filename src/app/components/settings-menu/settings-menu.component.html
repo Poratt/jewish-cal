@@ -2,6 +2,114 @@
     @if(contentSettings(); as settings) {
     <div class="settings-tabs-container" (wheel)="$event.stopPropagation()">
         <mat-tab-group dir="rtl" dynamicHeight class="custom-tabs sm" stretchTabs>
+                        <mat-tab>
+                <ng-template mat-tab-label>
+                    <div class="tab-label">
+                        <span class="pi pi-list"></span>
+                        <span>תוכן</span>
+                    </div>
+                </ng-template>
+                <div class="settings-tab-content">
+                    <div class="settings-section">
+                        <label class="section-label">
+                            <span class="pi pi-align-justify"></span>
+                            <span>הצגת אירועים</span>
+                        </label>
+                        <div class="content-settings-grid">
+                            @for(item of ContentSettingsEnumData(); track item.key) {
+                            <div class="form-group-row">
+                                <p-checkbox size="small" class="flex"
+                                    [ngModel]="settings[item.key]"
+                                    (ngModelChange)="onContentSettingChange($event, item.key, 'general')"
+                                    [binary]="true" [inputId]="item.key">
+                                </p-checkbox>
+                                <label [for]="item.key">{{item.hebName}}</label>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr class="section-divider" />
+
+                    <div class="settings-section">
+                        <div class="flex w-full justify-between items-center">
+                            <label class="section-label">
+                                <span class="pi pi-book"></span>
+                                <span>לימוד יומי</span>
+                            </label>
+                            <span class="text-xxs text-grey-500"> בחר עד {{maxLearningToShow()}} נושאי לימוד</span>
+                        </div>
+                        <div class="content-settings-grid  relative">
+                            @for(learn of LearningEnumData(); track learn.key) {
+                            <div class="form-group-row">
+                                <p-checkbox 
+                                    class="flex"
+                                    size="small"
+                                    [disabled]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()"
+                                    [ngModel]="settings.dailyLearningVisibility[learn.key]"
+                                    (ngModelChange)="onContentSettingChange($event, learn.key, 'dailyLearning')"
+                                    [binary]="true"                                        
+                                    [inputId]="'learnCheck-' + learn.key">
+                                </p-checkbox>
+                                <label [for]="'learnCheck-' + learn.key" 
+                                       [class.opacity-50]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()">
+                                    {{learn.hebName}}
+                                </label>
+                            </div>
+                            }
+                            
+                            <div class="desktop-only-overlay">
+                                <!-- <span class="pi pi-desktop icon"></span> -->
+                                <span class="material-symbol-rounded icon">home_max</span>
+                                <div class="content">
+                                    <p class="title">תכונה זמינה במסכים רחבים</p>
+                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <hr class="section-divider" />
+
+                    <div class="settings-section">
+                        <div class="flex w-full justify-between items-center">
+                            <label class="section-label">
+                                <span class="pi pi-clock"></span>
+                                <span>זמני היום</span>
+                            </label>
+                            <span class="text-xxs text-grey-500"> בחר עד {{maxZmanimToShow()}} זמנים</span>
+                        </div>
+                        <div class="content-settings-grid  relative">
+                            @for(zman of ZmanimEnumData(); track zman.key) {
+                            <div class="form-group-row">
+                                <p-checkbox 
+                                    size="small" 
+                                    class="flex"
+                                    [disabled]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()"
+                                    [ngModel]="settings.zmanimVisibility[zman.key]"
+                                    (ngModelChange)="onContentSettingChange($event, zman.key, 'zmanim')"
+                                    [binary]="true"
+                                    [inputId]="'zmanCheck-' + zman.key">
+                                </p-checkbox>
+                                <label [for]="'zmanCheck-' + zman.key"
+                                       [class.opacity-50]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()">
+                                    {{zman.hebName}}
+                                </label>
+                            </div>
+                            }
+                            <div class="desktop-only-overlay">
+                                <!-- <span class="pi pi-desktop icon"></span> -->
+                                <span class="material-symbol-rounded icon">home_max</span>
+                                <div class="content">
+                                    <p class="title">תכונה זמינה במסכים רחבים</p>
+                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <div class="tab-label">
@@ -114,112 +222,7 @@
                     </div>
                 </div>
             </mat-tab>
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <div class="tab-label">
-                        <span class="pi pi-list"></span>
-                        <span>תוכן</span>
-                    </div>
-                </ng-template>
-                <div class="settings-tab-content">
-                    <div class="settings-section">
-                        <label class="section-label">
-                            <span class="pi pi-align-justify"></span>
-                            <span>הצגת אירועים</span>
-                        </label>
-                        <div class="content-settings-grid">
-                            @for(item of ContentSettingsEnumData(); track item.key) {
-                            <div class="form-group-row">
-                                <p-checkbox size="small" class="flex"
-                                    [ngModel]="settings[item.key]"
-                                    (ngModelChange)="onContentSettingChange($event, item.key, 'general')"
-                                    [binary]="true" [inputId]="item.key">
-                                </p-checkbox>
-                                <label [for]="item.key">{{item.hebName}}</label>
-                            </div>
-                            }
-                        </div>
-                    </div>
 
-                    <hr class="section-divider" />
-
-                    <div class="settings-section">
-                        <div class="flex w-full justify-between items-center">
-                            <label class="section-label">
-                                <span class="pi pi-book"></span>
-                                <span>לימוד יומי</span>
-                            </label>
-                            <span class="text-xxs text-grey-500"> בחר עד {{maxLearningToShow()}} נושאי לימוד</span>
-                        </div>
-                        <div class="content-settings-grid  relative">
-                            @for(learn of LearningEnumData(); track learn.key) {
-                            <div class="form-group-row">
-                                <p-checkbox 
-                                    class="flex"
-                                    size="small"
-                                    [disabled]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()"
-                                    [ngModel]="settings.dailyLearningVisibility[learn.key]"
-                                    (ngModelChange)="onContentSettingChange($event, learn.key, 'dailyLearning')"
-                                    [binary]="true"                                        
-                                    [inputId]="'learnCheck-' + learn.key">
-                                </p-checkbox>
-                                <label [for]="'learnCheck-' + learn.key" 
-                                       [class.opacity-50]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()">
-                                    {{learn.hebName}}
-                                </label>
-                            </div>
-                            }
-                            
-                            <div class="desktop-only-overlay">
-                                <span class="pi pi-desktop icon"></span>
-                                <div class="content">
-                                    <p class="title">תכונה זמינה רק במחשב</p>
-                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <hr class="section-divider" />
-
-                    <div class="settings-section">
-                        <div class="flex w-full justify-between items-center">
-                            <label class="section-label">
-                                <span class="pi pi-clock"></span>
-                                <span>זמני היום</span>
-                            </label>
-                            <span class="text-xxs text-grey-500"> בחר עד {{maxZmanimToShow()}} זמנים</span>
-                        </div>
-                        <div class="content-settings-grid  relative">
-                            @for(zman of ZmanimEnumData(); track zman.key) {
-                            <div class="form-group-row">
-                                <p-checkbox 
-                                    size="small" 
-                                    class="flex"
-                                    [disabled]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()"
-                                    [ngModel]="settings.zmanimVisibility[zman.key]"
-                                    (ngModelChange)="onContentSettingChange($event, zman.key, 'zmanim')"
-                                    [binary]="true"
-                                    [inputId]="'zmanCheck-' + zman.key">
-                                </p-checkbox>
-                                <label [for]="'zmanCheck-' + zman.key"
-                                       [class.opacity-50]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()">
-                                    {{zman.hebName}}
-                                </label>
-                            </div>
-                            }
-                            <div class="desktop-only-overlay">
-                                <span class="pi pi-desktop icon"></span>
-                                <div class="content">
-                                    <p class="title">תכונה זמינה רק במחשב</p>
-                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
                     <div class="tab-label">

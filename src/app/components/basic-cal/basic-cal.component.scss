@@ -100,10 +100,13 @@
 			outline: 1px solid var(--grid-border-color);
 			outline-offset: -2px;
 			border-radius: 5px;
+			background-color: white;
 
-			&:hover {
-				border-color: color-mix(in srgb, var(--theme-color) 15%, white);
-				box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);
+			@media (hover: hover) and (pointer: fine) {
+				&:hover {
+					border-color: color-mix(in srgb, var(--theme-color) 15%, white);
+					box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);
+				}
 			}
 
 			&:first-child {
@@ -374,29 +377,26 @@
 	white-space: nowrap;
 	width: fit-content;
 	height: fit-content;
-
+	background-color: var(--grey-60);
+	color: var(--grey-600);
 	&.rosh-hodesh-badge {
-		background-color: var(--primary-100);
-		color: var(--primary-800);
+		// background-color: var(--primary-100);
+		color: var(--primary-500);
 	}
 
 	&.omer-badge {
-		background-color: var(--green-100);
-		color: var(--green-800);
+		color: var(--green-500);
 	}
 
 	&.hallel-badge {
-		background-color: var(--secondary-100);
-		color: var(--secondary-800);
+		color: var(--secondary-500);
 	}
 
 	&.mevarchim-badge {
-		background-color: var(--yellow-100);
-		color: var(--yellow-800);
+		color: var(--secondary-600);
 	}
 
 	&.molad-badge {
-		background-color: rgba(208, 126, 255, 0.05);
 		color: var(--secondary-700);
 		position: relative;
 		cursor: pointer;
