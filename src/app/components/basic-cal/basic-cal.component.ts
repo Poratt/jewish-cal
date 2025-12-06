@@ -301,7 +301,11 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   onDayClick(dayObj: DayObject): void {
     console.log(dayObj);
     
-    if(this.showSettings()) this.showSettings.set(true);
+    if(this.showSettings()) {
+      this.showSettings.set(false);
+      return
+    };
+
     this.currentDayIndex = this.displayedDays[0].findIndex(d => d.ge.fullDate.getTime() === dayObj.ge.fullDate.getTime());
     this.dayObj.set(dayObj);
     this.dialogCloseSubscription?.unsubscribe();

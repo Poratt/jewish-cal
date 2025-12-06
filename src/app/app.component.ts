@@ -1,7 +1,5 @@
-import { Component, inject, AfterViewInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 import { ToastModule } from 'primeng/toast';
-import { NotificationService } from './core/services/notification.service';
 import { BasicCalComponent } from "./components/basic-cal/basic-cal.component";
 
 @Component({

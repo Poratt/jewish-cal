@@ -9,23 +9,24 @@
 	gap: 0;
 	font-family: var(--app-font-family);
 	font-size: 13px;
+
+	> :nth-child(2) {
+		animation-delay: 0.1s;
+	}
+	> :nth-child(3) {
+		animation-delay: 0.2s;
+	}
+	> :nth-child(4) {
+		animation-delay: 0.3s;
+	}
+	> :nth-child(5) {
+		animation-delay: 0.4s;
+	}
 }
+
 .day-details-header,
 .details-section {
 	animation: fadeIn 0.4s ease-in-out both;
-}
-
-.day-details-container > :nth-child(2) {
-	animation-delay: 0.1s;
-}
-.day-details-container > :nth-child(3) {
-	animation-delay: 0.2s;
-}
-.day-details-container > :nth-child(4) {
-	animation-delay: 0.3s;
-}
-.day-details-container > :nth-child(5) {
-	animation-delay: 0.4s;
 }
 
 @keyframes fadeIn {
@@ -43,12 +44,13 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 1rem;
-	/* background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%); */
-	/* color: white; */
+	padding: 0 1rem;
 
 	.header-text {
 		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.gregorian-date {
@@ -64,6 +66,19 @@
 		margin: 0.25rem 0 0;
 	}
 
+	.location-badge {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		font-size: 0.75rem;
+		color: var(--grey-500);
+		margin-top: 4px;
+
+		i {
+			font-size: 0.75rem;
+		}
+	}
+
 	.nav-arrow {
 		background: transparent;
 		border: none;
@@ -73,11 +88,11 @@
 		padding: 0.5rem;
 		border-radius: 50%;
 		transition: background-color 0.2s, color 0.2s;
-	}
 
-	.nav-arrow:hover {
-		background-color: var(--grey-100);
-		color: var(--grey-700);
+		&:hover {
+			background-color: var(--grey-100);
+			color: var(--grey-700);
+		}
 	}
 }
 
@@ -105,7 +120,6 @@
 		list-style: none;
 		padding: 0;
 		margin: 0;
-		/* display: flex; */
 		flex-direction: column;
 		gap: 0.35rem;
 
@@ -125,6 +139,7 @@
 					opacity: 1;
 				}
 			}
+
 			.verses {
 				display: inline-block;
 				align-items: flex-start;
@@ -194,6 +209,35 @@
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
+}
+
+.event-item-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+
+	.event-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.event-url-link {
+		color: var(--grey-400);
+		transition: color 0.2s ease;
+		font-size: 12px;
+		text-decoration: none;
+
+		&:hover {
+			color: var(--primary-500);
+		}
+	}
+}
+
+.omer-details {
+	color: var(--grey-500);
+	font-size: 0.8em;
 }
 
 @media (min-width: 480px) {

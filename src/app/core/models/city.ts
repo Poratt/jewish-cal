@@ -7,10 +7,8 @@ export interface City {
   countryCode?: string;
   latitude?: number;
   longitude?: number;
+    elevation?: number;
 }
-
-
-
 
 export interface GroupedCity {
   countryHeb: string;

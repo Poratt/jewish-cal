@@ -7,6 +7,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { SliderModule } from 'primeng/slider';
+import { ButtonModule } from 'primeng/button'; // Ensure ButtonModule is imported
+import { TooltipModule } from 'primeng/tooltip'; // Ensure TooltipModule is imported
 import { slideDown } from '../../core/constants/animations';
 import { ContentSettingsEnumData, ContentSettings, ViewSettingType, ContentSettingsSections } from '../../core/models/content-settings';
 import { EnumData } from '../../core/models/enumData';
@@ -26,7 +28,7 @@ interface FontOption {
   standalone: true,
   imports: [
     CommonModule, FormsModule, MatTabsModule, CheckboxModule, DatePickerModule,
-    InputNumberModule, SelectModule, SliderModule
+    InputNumberModule, SelectModule, SliderModule, ButtonModule, TooltipModule
   ],
   templateUrl: './settings-menu.component.html',
   styleUrls: ['./settings-menu.component.scss'],
@@ -38,6 +40,9 @@ export class SettingsMenuComponent {
 
   public contentSettings = this.settingsService.contentSettingsSignal;
   public selectedLocation = this.settingsService.selectedLocationSignal;
+  // New signal for the detected location
+  public userCurrentLocation = this.settingsService.userCurrentLocationSignal; 
+  
   public groupedCities = this.settingsService.groupedCitiesSignal;
   public borderBrightness = this.settingsService.borderBrightnessSignal;
   public shabbatHolidayColor = this.settingsService.shabbatHolidayColorSignal;
@@ -67,6 +72,21 @@ export class SettingsMenuComponent {
   public zmanimCheckedCount = computed(() => {
     const visibility = this.contentSettings()?.zmanimVisibility;
     return visibility ? Object.values(visibility).filter(Boolean).length : 0;
+  });
+
+  public showLocationResetButton = computed(() => {
+    const current = this.selectedLocation();
+    const detected = this.userCurrentLocation();
+    
+    // If we haven't detected a location yet, show the button so user can try to trigger detection
+    if (!detected) return true;
+    
+    // If we have both, show only if they are different (by city name)
+    if (current && detected) {
+        return current.city !== detected.city;
+    }
+    
+    return true;
   });
 
 
@@ -109,6 +129,10 @@ export class SettingsMenuComponent {
     this.settingsService.updateSettings(type, value)
   }
 
+  public setCurrentLocation(): void {
+      this.settingsService.setCurrentLocation();
+  }
+
   public prepareAndPrint(): void {
     this.printRangeError.set(null);
     const sets = this.printSets();
@@ -126,9 +150,5 @@ export class SettingsMenuComponent {
 
     this.settingsService.triggerPrint({ startDate, endDate, sets: this.printSets() });
   }
-
-
-
-
 
 }

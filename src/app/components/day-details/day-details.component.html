@@ -6,6 +6,14 @@
         <div class="header-text">
             <h3 class="hebrew-date">{{ day.he.fullDate }}</h3>
             <h2 class="gregorian-date">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
+
+            @if(userSettingsService.selectedLocationSignal(); as location) {
+            <div class="location-badge">
+                <i class="pi pi-map-marker"></i>
+                <span>{{ location.cityHeb }}</span>
+            </div>
+            }
+            
         </div>
         <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" aria-label="Next Month" (click)="onNextDay()"></p-button>
 
@@ -38,10 +46,45 @@
             </li>
             }
 
-            <!-- Display other events that are not related to the fast -->
+            <!-- Display other events-->
             @for(event of day.events; track event.desc) {
             @if(!event.categories.includes('fast')) {
-            <li>{{ event.emoji }} {{ event.hebName }}</li>
+            <li>
+                <div class="event-item-wrapper">
+                    @if (event.url) {
+                    <a [href]="event.url" target="_blank" class="event-url-link pi pi-external-link" pTooltip="קרא עוד" tooltipPosition="top"></a>
+                    }
+
+                    @if (event.categories.includes('molad')) {
+                    <div class="event-content">
+                        <span class="rotate-90 -mr-[3px] -ml-0.5">🌙</span>
+                        <span>{{ event.hebName }}</span>
+                    </div>
+                    } 
+                    @else if(event.omerEvent) {
+                    <div class="event-content">
+                        <div class="flex flex-col items-center">
+                            <span>{{ event.hebName }}</span>
+                            <span class="omer-details">({{event.omerEvent.omer}})</span>
+                        </div>
+                        <div class="flex flex-col omer-details">
+                            <span>{{event.omerEvent.sefira('he') }}</span>
+                            <span>{{event.omerEvent.getTodayIs('he') }}</span>
+                        </div>
+                    </div>
+                    }
+                    @else if(event.categories.includes('havdalah') || event.categories.includes('candles')) {
+                    <div class="event-content w-full justify-end">
+                        <span>{{ event.emoji }} {{ event.hebName }}</span>
+                    </div>
+                    }
+                    @else {
+                    <div class="event-content">
+                        <span>{{ event.emoji }} {{ event.hebName }}</span>
+                    </div>
+                    }
+                </div>
+            </li>
             }
             }
         </ul>

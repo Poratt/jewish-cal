@@ -5,9 +5,8 @@ import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { LeyningWeekday, LeyningShabbatHoliday } from '@hebcal/leyning';
 import { TooltipModule } from "primeng/tooltip";
 import { ButtonModule } from 'primeng/button';
-import { DayObject } from '../../core/models/day-object';
+import { CalEvent, DayObject } from '../../core/models/day-object';
 import { EnumData } from '../../core/models/enumData';
-import { EventInfo } from '../../core/models/event-info';
 import { LearningEnumData, Learning } from '../../core/models/learning';
 import { aliyotMap } from '../../core/models/leyning';
 import { Zman } from '../../core/models/zman';
@@ -47,7 +46,7 @@ export class DayDetailsComponent {
 	public readonly dayObj: Signal<DayObject | null>;
 	public readonly aliyotMap: Record<number | string, string> = aliyotMap;
 
-	public fastDayInfo: { name: string, start?: EventInfo, end?: EventInfo } | null = null;
+	public fastDayInfo: { name: string, start?: CalEvent, end?: CalEvent } | null = null;
 
 	constructor() {
 		this.dayObj = this.config.data.dayObj;
@@ -122,4 +121,6 @@ export class DayDetailsComponent {
 	public onNextDay(): void {
 		this.dialogNavService.triggerNextDay();
 	}
+
+
 }

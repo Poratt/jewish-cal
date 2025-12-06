@@ -27,7 +27,10 @@ export class SettingsService {
 
 	private contentSettingsSource: WritableSignal<ContentSettings>;
 	private selectedLocationSource: WritableSignal<City | null>;
-	private groupedCitiesSource: WritableSignal<GroupedCity[]>;
+    // NEW: Stores the actual GPS location to compare against the selected one
+    private userCurrentLocationSource: WritableSignal<City | null> = signal(null); 
+	
+    private groupedCitiesSource: WritableSignal<GroupedCity[]>;
 	private borderBrightnessSource: WritableSignal<number>;
 	private shabbatHolidayColorSource: WritableSignal<string>;
 	private selectedFontSource: WritableSignal<string>;
@@ -37,6 +40,9 @@ export class SettingsService {
 
 	public readonly contentSettingsSignal: Signal<ContentSettings>;
 	public readonly selectedLocationSignal: Signal<City | null>;
+    // NEW: Expose the real location signal
+    public readonly userCurrentLocationSignal: Signal<City | null>;
+
 	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
 	public readonly borderBrightnessSignal: Signal<number>;
 	public readonly shabbatHolidayColorSignal: Signal<string>;
@@ -58,6 +64,8 @@ export class SettingsService {
 
 		this.contentSettingsSignal = this.contentSettingsSource.asReadonly();
 		this.selectedLocationSignal = this.selectedLocationSource.asReadonly();
+        this.userCurrentLocationSignal = this.userCurrentLocationSource.asReadonly(); // Expose
+
 		this.groupedCitiesSignal = this.groupedCitiesSource.asReadonly();
 		this.borderBrightnessSignal = this.borderBrightnessSource.asReadonly();
 		this.shabbatHolidayColorSignal = this.shabbatHolidayColorSource.asReadonly();
@@ -85,7 +93,8 @@ export class SettingsService {
 			default: console.warn('Unknown setting type:', type); break;
 		}
 	}
-	public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {	
+	
+    public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {	
 		this.printRequestSource.set(data);
 	}
 
@@ -93,20 +102,39 @@ export class SettingsService {
 		this.printRequestSource.set(null);
 	}
 
+    public async setCurrentLocation(): Promise<void> {
+		const allLocations = getLocationNames();
+		const userLocationResult = await this.geoService.detectUserLocation(allLocations);
+		if (userLocationResult.success && userLocationResult.city) {
+			this.selectedLocationSource.set(userLocationResult.city);
+            this.userCurrentLocationSource.set(userLocationResult.city); // Update the "real" location too
+		} else {
+			console.warn('Could not detect current location');
+		}
+	}
 
 	private async initializeCitiesAndLocation(): Promise<void> {
 		const allLocations = getLocationNames();
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
 
+        // Try to detect location on init regardless, to fill the "My Location" state
+        this.geoService.detectUserLocation(allLocations).then(result => {
+            if (result.success && result.city) {
+                this.userCurrentLocationSource.set(result.city);
+                
+                // If no location was previously saved, set it as selected too
+                if (!this.selectedLocationSource()) {
+                    this.selectedLocationSource.set(result.city);
+                }
+            }
+        });
+
 		if (!this.selectedLocationSource()) {
-			const userLocationResult = await this.geoService.detectUserLocation(allLocations);
-			if (userLocationResult.success && userLocationResult.city) {
-				this.selectedLocationSource.set(userLocationResult.city);
-			} else {
-				const telAviv = allLocations.find(c => c.city === 'Tel Aviv');
-				if (telAviv) {
-					this.selectedLocationSource.set(telAviv);
-				}
+            // Fallback to Tel Aviv only if detection fails AND nothing is saved
+            // Note: The async detection above might finish later, which is fine (Signals will update)
+			const telAviv = allLocations.find(c => c.city === 'Tel Aviv');
+			if (telAviv) {
+				this.selectedLocationSource.set(telAviv);
 			}
 		}
 	}
@@ -184,8 +212,6 @@ export class SettingsService {
 	}
 
 	private getDefaultContentSettings(): ContentSettings {
-
-
 		return JSON.parse(JSON.stringify(ContentSettingsDefault));
 	}
 }

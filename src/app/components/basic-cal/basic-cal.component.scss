@@ -4,13 +4,19 @@
 	direction: ltr;
 	height: 100vh;
 	width: 100%;
-	border-radius: 0.25rem;
+	border-radius: 4px;
 	overflow: hidden;
 	color: var(--grey-800);
-	padding: 0 clamp(0.5rem, 2vw, 1.5rem) clamp(0.5rem, 2vw, 1.5rem) clamp(0.5rem, 2vw, 1.5rem);
 	box-sizing: border-box;
 	background: transparent;
 	position: relative;
+	padding: 0 8px 16px 8px;
+
+	@media (min-width: $md) {
+		padding: 0 24px 24px 24px;
+		border-radius: 8px;
+	}
+
 	.header-wrapper {
 		direction: rtl;
 		display: flex;
@@ -18,38 +24,58 @@
 		justify-content: center;
 		height: 3rem;
 		font-weight: 600;
-		font-size: clamp(0.875rem, 1.5vw, 1rem);
 		cursor: default;
 
+		font-size: 14px;
+		@media (min-width: $md) {
+			font-size: 16px;
+		}
+
 		.header-contents {
-			padding: clamp(4px, 1vw, 8px) 0;
+			padding: 4px 0;
 			display: flex;
 			height: 100%;
 			justify-content: space-between;
 			align-items: center;
-			gap: clamp(0.25rem, 0.75vw, 0.5rem);
+			gap: 4px;
 			width: 100%;
+
+			@media (min-width: $md) {
+				padding: 8px 0;
+				gap: 8px;
+			}
 
 			.header-group {
 				display: flex;
-				gap: clamp(0.25rem, 0.75vw, 0.5rem);
+				gap: 4px;
 				align-items: center;
+
+				@media (min-width: $md) {
+					gap: 8px;
+				}
 
 				.header-date-block {
 					display: flex;
-					/* padding-bottom: clamp(0.125rem, 0.35vw, 0.25rem); */
-					gap: clamp(0.25rem, 0.75vw, 0.5rem);
-					width: clamp(80px, 20vw, 220px);
+					gap: 4px;
+
+					@media (min-width: $md) {
+						gap: 8px;
+						width: 220px;
+					}
 
 					.header-item {
 						display: flex;
 						justify-content: center;
 						align-items: center;
 						line-height: 12px;
-						border-radius: 0.25rem;
-						/* padding: 0 clamp(0.125rem, 0.35vw, 0.25rem); */
+						border-radius: 4px;
 						background-color: rgba(255, 255, 255, 0.2);
-						font-size: clamp(12px, 1.75vw, 20px);
+						font-size: 14px;
+						padding: 2px 4px;
+
+						@media (min-width: $md) {
+							font-size: 20px;
+						}
 					}
 				}
 			}
@@ -69,7 +95,11 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			font-size: clamp(0.75rem, 1.25vw, 1rem);
+
+			font-size: 12px;
+			@media (min-width: $md) {
+				font-size: 16px;
+			}
 		}
 	}
 
@@ -80,17 +110,18 @@
 		grid-template-columns: repeat(7, minmax(0, 1fr));
 		grid-auto-rows: 1fr;
 		width: 100%;
-		border-radius: clamp(0.5rem, 1vw, 0.75rem);
 		overflow: hidden;
-		// border: 1px solid var(--grid-border-color);
+
+		border-radius: 8px;
+		@media (min-width: $md) {
+			border-radius: 12px;
+		}
 
 		.day {
 			direction: rtl;
 			border: 1px solid transparent;
 			display: flex;
 			flex-direction: column;
-			padding: clamp(2px, 0.75vw, 4px);
-			font-size: 14px;
 			height: 100%;
 			width: 100%;
 			cursor: pointer;
@@ -101,6 +132,12 @@
 			outline-offset: -2px;
 			border-radius: 5px;
 			background-color: white;
+			padding: 4px;
+			@media (min-width: $md) {
+				padding: 8px;
+			}
+
+			font-size: 14px;
 
 			@media (hover: hover) and (pointer: fine) {
 				&:hover {
@@ -110,19 +147,19 @@
 			}
 
 			&:first-child {
-				border-top-left-radius: clamp(0.5rem, 1vw, 0.75rem);
+				border-top-left-radius: 12px;
 			}
 
 			&:nth-child(7) {
-				border-top-right-radius: clamp(0.5rem, 1vw, 0.75rem);
+				border-top-right-radius: 12px;
 			}
 
 			&:nth-last-child(7) {
-				border-bottom-left-radius: clamp(0.5rem, 1vw, 0.75rem);
+				border-bottom-left-radius: 12px;
 			}
 
 			&:last-child {
-				border-bottom-right-radius: clamp(0.5rem, 1vw, 0.75rem);
+				border-bottom-right-radius: 12px;
 			}
 
 			&.other-month {
@@ -134,28 +171,32 @@
 
 			&.today {
 				border-color: color-mix(in srgb, var(--theme-color) 25%, white);
-				border-radius: 4px;
-				animation: expand-shadow 1.5s ease-in-out infinite alternate;
-				@keyframes expand-shadow {
-					0% {
-						box-shadow: inset 0 0 10px 2px color-mix(in srgb, var(--theme-color) 15%, white);
-					}
-					100% {
-						box-shadow: inset 0 0 20px 5px color-mix(in srgb, var(--theme-color) 20%, white);
-					}
-				}
+				// border-radius: 4px;
+				animation: expand-inset-shadow 0.8s ease-in-out 10 alternate-reverse forwards;
 			}
 
 			.day-gregorian-date {
-				font-weight: 600;
-				color: color-mix(in srgb, var(--theme-color) 60%, black);
+				font-weight: 500;
+				break-inside: avoid;
+				page-break-inside: avoid;
+				background: linear-gradient(135deg, var(--theme-color), color-mix(in srgb, var(--theme-color) 60%, black));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				font-size: 24px;
+
+				@media (min-width: $md) {
+					font-size: 32px;
+				}
 			}
 
 			@media print {
 				&.today {
 					background-color: transparent;
-					border: 1px solid var(--grid-border-color);
-					outline: 2px solid transparent;
+					border: 1px solid transparent!important;
+					animation: none;
+					outline: 2px solid var(--grid-border-color)!important;
+					box-shadow: none!important;
 				}
 				&:hover {
 					box-shadow: none;
@@ -163,24 +204,30 @@
 					border: 1px solid var(--grid-border-color);
 					outline: 2px solid transparent;
 				}
+				.day-gregorian-date {
+					background: none !important;
+					-webkit-text-fill-color: unset !important;
+					color: color-mix(in srgb, var(--theme-color) 75%, black) !important;
+					display: inline-block !important;
+				}
 			}
 
 			&.saturday,
 			&.holiday-bg {
 				color: var(--theme-color);
+			}
+
+			&.shabbat-bg,
+			&.holiday-bg {
 				background: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
 			}
 
-			&.friday:not(.saturday, .holiday-bg),
+			&.friday-bg:not(.saturday, .holiday-bg),
 			&.holiday-eve-bg:not(.saturday, .holiday-bg),
 			&.chol-hamoed-bg:not(.saturday, .holiday-bg) {
 				color: color-mix(in srgb, var(--theme-color) 60%, white);
 				--mixed-bg-color: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
-
-				/* 2. Use it in a gradient (Color -> Transparent) */
 				background-image: linear-gradient(to top, var(--mixed-bg-color), white);
-
-				/* 3. Restrict it to the bottom 50% of the cell */
 				background-size: 100% 50%;
 				background-repeat: no-repeat;
 				background-position: bottom;
@@ -192,34 +239,31 @@
 			.day-header {
 				display: flex;
 				justify-content: space-between;
-				align-items: center;
-
+				align-items: flex-start;
 				width: 100%;
 
-				.hebrew-date-container {
-					display: flex;
-					align-items: center;
-					gap: 4px;
+				.day-hebrew-date {
+					line-height: 12px;
+					font-size: 12px;
+					padding: 4px;
 					width: 100%;
+
+					@media (min-width: $md) {
+						font-size: 16px;
+					}
 				}
-			}
-
-			.day-hebrew-date {
-				font-size: clamp(12px, 2.25vw, 18px);
-				line-height: 12px;
-			}
-
-			.day-gregorian-date {
-				font-size: clamp(24px, 4.5vw, 36px);
-				font-weight: 500;
 			}
 
 			.day-content {
 				height: 100%;
 				display: flex;
 				flex-direction: column;
-				font-size: clamp(10px, 1vw, 13px);
-				line-height: clamp(10px, 0.75vw, 11px);
+				line-height: 11px;
+
+				font-size: 10px;
+				@media (min-width: $md) {
+					font-size: 12px;
+				}
 
 				.day-events,
 				.day-extra-content {
@@ -228,11 +272,15 @@
 				}
 
 				.day-extra-content {
-					font-size: clamp(0.6rem, 0.875vw, 0.7rem);
 					display: flex;
 					justify-content: space-between;
 					flex-grow: 1;
 					padding: 2px 0;
+
+					font-size: 10px;
+					@media (min-width: $md) {
+						font-size: 11px;
+					}
 
 					@media (max-width: $xl) {
 						display: none;
@@ -240,10 +288,12 @@
 				}
 
 				.day-omer,
-				.day-molad,
 				.day-other-zmanim,
 				.day-learning {
-					padding: 0 clamp(0.125rem, 0.35vw, 0.25rem);
+					padding: 0 2px;
+					@media (min-width: $md) {
+						padding: 0 4px;
+					}
 				}
 
 				.day-other-zmanim,
@@ -291,7 +341,7 @@
 		transform: translateX(-150%);
 		transition: all 0.2s ease-in-out;
 		opacity: 0;
-		border-radius: clamp(0.75rem, 1.5vw, 1rem);
+		border-radius: 16px;
 		backdrop-filter: blur(7px);
 		background: rgba(255, 255, 255, 0.91);
 		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -318,12 +368,8 @@
 		direction: ltr !important;
 	}
 
-	.print-container .days {
-		// border: 1px solid var(--grid-border-color);
-	}
 	.print-preview-mode .day,
 	.print-container .day {
-		// border: 1px solid var(--grid-border-color) !important;
 		outline: 1px solid var(--grid-border-color);
 		outline-offset: -2px;
 		border-radius: 5px;
@@ -380,7 +426,6 @@
 	background-color: var(--grey-60);
 	color: var(--grey-600);
 	&.rosh-hodesh-badge {
-		// background-color: var(--primary-100);
 		color: var(--primary-500);
 	}
 
@@ -395,15 +440,18 @@
 	&.mevarchim-badge {
 		color: var(--secondary-600);
 	}
+}
 
-	&.molad-badge {
-		color: var(--secondary-700);
-		position: relative;
-		cursor: pointer;
-		text-align: center;
 
-		&:hover .custom-tooltip {
-			opacity: 1;
-		}
+
+
+@keyframes expand-inset-shadow {
+	0% {
+		outline-color: color-mix(in srgb, var(--theme-color) 10%, transparent);
+		box-shadow: inset 0 0 1px 1px color-mix(in srgb, var(--theme-color) 5%, white);
+	}
+	100% {
+		outline-color: color-mix(in srgb, var(--theme-color) 40%, white);
+		box-shadow: inset 0 0 2px 5px color-mix(in srgb, var(--theme-color) 10%, white);
 	}
 }

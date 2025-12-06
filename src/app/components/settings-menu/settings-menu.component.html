@@ -18,7 +18,8 @@
                         <div class="content-settings-grid">
                             @for(item of ContentSettingsEnumData(); track item.key) {
                             <div class="form-group-row">
-                                <p-checkbox size="small" class="flex"
+                                <p-checkbox 
+                                    size="small"
                                     [ngModel]="settings[item.key]"
                                     (ngModelChange)="onContentSettingChange($event, item.key, 'general')"
                                     [binary]="true" [inputId]="item.key">
@@ -43,7 +44,6 @@
                             @for(learn of LearningEnumData(); track learn.key) {
                             <div class="form-group-row">
                                 <p-checkbox 
-                                    class="flex"
                                     size="small"
                                     [disabled]="!settings.dailyLearningVisibility[learn.key] && learningCheckedCount() >= maxLearningToShow()"
                                     [ngModel]="settings.dailyLearningVisibility[learn.key]"
@@ -57,15 +57,7 @@
                                 </label>
                             </div>
                             }
-                            
-                            <div class="desktop-only-overlay">
-                                <!-- <span class="pi pi-desktop icon"></span> -->
-                                <span class="material-symbol-rounded icon">home_max</span>
-                                <div class="content">
-                                    <p class="title">תכונה זמינה במסכים רחבים</p>
-                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
-                                </div>
-                            </div>
+                            <ng-container *ngTemplateOutlet="desktopOverlay"></ng-container>
                         </div>
 
                     </div>
@@ -84,8 +76,7 @@
                             @for(zman of ZmanimEnumData(); track zman.key) {
                             <div class="form-group-row">
                                 <p-checkbox 
-                                    size="small" 
-                                    class="flex"
+                                    size="small"
                                     [disabled]="!settings.zmanimVisibility[zman.key] && zmanimCheckedCount() >= maxZmanimToShow()"
                                     [ngModel]="settings.zmanimVisibility[zman.key]"
                                     (ngModelChange)="onContentSettingChange($event, zman.key, 'zmanim')"
@@ -98,14 +89,7 @@
                                 </label>
                             </div>
                             }
-                            <div class="desktop-only-overlay">
-                                <!-- <span class="pi pi-desktop icon"></span> -->
-                                <span class="material-symbol-rounded icon">home_max</span>
-                                <div class="content">
-                                    <p class="title">תכונה זמינה במסכים רחבים</p>
-                                    <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
-                                </div>
-                            </div>
+                            <ng-container *ngTemplateOutlet="desktopOverlay"></ng-container>
                         </div>
                     </div>
                 </div>
@@ -119,10 +103,18 @@
                 </ng-template>
                 <div class="settings-tab-content">
                     <div class="settings-section">
-                        <label class="section-label">
-                            <span class="pi pi-map-marker"></span>
-                            <span>מיקום</span>
-                        </label>
+                        <div class="flex w-full items-center justify-between">
+                            <label class="section-label">
+                                <span class="pi pi-map-marker"></span>
+                                <span>מיקום</span>
+                            </label>
+                            @if (showLocationResetButton()) {
+                                <p-button @slideDown class="xs-icon" severity="secondary" [text]="true" [rounded]="true"
+                                    icon="pi pi-compass" pTooltip="המיקום שלי" tooltipPosition="left"
+                                    (onClick)="setCurrentLocation()" aria-label="המיקום שלי">
+                                </p-button>
+                            }
+                        </div>
                         <p-select #locationDropdown
                             [ngModel]="selectedLocation()"
                             (ngModelChange)="onSettingUpdate('location', $event)"
@@ -132,7 +124,7 @@
                             [filter]="true"
                             filterBy="cityHeb" 
                             placeholder="בחר עיר" 
-                            icon
+                            
                             class="w-full">
                             <ng-template pTemplate="selectedItem">
                                 @if(selectedLocation(); as location) {
@@ -162,62 +154,68 @@
                             <span class="pi pi-palette"></span>
                             <span>עיצוב</span>
                         </label>
-                        <div class="form-group">
-                            <label>בהירות גבולות</label>
-                            <p-slider [ngModel]="borderBrightness()"
-                                (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
-                        </div>
-                        <div class="form-group">
-                            <label>צבעי שבת וחג</label>
-                            <div class="color-options-container">
-                                @for (color of colors(); track color) {
-                                <div class="color-swatch" [style.background-color]="color"
-                                    [ngClass]="{'selected': shabbatHolidayColor() === color}"
-                                    (click)="onSettingUpdate('shabbatColor', color)">
-                                </div>
-                                }
+                        <div class="flex flex-col gap-4">
+                            <div class="form-group">
+                                <label>בהירות גבולות</label>
+                                <p-slider class="my-2 mx-4" [ngModel]="borderBrightness()"
+                                    (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
                             </div>
-                        </div>
-                        <div class="form-group-row">
-                            <p-checkbox
-                                class="flex"
-                                size="small"
-                                [ngModel]="settings.showShabbatBackgrounds"
-                                (ngModelChange)="onContentSettingChange($event, 'showShabbatBackgrounds', 'general')"
-                                [binary]="true"
-                                inputId="shabbatBgCheck">
-                            </p-checkbox>
-                            <label for="shabbatBgCheck">הצג רקעים לשבת וחג</label>
-                        </div>
-                        <div class="form-group">
-                            <label>שקיפות רקע</label>
-                            <p-slider [ngModel]="shabbatBackgroundOpacity()"
-                                (onChange)="onSettingUpdate('shabbatOpacity', $event.value)" 
-                                [min]="1" [max]="5" [step]="0.1"></p-slider>
-                        </div>
-                        <div class="form-group">
-                            <label>פונט</label>
-                            <p-select 
-                                appendTo="body"
-                                [ngModel]="selectedFont()"
-                                (ngModelChange)="onSettingUpdate('font', $event)"
-                                [options]="fontOptions()" optionLabel="name"
-                                optionValue="value"
-                                placeholder="בחר פונט" class="w-full font-selector">
-                                <ng-template pTemplate="item" let-option>
-                                    <div class="font-option">
-                                        <div class="font-name">{{ option.name }}</div>
-                                        <div class="font-preview" [style.fontFamily]="option.value">
-                                            כ״ה אלול תשפ״ה • 25 September 2025
+                            <div class="form-group">
+                                <div class="flex items-center justify-between w-full">
+                                    <label>צבע הלוח</label>
+                                    <div class="form-group-row">
+                                        <p-checkbox
+                                            class="flex"
+                                            size="small"
+                                            [ngModel]="settings.showShabbatBackgrounds"
+                                            (ngModelChange)="onContentSettingChange($event, 'showShabbatBackgrounds', 'general')"
+                                            [binary]="true"
+                                            inputId="shabbatBgCheck">
+                                        </p-checkbox>
+                                        <label for="shabbatBgCheck">הצג רקעים לשבת וחג</label>
+                                    </div>
+                                </div>
+                                <div class="color-options-container">
+                                    @for (color of colors(); track color) {
+                                    <div class="color-swatch" [style.background-color]="color"
+                                        [ngClass]="{'selected': shabbatHolidayColor() === color}"
+                                        (click)="onSettingUpdate('shabbatColor', color)">
+                                    </div>
+                                    }
+                                </div>
+                                
+                                <div class="form-group expandable mt-2" [class.expanded]="settings.showShabbatBackgrounds">
+                                    <label>שקיפות רקע</label>
+                                    <p-slider class="my-2 mx-4" [ngModel]="shabbatBackgroundOpacity()"
+                                        (onChange)="onSettingUpdate('shabbatOpacity', $event.value)"
+                                        [min]="1" [max]="5" [step]="0.1"></p-slider>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>פונט</label>
+                                <p-select
+                                    appendTo="body"
+                                    [ngModel]="selectedFont()"
+                                    (ngModelChange)="onSettingUpdate('font', $event)"
+                                    [options]="fontOptions()" optionLabel="name"
+                                    optionValue="value"
+                                    placeholder="בחר פונט" class="w-full font-selector">
+                                    <ng-template pTemplate="item" let-option>
+                                        <div class="font-option">
+                                            <div class="font-name">{{ option.name }}</div>
+                                            <div class="font-preview" [style.fontFamily]="option.value">
+                                                כ״ה אלול תשפ״ה • 25 September 2025
+                                            </div>
                                         </div>
-                                    </div>
-                                </ng-template>
-                                <ng-template pTemplate="selectedItem" let-option>
-                                    <div [style.fontFamily]="option.value">
-                                        {{ option.name }}
-                                    </div>
-                                </ng-template>
-                            </p-select>
+                                    </ng-template>
+                                    <ng-template pTemplate="selectedItem" let-option>
+                                        <div [style.fontFamily]="option.value">
+                                            {{ option.name }}
+                                        </div>
+                                    </ng-template>
+                                </p-select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -290,3 +288,17 @@
     </div>
     }
 </div>
+
+
+
+<ng-template #desktopOverlay>
+    <div class="desktop-only-overlay">
+        <div class="icon-wrapper">
+            <div class="svg-icon"></div>
+        </div>
+        <div class="overlay-content">
+            <p class="title">תכונה זמינה במסכים רחבים</p>
+            <p class="description">עבור למסך גדול יותר כדי להשתמש באפשרות זו</p>
+        </div>
+    </div>
+</ng-template>

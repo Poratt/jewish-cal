@@ -12,18 +12,28 @@
 }
 
 /* Icon Only Buttons */
-.sm-icon .p-button-icon-only {
-	width: 24px !important;
-	height: 24px !important;
-	padding: 4px !important;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	.p-button-icon {
-		font-size: 16px !important;
+@mixin icon-button($size, $padding, $icon-size) {
+	.p-button-icon-only {
+		width: $size !important;
+		height: $size !important;
+		padding: $padding !important;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		
+		.p-button-icon {
+			font-size: $icon-size !important;
+		}
 	}
 }
 
+.sm-icon {
+	@include icon-button(24px, 4px, 16px);
+}
+
+.xs-icon {
+	@include icon-button(20px, 2px, 12px);
+}
 
 
 /* Split Button */
@@ -508,7 +518,7 @@ tr[ng-reflect-animation-trigger='rowExpansionTrigger'] {
 
 	.p-dialog-header {
 		color: var(--grey-800);
-		padding: 12px 20px;
+		padding: 12px 20px 0;
 		.p-button-text.p-button-secondary {
 			width: 32px !important;
 			height: 16px !important;

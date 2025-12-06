@@ -1,18 +1,20 @@
 import { Leyning, LeyningWeekday } from "@hebcal/leyning";
 import { ZmanimModel } from "./zman";
-import { DailyLearning, Molad } from "@hebcal/core";
+import { DailyLearning, Molad, OmerEvent } from "@hebcal/core";
 
 export interface CalEvent {
-  dateStr: string;
-  hebDate: string;
-  hebName: string;
-  hebNoNikud: string;
-  event: EventDetails;
-  emoji: string | null;
-  mask: number;
-  flags: number;
-  categories: string[];
-  desc: string;
+    dateStr: string;
+    hebDate: string;
+    hebName: string;
+    hebNoNikud: string;
+    event: any; 
+    emoji: string | null;
+    mask: number;
+    flags: number;
+    categories: string[];
+    desc: string;
+    omerEvent?: OmerEvent;
+    url?: string;
 }
 
 export interface EventDetails {
