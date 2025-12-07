@@ -1,5 +1,5 @@
-import { Component, inject, Signal, effect } from '@angular/core';
-import { CommonModule, KeyValuePipe } from '@angular/common';
+import { Component, inject, Signal, effect, computed, OnInit, OnDestroy, signal } from '@angular/core';
+import { CommonModule, KeyValuePipe, DatePipe } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { LeyningWeekday, LeyningShabbatHoliday } from '@hebcal/leyning';
@@ -9,7 +9,7 @@ import { CalEvent, DayObject } from '../../core/models/day-object';
 import { EnumData } from '../../core/models/enumData';
 import { LearningEnumData, Learning } from '../../core/models/learning';
 import { aliyotMap } from '../../core/models/leyning';
-import { Zman } from '../../core/models/zman';
+import { Zman, ZmanimEnumData, GroupedZmanim, groupZmanimByCategory, ZmanimVisibility } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
 import { translate, getHaftaraBook, getHaftaraVerses, formatAliyahVerses } from '../../core/services/hebcal-helpers';
 import { HebcalService } from '../../core/services/hebcal.service';
@@ -19,16 +19,17 @@ import { SettingsService } from '../../core/services/settings.service';
 	selector: 'app-day-details',
 	standalone: true,
 	imports: [
-    CommonModule,
-    DividerModule,
-    KeyValuePipe,
-    TooltipModule,
-	ButtonModule
-],
+		CommonModule,
+		DividerModule,
+		KeyValuePipe,
+		TooltipModule,
+		ButtonModule,
+		DatePipe
+	],
 	templateUrl: './day-details.component.html',
-	styleUrls: ['./day-details.component.css']
+	styleUrls: ['./day-details.component.scss']
 })
-export class DayDetailsComponent {
+export class DayDetailsComponent implements OnInit, OnDestroy {
 
 	public readonly ref = inject(DynamicDialogRef);
 	public readonly config = inject(DynamicDialogConfig);
@@ -36,7 +37,7 @@ export class DayDetailsComponent {
 	private readonly dialogNavService = inject(DialogNavigationService);
 	public readonly userSettingsService = inject(SettingsService);
 
-
+	public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 	public readonly LearningEnumData: EnumData[] = LearningEnumData;
 	public readonly translate = translate;
 	public readonly getHaftaraBook = getHaftaraBook
@@ -47,14 +48,93 @@ export class DayDetailsComponent {
 	public readonly aliyotMap: Record<number | string, string> = aliyotMap;
 
 	public fastDayInfo: { name: string, start?: CalEvent, end?: CalEvent } | null = null;
+	public groupedZmanim: GroupedZmanim | null = null;
+	public readonly zmanimGroupTitles: Record<string, string> = {
+		morning: 'זמני בוקר',
+		afternoon: 'זמני צהריים',
+		evening: 'זמני ערב ולילה'
+	};
+
+	public currentTime = signal(new Date());
+	private intervalId?: number;
+	public isToday = computed(() => this.checkIfToday(this.dayObj()));
+	public nextZmanKey: Signal<keyof ZmanimVisibility | null>;
 
 	constructor() {
 		this.dayObj = this.config.data.dayObj;
 
-		// Re-run logic whenever the day object signal changes
 		effect(() => {
 			this.prepareFastDayInfo();
+			const zmanim = this.dayObj()?.zmanim;
+			if (zmanim) {
+				this.groupedZmanim = groupZmanimByCategory(zmanim);
+			}
 		});
+
+		this.nextZmanKey = computed(() => {
+			if (!this.isToday() || !this.dayObj()?.zmanim) {
+				return null;
+			}
+			const now = this.currentTime();
+			const futureZmanim = this.dayObj()!.zmanim!
+				.map(zman => ({
+					...zman,
+					date: this.parseZmanTime(zman.time as string)
+				}))
+				.filter(zman => zman.date > now)
+				.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+			return futureZmanim.length > 0 ? futureZmanim[0].key : null;
+		});
+	}
+
+	ngOnInit(): void {
+		if (this.isToday()) {
+			this.intervalId = window.setInterval(() => {
+				this.currentTime.set(new Date());
+			}, 60000); // Update every minute
+		}
+	}
+
+	ngOnDestroy(): void {
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
+	}
+
+	private checkIfToday(day: DayObject | null): boolean {
+		if (!day) {
+			return false;
+		}
+		const today = new Date();
+		const dayDate = day.ge.fullDate;
+		return today.getFullYear() === dayDate.getFullYear() &&
+			today.getMonth() === dayDate.getMonth() &&
+			today.getDate() === dayDate.getDate();
+	}
+
+	private parseZmanTime(timeStr: string): Date {
+		const [hours, minutes] = timeStr.split(':').map(Number);
+		const date = new Date();
+		date.setHours(hours, minutes, 0, 0);
+		return date;
+	}
+
+	public getZmanStatus(zman: Zman): string | null {
+		if (!this.isToday()) {
+			return null;
+		}
+
+		if (zman.key === this.nextZmanKey()) {
+			return 'next';
+		}
+
+		const zmanTime = this.parseZmanTime(zman.time as string);
+		if (zmanTime < this.currentTime()) {
+			return 'past';
+		}
+
+		return null;
 	}
 
 	private prepareFastDayInfo(): void {
@@ -63,24 +143,22 @@ export class DayDetailsComponent {
 			this.fastDayInfo = null;
 			return;
 		}
-	
-		// Find the main fast event (like Yom Kippur Katan)
-		const mainFastEvent = day.events.find(e => 
-			e.categories.includes('fast') && 
-			!e.desc.includes('Fast begins') && 
+
+		const mainFastEvent = day.events.find(e =>
+			e.categories.includes('fast') &&
+			!e.desc.includes('Fast begins') &&
 			!e.desc.includes('Fast ends')
 		);
-	
+
 		const fastStart = day.events.find(e => e.desc.includes('Fast begins'));
 		const fastEnd = day.events.find(e => e.desc.includes('Fast ends'));
-	
+
 		if (mainFastEvent || fastStart || fastEnd) {
-			// Prefer the name from the main event if it exists
-			const fastName = mainFastEvent?.hebName || 
-						   fastStart?.hebName.replace('תחילת הצום:', '').trim() ||
-						   fastEnd?.hebName.replace('סוף צום:', '').trim() || 
-						   'צום';
-	
+			const fastName = mainFastEvent?.hebName ||
+				fastStart?.hebName.replace('תחילת הצום:', '').trim() ||
+				fastEnd?.hebName.replace('סוף צום:', '').trim() ||
+				'צום';
+
 			this.fastDayInfo = {
 				name: fastName,
 				start: fastStart,
@@ -114,6 +192,11 @@ export class DayDetailsComponent {
 		return (day.learn as Learning)[stringKey];
 	}
 
+	public getZmanDescription(key: string | number): string | undefined {
+		const zmanData = this.ZmanimEnumData.find(z => z.key === key);
+		return zmanData?.desc;
+	}
+
 	public onPrevDay(): void {
 		this.dialogNavService.triggerPrevDay();
 	}
@@ -121,6 +204,5 @@ export class DayDetailsComponent {
 	public onNextDay(): void {
 		this.dialogNavService.triggerNextDay();
 	}
-
-
 }
+

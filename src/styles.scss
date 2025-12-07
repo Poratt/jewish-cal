@@ -11,6 +11,7 @@
 @use './app/assets/styles/_angular-materials-override.scss';
 
 @use 'primeicons/primeicons.css';
+@use 'variables' as *;
 
 .custom-tooltip {
 	line-height: 1.4;
@@ -20,7 +21,6 @@
 }
 
 .p-checkbox {
-
 	&.p-checkbox-checked .p-checkbox-box {
 		background-color: var(--secondary-300) !important;
 		border-color: var(--secondary-400) !important;
@@ -58,7 +58,7 @@
 		font-size: 12px !important;
 		white-space: nowrap;
 	}
-	
+
 	.p-datepicker-month {
 		font-size: 12px !important;
 		font-weight: 400 !important;
@@ -67,7 +67,7 @@
 	.p-datepicker-select-month {
 		font-size: clamp(12px, 1.75vw, 14px) !important;
 	}
-	
+
 	.p-datepicker-month-selected,
 	.p-datepicker-year-selected {
 		color: var(--primary-600);
@@ -75,3 +75,29 @@
 	}
 }
 
+.p-dialog-content {
+	padding: 0 !important;
+	@media (min-width: $sm) {
+		padding: 0 12px !important;
+	}
+	@media (min-width: $md) {
+		padding: 0 24px !important;
+	}
+}
+
+.text-grey-sm {
+	color: var(--grey-500);
+	font-size: 12px;
+}
+
+.text-grey-xs {
+	color: var(--grey-500);
+	font-size: 10px;
+}
+
+strong {
+	font-weight: 500;
+	color: var(--grey-800);
+	min-width: 60px;
+	font-size: 11px;
+}

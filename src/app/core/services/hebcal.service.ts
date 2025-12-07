@@ -93,6 +93,8 @@ export class HebcalService {
     if (ev.getCategories().includes('havdalah')) {
       hebName = hebName.replace(/\s*\(\d+.*?\)/, '');
     }
+    
+    // console.log(ev)
 
     const eventInfo: CalEvent = {
 

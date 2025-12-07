@@ -133,14 +133,14 @@
 			border-radius: 5px;
 			background-color: white;
 			padding: 2px;
+			font-size: 14px;
+
 			@media (min-width: $sm) {
 				padding: 4px;
 			}
 			@media (min-width: $md) {
 				padding: 8px;
 			}
-
-			font-size: 14px;
 
 			@media (hover: hover) and (pointer: fine) {
 				&:hover {
@@ -208,7 +208,13 @@
 				background: color-mix(in srgb, var(--theme-color) var(--theme-opacity), white);
 				.day-hebrew-date,
 				.day-gregorian-date {
-					background: linear-gradient(135deg, var(--theme-color), var(--theme-color), var(--theme-color), color-mix(in srgb, var(--theme-color) 50%, var(--grey-500)));
+					background: linear-gradient(
+						135deg,
+						var(--theme-color),
+						var(--theme-color),
+						var(--theme-color),
+						color-mix(in srgb, var(--theme-color) 50%, var(--grey-500))
+					);
 					-webkit-background-clip: text;
 					-webkit-text-fill-color: transparent;
 					background-clip: text;
@@ -229,7 +235,13 @@
 
 				.day-hebrew-date,
 				.day-gregorian-date {
-					background: linear-gradient(135deg, var(--theme-color), var(--theme-color), var(--theme-color), color-mix(in srgb, var(--theme-color) 50%, var(--grey-800)));
+					background: linear-gradient(
+						135deg,
+						var(--theme-color),
+						var(--theme-color),
+						var(--theme-color),
+						color-mix(in srgb, var(--theme-color) 50%, var(--grey-800))
+					);
 					-webkit-background-clip: text;
 					-webkit-text-fill-color: transparent;
 					background-clip: text;
