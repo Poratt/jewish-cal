@@ -4,8 +4,8 @@
     <div class="print-month-page">
         <div class="calender-wrapper" 
             [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-            [style.--theme-color]="shabbatHolidayColor()"
-            [style.--bg-opacity]="shabbatBackgroundOpacity() + '%'">
+            [style.--theme-color]="themeColor()"
+            [style.--bg-opacity]="themeOpacity() + '%'">
             <!-- Calendar Header for Print -->
             <div class="header-wrapper">
                 <div class="header-contents">
@@ -35,11 +35,11 @@
                 <div class="day" [ngClass]="{
                     'other-month': dayObj.ge.month !== monthData.month,
                     'saturday': dayObj.ge.day === 6,
-                    'shabbat-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
-                    'friday-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
-                    'holiday-bg': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
-                    'holiday-eve-bg': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
-                    'chol-hamoed-bg': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
+                    'shabbat': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
+                    'friday': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
+                    'holiday': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
+                    'holiday-eve': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
+                    'chol-hamoed': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
                     }">
 
                     <!-- Day Header (Print) -->
@@ -134,7 +134,7 @@
 <!-- Main Interactive View Container -->
 @if (!isPrintingMode()) {
 <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-    [style.--theme-color]="shabbatHolidayColor()" [style.--shabbat-bg-opacity]="shabbatBackgroundOpacity() + '%'">
+    [style.--theme-color]="themeColor()" [style.--theme-opacity]="themeOpacity() + '%'">
     <!-- Calendar Header -->
     <div class="header-wrapper" (wheel)="onMouseWheel($event)">
         <div class="header-contents">
@@ -184,11 +184,11 @@
                 'other-month': dayObj.ge.month !== calenderDate.getMonth() || dayObj.ge.year !== calenderDate.getFullYear(), 
                 'saturday': dayObj.ge.day === 6,
                 'today': isToday(dayObj),
-                'shabbat-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
-                'friday-bg': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
-                'holiday-bg': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
-                'holiday-eve-bg': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
-                'chol-hamoed-bg': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
+                'shabbat': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 6,
+                'friday': contentSettings().showShabbatBackgrounds && dayObj.ge.day === 5,
+                'holiday': contentSettings().showShabbatBackgrounds && isHoliday(dayObj),
+                'holiday-eve': contentSettings().showShabbatBackgrounds && isHolidayEve(dayObj),
+                'chol-hamoed': contentSettings().showShabbatBackgrounds && isCholHamoed(dayObj)
              }">
             <div class="day-header">
                 <p class="day-hebrew-date">{{sliceHebDate(dayObj.he.fullDate)}}</p>

@@ -52,9 +52,9 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   public selectedLocation = this.settingsService.selectedLocationSignal;
   public groupedCities = this.settingsService.groupedCitiesSignal;
   public borderBrightness = this.settingsService.borderBrightnessSignal;
-  public shabbatHolidayColor = this.settingsService.shabbatHolidayColorSignal;
+  public themeColor = this.settingsService.themeColorSignal;
+  public themeOpacity = this.settingsService.themeOpacitySignal;
   public currentFont = this.settingsService.selectedFontSignal;
-  public shabbatBackgroundOpacity = this.settingsService.shabbatBackgroundOpacitySignal;
 
   public currentDate = new Date();
   public calenderDate = new Date();

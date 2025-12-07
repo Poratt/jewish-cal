@@ -132,7 +132,10 @@
 			outline-offset: -2px;
 			border-radius: 5px;
 			background-color: white;
-			padding: 4px;
+			padding: 2px;
+			@media (min-width: $sm) {
+				padding: 4px;
+			}
 			@media (min-width: $md) {
 				padding: 8px;
 			}
@@ -149,54 +152,97 @@
 			&:first-child {
 				border-top-left-radius: 12px;
 			}
-
 			&:nth-child(7) {
 				border-top-right-radius: 12px;
 			}
-
 			&:nth-last-child(7) {
 				border-bottom-left-radius: 12px;
 			}
-
 			&:last-child {
 				border-bottom-right-radius: 12px;
 			}
 
 			&.other-month {
-				opacity: 1;
 				> * {
 					opacity: 0.2;
 				}
 			}
 
-			&.today {
-				border-color: color-mix(in srgb, var(--theme-color) 25%, white);
-				// border-radius: 4px;
-				animation: expand-inset-shadow 0.8s ease-in-out 10 alternate-reverse forwards;
+			.day-gregorian-date,
+			.day-hebrew-date {
+				background: linear-gradient(135deg, var(--grey-700), var(--grey-600));
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
 			}
 
 			.day-gregorian-date {
 				font-weight: 500;
-				break-inside: avoid;
-				page-break-inside: avoid;
-				background: linear-gradient(135deg, var(--theme-color), color-mix(in srgb, var(--theme-color) 60%, black));
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-				font-size: 24px;
+				font-size: 20px;
+				margin-top: -2px;
 
+				@media (min-width: $sm) {
+					font-size: 24px;
+				}
 				@media (min-width: $md) {
 					font-size: 32px;
+				}
+			}
+
+			&.today {
+				border-color: color-mix(in srgb, var(--theme-color) 25%, white);
+				animation: expand-inset-shadow 0.8s ease-in-out 10 alternate-reverse forwards;
+
+				.day-hebrew-date,
+				.day-gregorian-date {
+					background: linear-gradient(135deg, var(--theme-color), color-mix(in srgb, var(--theme-color) 40%, var(--grey-800)));
+					-webkit-background-clip: text;
+					-webkit-text-fill-color: transparent;
+					background-clip: text;
+				}
+			}
+
+			&.saturday,
+			&.holiday {
+				color: var(--theme-color);
+				background: color-mix(in srgb, var(--theme-color) var(--theme-opacity), white);
+				.day-hebrew-date,
+				.day-gregorian-date {
+					background: linear-gradient(135deg, var(--theme-color), var(--theme-color), var(--theme-color), color-mix(in srgb, var(--theme-color) 50%, var(--grey-500)));
+					-webkit-background-clip: text;
+					-webkit-text-fill-color: transparent;
+					background-clip: text;
+				}
+			}
+
+			&.friday:not(.saturday, .holiday),
+			&.holiday-eve:not(.saturday, .holiday),
+			&.chol-hamoed:not(.saturday, .holiday) {
+				color: color-mix(in srgb, var(--theme-color) 60%, white);
+				--mixed-bg-color: color-mix(in srgb, var(--theme-color) var(--theme-opacity), white);
+				background-image: linear-gradient(to top, var(--mixed-bg-color), white);
+				background-size: 100% 50%;
+				background-repeat: no-repeat;
+				background-position: bottom;
+				-webkit-print-color-adjust: exact !important;
+				print-color-adjust: exact !important;
+
+				.day-hebrew-date,
+				.day-gregorian-date {
+					background: linear-gradient(135deg, var(--theme-color), var(--theme-color), var(--theme-color), color-mix(in srgb, var(--theme-color) 50%, var(--grey-800)));
+					-webkit-background-clip: text;
+					-webkit-text-fill-color: transparent;
+					background-clip: text;
 				}
 			}
 
 			@media print {
 				&.today {
 					background-color: transparent;
-					border: 1px solid transparent!important;
+					border: 1px solid transparent !important;
 					animation: none;
-					outline: 2px solid var(--grid-border-color)!important;
-					box-shadow: none!important;
+					outline: 2px solid var(--grid-border-color) !important;
+					box-shadow: none !important;
 				}
 				&:hover {
 					box-shadow: none;
@@ -204,36 +250,12 @@
 					border: 1px solid var(--grid-border-color);
 					outline: 2px solid transparent;
 				}
-				.day-gregorian-date {
+				.day-gregorian-date,
+				.day-hebrew-date {
 					background: none !important;
 					-webkit-text-fill-color: unset !important;
-					color: color-mix(in srgb, var(--theme-color) 75%, black) !important;
-					display: inline-block !important;
+					color: var(--theme-color) !important;
 				}
-			}
-
-			&.saturday,
-			&.holiday-bg {
-				color: var(--theme-color);
-			}
-
-			&.shabbat-bg,
-			&.holiday-bg {
-				background: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
-			}
-
-			&.friday-bg:not(.saturday, .holiday-bg),
-			&.holiday-eve-bg:not(.saturday, .holiday-bg),
-			&.chol-hamoed-bg:not(.saturday, .holiday-bg) {
-				color: color-mix(in srgb, var(--theme-color) 60%, white);
-				--mixed-bg-color: color-mix(in srgb, var(--theme-color) var(--shabbat-bg-opacity), white);
-				background-image: linear-gradient(to top, var(--mixed-bg-color), white);
-				background-size: 100% 50%;
-				background-repeat: no-repeat;
-				background-position: bottom;
-
-				-webkit-print-color-adjust: exact !important;
-				print-color-adjust: exact !important;
 			}
 
 			.day-header {
@@ -244,12 +266,15 @@
 
 				.day-hebrew-date {
 					line-height: 12px;
-					font-size: 12px;
-					padding: 4px;
+					font-size: 10px;
+					padding: 2px;
 					width: 100%;
 
+					@media (min-width: $sm) {
+						font-size: 12px;
+					}
 					@media (min-width: $md) {
-						font-size: 16px;
+						font-size: 14px;
 					}
 				}
 			}
@@ -259,8 +284,8 @@
 				display: flex;
 				flex-direction: column;
 				line-height: 11px;
-
 				font-size: 10px;
+
 				@media (min-width: $md) {
 					font-size: 12px;
 				}
@@ -276,8 +301,8 @@
 					justify-content: space-between;
 					flex-grow: 1;
 					padding: 2px 0;
-
 					font-size: 10px;
+
 					@media (min-width: $md) {
 						font-size: 11px;
 					}
@@ -303,9 +328,7 @@
 					font-size: 0.9em;
 					line-height: 13px;
 					color: var(--grey-600);
-					line-height: 10px;
 					font-weight: 500;
-
 					max-height: 50px;
 					overflow: hidden;
 					overscroll-behavior-y: contain;
@@ -441,9 +464,6 @@
 		color: var(--secondary-600);
 	}
 }
-
-
-
 
 @keyframes expand-inset-shadow {
 	0% {

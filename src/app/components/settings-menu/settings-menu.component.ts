@@ -45,9 +45,9 @@ export class SettingsMenuComponent {
   
   public groupedCities = this.settingsService.groupedCitiesSignal;
   public borderBrightness = this.settingsService.borderBrightnessSignal;
-  public shabbatHolidayColor = this.settingsService.shabbatHolidayColorSignal;
+  public themeColor = this.settingsService.themeColorSignal;
   public selectedFont = this.settingsService.selectedFontSignal;
-  public shabbatBackgroundOpacity = this.settingsService.shabbatBackgroundOpacitySignal;
+  public themeOpacity = this.settingsService.themeOpacitySignal;
 
   public printRangeError = signal<string | null>(null);
   public printSets = signal<number>(1);

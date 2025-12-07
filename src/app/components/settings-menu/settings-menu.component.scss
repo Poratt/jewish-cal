@@ -152,27 +152,10 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
-
-		.slider-container {
-			display: flex;
-			align-items: center;
-			gap: 12px;
-		}
-
-		.slider-container span {
-			font-size: 11px;
-			color: var(--grey-500);
-			white-space: nowrap;
-		}
-
-		.slider-container p-slider {
-			width: 100%;
-		}
-
-		&.disabled {
-			opacity: 0.5;
-			pointer-events: none;
-		}
+	}
+	
+	.slider-wrapper {
+		direction: ltr;
 	}
 
 	.form-row {

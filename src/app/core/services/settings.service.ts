@@ -32,9 +32,9 @@ export class SettingsService {
 	
     private groupedCitiesSource: WritableSignal<GroupedCity[]>;
 	private borderBrightnessSource: WritableSignal<number>;
-	private shabbatHolidayColorSource: WritableSignal<string>;
+	private themeColorSource: WritableSignal<string>;
+	private themeOpacitySource: WritableSignal<number>;
 	private selectedFontSource: WritableSignal<string>;
-	private shabbatBackgroundOpacitySource: WritableSignal<number>;
 	private printRequestSource: WritableSignal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
 
@@ -45,9 +45,9 @@ export class SettingsService {
 
 	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
 	public readonly borderBrightnessSignal: Signal<number>;
-	public readonly shabbatHolidayColorSignal: Signal<string>;
+	public readonly themeColorSignal: Signal<string>;
 	public readonly selectedFontSignal: Signal<string>;
-	public readonly shabbatBackgroundOpacitySignal: Signal<number>;
+	public readonly themeOpacitySignal: Signal<number>;
 	public readonly printRequestSignal: Signal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
 	constructor() {
@@ -56,9 +56,9 @@ export class SettingsService {
 		this.selectedLocationSource = signal(this.loadSelectedLocation());
 		this.groupedCitiesSource = signal<GroupedCity[]>([]);
 		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_OPACITY, 85));
-		this.shabbatHolidayColorSource = signal(this.loadFromStorage(this.THEME, '#3b82f6'));
+		this.themeColorSource = signal(this.loadFromStorage(this.THEME, '#3b82f6'));
 		this.selectedFontSource = signal(this.loadFromStorage(this.SELECTED_FONT, this.DEFAULT_FONT));
-		this.shabbatBackgroundOpacitySource = signal(this.loadFromStorage(this.BG_OPACITY, 4));
+		this.themeOpacitySource = signal(this.loadFromStorage(this.BG_OPACITY, 4));
 		this.printRequestSource = signal(null);
 
 
@@ -68,9 +68,9 @@ export class SettingsService {
 
 		this.groupedCitiesSignal = this.groupedCitiesSource.asReadonly();
 		this.borderBrightnessSignal = this.borderBrightnessSource.asReadonly();
-		this.shabbatHolidayColorSignal = this.shabbatHolidayColorSource.asReadonly();
+		this.themeColorSignal = this.themeColorSource.asReadonly();
 		this.selectedFontSignal = this.selectedFontSource.asReadonly();
-		this.shabbatBackgroundOpacitySignal = this.shabbatBackgroundOpacitySource.asReadonly();
+		this.themeOpacitySignal = this.themeOpacitySource.asReadonly();
 		this.printRequestSignal = this.printRequestSource.asReadonly();
 
 		this.initializeCitiesAndLocation();
@@ -87,8 +87,8 @@ export class SettingsService {
 		switch (type) {
 			case 'location': this.selectedLocationSource.set(value); break;
 			case 'borderBrightness': this.borderBrightnessSource.set(value); break;
-			case 'shabbatColor': this.shabbatHolidayColorSource.set(value); break;
-			case 'shabbatOpacity': this.shabbatBackgroundOpacitySource.set(value); break;
+			case 'shabbatColor': this.themeColorSource.set(value); break;
+			case 'shabbatOpacity': this.themeOpacitySource.set(value); break;
 			case 'font': this.selectedFontSource.set(value); break;
 			default: console.warn('Unknown setting type:', type); break;
 		}
@@ -144,9 +144,9 @@ export class SettingsService {
 		effect(() => this.saveToStorage(this.CONTENT_SETTINGS, this.contentSettingsSource()));
 		effect(() => this.saveToStorage(this.LOCATION, this.selectedLocationSource()));
 		effect(() => this.saveToStorage(this.BORDER_OPACITY, this.borderBrightnessSource()));
-		effect(() => this.saveToStorage(this.THEME, this.shabbatHolidayColorSource()));
+		effect(() => this.saveToStorage(this.THEME, this.themeColorSource()));
 		effect(() => this.saveToStorage(this.SELECTED_FONT, this.selectedFontSource()));
-		effect(() => this.saveToStorage(this.BG_OPACITY, this.shabbatBackgroundOpacitySource()));
+		effect(() => this.saveToStorage(this.BG_OPACITY, this.themeOpacitySource()));
 	}
 
 	private setupFontEffect(): void {

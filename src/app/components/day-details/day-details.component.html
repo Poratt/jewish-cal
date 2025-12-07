@@ -1,5 +1,5 @@
 @if(dayObj(); as day) {
-<div class="day-details-container" [style.--theme-color]="userSettingsService.shabbatHolidayColorSignal()">
+<div class="day-details-container" [style.--theme-color]="userSettingsService.themeColorSignal()">
     <div class="day-details-header">
         <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" aria-label="Previous Month" (click)="onPrevDay()"></p-button>
 

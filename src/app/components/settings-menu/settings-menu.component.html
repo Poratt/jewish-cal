@@ -157,8 +157,10 @@
                         <div class="flex flex-col gap-4">
                             <div class="form-group">
                                 <label>בהירות גבולות</label>
-                                <p-slider class="my-2 mx-4" [ngModel]="borderBrightness()"
-                                    (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
+                                <div class="slider-wrapper">
+                                    <p-slider dir="ltr" class="my-2 mx-4" [ngModel]="borderBrightness()"
+                                        (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <div class="flex items-center justify-between w-full">
@@ -178,7 +180,7 @@
                                 <div class="color-options-container">
                                     @for (color of colors(); track color) {
                                     <div class="color-swatch" [style.background-color]="color"
-                                        [ngClass]="{'selected': shabbatHolidayColor() === color}"
+                                        [ngClass]="{'selected': themeColor() === color}"
                                         (click)="onSettingUpdate('shabbatColor', color)">
                                     </div>
                                     }
@@ -186,9 +188,11 @@
                                 
                                 <div class="form-group expandable mt-2" [class.expanded]="settings.showShabbatBackgrounds">
                                     <label>שקיפות רקע</label>
-                                    <p-slider class="my-2 mx-4" [ngModel]="shabbatBackgroundOpacity()"
-                                        (onChange)="onSettingUpdate('shabbatOpacity', $event.value)"
-                                        [min]="1" [max]="5" [step]="0.1"></p-slider>
+                                    <div class="slider-wrapper">
+                                        <p-slider dir="ltr" class="my-2 mx-4" [ngModel]="themeOpacity()"
+                                            (onChange)="onSettingUpdate('shabbatOpacity', $event.value)"
+                                            [min]="1" [max]="5" [step]="0.1"></p-slider>
+                                    </div>
                                 </div>
                             </div>
                             
