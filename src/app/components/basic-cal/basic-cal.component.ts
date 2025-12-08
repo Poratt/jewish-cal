@@ -56,7 +56,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   public themeOpacity = this.settingsService.themeOpacitySignal;
   public currentFont = this.settingsService.selectedFontSignal;
 
-  public currentDate = new Date(2025,11,7);
+  public currentDate = new Date();
   public calenderDate = new Date();
   public showSettings = signal(false);
 
