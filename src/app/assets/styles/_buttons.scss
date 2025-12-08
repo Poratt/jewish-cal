@@ -229,76 +229,76 @@ button.empty {
 	}
 }
 
-.toggle-switch {
-	display: flex;
-	width: 120px;
-	height: 24px;
-	display: flex;
-	justify-content: center;
-	position: relative;
-	border-radius: 20px;
-	background: var(--red-100);
-	border: 1px solid var(--grey-90);
-	overflow: hidden;
-	cursor: pointer;
-	transition: all 0.3s ease;
-	user-select: none;
-	will-change: background-color;
+// .toggle-switch {
+// 	display: flex;
+// 	width: 120px;
+// 	height: 24px;
+// 	display: flex;
+// 	justify-content: center;
+// 	position: relative;
+// 	border-radius: 20px;
+// 	background: var(--red-100);
+// 	border: 1px solid var(--grey-90);
+// 	overflow: hidden;
+// 	cursor: pointer;
+// 	transition: all 0.3s ease;
+// 	user-select: none;
+// 	will-change: background-color;
 
-	&::after {
-		content: '';
-		position: absolute;
-		width: 52px;
-		height: calc(100% - 5px);
-		top: 3px;
-		left: 3px;
-		padding: 1px 4px;
-		border-radius: 20px;
-		transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), outline 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-			background 0.5s ease;
-		z-index: 0;
-		will-change: transform, background-color, scale;
-		background: var(--red-300);
-	}
+// 	&::after {
+// 		content: '';
+// 		position: absolute;
+// 		width: 52px;
+// 		height: calc(100% - 5px);
+// 		top: 3px;
+// 		left: 3px;
+// 		padding: 1px 4px;
+// 		border-radius: 20px;
+// 		transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), outline 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+// 			background 0.5s ease;
+// 		z-index: 0;
+// 		will-change: transform, background-color, scale;
+// 		background: var(--red-300);
+// 	}
 
-	&.active::after {
-		transform: translateX(58px);
-		background: var(--green-300);
-	}
+// 	&.active::after {
+// 		transform: translateX(58px);
+// 		background: var(--green-300);
+// 	}
 
-	&:has(.inactive) {
-		background-color: var(--red-100);
-		.toggle-switch-text.inactive {
-			color: var(--red-700);
-		}
-	}
-	&:has(.active) {
-		background-color: var(--green-100);
-		.toggle-switch-text.active {
-			color: var(--green-700);
-		}
-	}
+// 	&:has(.inactive) {
+// 		background-color: var(--red-100);
+// 		.toggle-switch-text.inactive {
+// 			color: var(--red-700);
+// 		}
+// 	}
+// 	&:has(.active) {
+// 		background-color: var(--green-100);
+// 		.toggle-switch-text.active {
+// 			color: var(--green-700);
+// 		}
+// 	}
 
-	.toggle-switch-text {
-		width: 60px;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 11px;
-		font-weight: 400;
-		color: var(--grey-600);
-		z-index: 1;
-		transition: color 0.3s ease 0.05s, font-weight 0.3s ease;
-		pointer-events: auto;
-		cursor: pointer;
-		color: var(--grey-300);
-	}
+// 	.toggle-switch-text {
+// 		width: 60px;
+// 		height: 100%;
+// 		display: flex;
+// 		align-items: center;
+// 		justify-content: center;
+// 		font-size: 11px;
+// 		font-weight: 400;
+// 		color: var(--grey-600);
+// 		z-index: 1;
+// 		transition: color 0.3s ease 0.05s, font-weight 0.3s ease;
+// 		pointer-events: auto;
+// 		cursor: pointer;
+// 		color: var(--grey-300);
+// 	}
 
-	input[type='checkbox'] {
-		display: none;
-	}
-}
+// 	input[type='checkbox'] {
+// 		display: none;
+// 	}
+// }
 
 .custom-select-button {
 	padding: 0.2rem 0.5rem;

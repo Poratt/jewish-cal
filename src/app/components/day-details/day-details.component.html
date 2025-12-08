@@ -1,10 +1,9 @@
-
 @if(dayObj(); as day) {
 <div class="day-details-container" [style.--theme-color]="userSettingsService.themeColorSignal()">
     <div class="day-details-header">
         <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" aria-label="Previous Month" (click)="onPrevDay()"></p-button>
 
-        <div class="header-text">
+        <div class="header-content">
             <h3 class="hebrew-date">{{ day.he.fullDate }}</h3>
             <h2 class="gregorian-date">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
 
@@ -142,55 +141,65 @@
     </div>
     }
 
-    @if(groupedZmanim) {
+    @if(filteredGroupedZmanim(); as groupedZmanim) {
     <div class="details-section">
-        <p class="section-header">
-            <i class="pi pi-clock"></i>
-            זמני היום
-        </p>
+        <div class="flex w-full items-center justify-between">
+            <p class="section-header">
+                <i class="pi pi-clock"></i>
+                זמני היום
+            </p>
+            <div class="toggle-switch" [class.gra]="defaultZmanimMethod() === ZmanimMethodType.Gra" (click)="toggleZmanimMethod(defaultZmanimMethod())">
+                @for (method of ZmanimMethodsData; track $index) {
+                    <span class="toggle-switch-text" [class.active]="method.key === defaultZmanimMethod()">
+                        {{method.fullname}}
+                    </span>
+                }
+            </div>
+        </div>
         <div class="zmanim-grid">
             <!-- Morning Times -->
-            @if (groupedZmanim.morning.length > 0) {
+            @if (groupedZmanim.morning.items.length > 0) {
             <div class="zmanim-group">
-                <span class="zmanim-group-title">{{ zmanimGroupTitles['morning'] }}</span>
+                <span class="zmanim-group-title">{{ groupedZmanim.morning.data.hebName }}</span>
                 <div class="zmanim-row">
-                    @for (zman of groupedZmanim.morning; track zman.key) {
-                    <div class="zman-item" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                        <span class="zman-name">{{ zman.hebName }}</span>
-                        <span class="zman-time">{{ zman.time }}</span>
-                    </div>
+                    @for (zman of groupedZmanim.morning.items; track zman.key) {
+                        <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
+                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-time">{{ zman.time }}</span>
+                        </div>
                     }
                 </div>
             </div>
             }
             <!-- Afternoon Times -->
-            @if (groupedZmanim.afternoon.length > 0) {
+            @if (groupedZmanim.afternoon.items.length > 0) {
             <div class="zmanim-group">
-                <span class="zmanim-group-title">{{ zmanimGroupTitles['afternoon'] }}</span>
+                <span class="zmanim-group-title">{{ groupedZmanim.afternoon.data.hebName }}</span>
                 <div class="zmanim-row">
-                    @for (zman of groupedZmanim.afternoon; track zman.key) {
-                    <div class="zman-item" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                        <span class="zman-name">{{ zman.hebName }}</span>
-                        <span class="zman-time">{{ zman.time }}</span>
-                    </div>
+                    @for (zman of groupedZmanim.afternoon.items; track zman.key) {
+                        <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
+                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-time">{{ zman.time }}</span>
+                        </div>
                     }
                 </div>
             </div>
             }
             <!-- Evening/Night Times -->
-            @if (groupedZmanim.evening.length > 0) {
+            @if (groupedZmanim.evening.items.length > 0) {
             <div class="zmanim-group">
-                <span class="zmanim-group-title">{{ zmanimGroupTitles['evening'] }}</span>
+                <span class="zmanim-group-title">{{ groupedZmanim.evening.data.hebName }}</span>
                 <div class="zmanim-row">
-                    @for (zman of groupedZmanim.evening; track zman.key) {
-                    <div class="zman-item" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                        <span class="zman-name">{{ zman.hebName }}</span>
-                        <span class="zman-time">{{ zman.time }}</span>
-                    </div>
+                    @for (zman of groupedZmanim.evening.items; track zman.key) {
+                        <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
+                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-time">{{ zman.time }}</span>
+                        </div>
                     }
                 </div>
             </div>
             }
+
         </div>
     </div>
     }
@@ -205,7 +214,7 @@
         <div class="learning-grid">
             @for (learn of LearningEnumData; track learn.key) {
             @if (getLearning(day, learn.key)) {
-            <div class="learning-item" [pTooltip]="learn.desc">
+            <div class="learning-item" tooltipPosition="bottom" [pTooltip]="learn.desc">
                 <strong >{{ learn.hebName }}:</strong>
                 <span class="text-grey-xs" [innerHtml]="getLearning(day, learn.key)"> </span>
             </div>

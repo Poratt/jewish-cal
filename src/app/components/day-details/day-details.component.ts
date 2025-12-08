@@ -1,3 +1,4 @@
+import { ZmanimMethod, ZmanimMethodsData, ZmanimMethodType } from './../../core/models/zmanim-methods';
 import { Component, inject, Signal, effect, computed, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, KeyValuePipe, DatePipe } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
@@ -11,21 +12,23 @@ import { LearningEnumData, Learning } from '../../core/models/learning';
 import { aliyotMap } from '../../core/models/leyning';
 import { Zman, ZmanimEnumData, GroupedZmanim, groupZmanimByCategory, ZmanimVisibility } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
-import { translate, getHaftaraBook, getHaftaraVerses, formatAliyahVerses } from '../../core/services/hebcal-helpers';
+import { translate, getHaftaraBook, getHaftaraVerses, formatAliyahVerses, prepareFastDayInfo } from '../../core/services/hebcal-helpers';
 import { HebcalService } from '../../core/services/hebcal.service';
 import { SettingsService } from '../../core/services/settings.service';
+import { ParenthesesStylePipe } from "../../core/pipes/parentheses-style.pipe";
 
 @Component({
 	selector: 'app-day-details',
 	standalone: true,
 	imports: [
-		CommonModule,
-		DividerModule,
-		KeyValuePipe,
-		TooltipModule,
-		ButtonModule,
-		DatePipe
-	],
+    CommonModule,
+    DividerModule,
+    KeyValuePipe,
+    TooltipModule,
+    ButtonModule,
+    DatePipe,
+    ParenthesesStylePipe
+],
 	templateUrl: './day-details.component.html',
 	styleUrls: ['./day-details.component.scss']
 })
@@ -39,38 +42,43 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 
 	public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 	public readonly LearningEnumData: EnumData[] = LearningEnumData;
-	public readonly translate = translate;
-	public readonly getHaftaraBook = getHaftaraBook
-	public readonly getHaftaraVerses = getHaftaraVerses
-	public readonly formatAliyahVerses = formatAliyahVerses
-
-	public readonly dayObj: Signal<DayObject | null>;
 	public readonly aliyotMap: Record<number | string, string> = aliyotMap;
 
+
+	public readonly translate = translate;
+	public readonly getHaftaraBook = getHaftaraBook;
+	public readonly getHaftaraVerses = getHaftaraVerses;
+	public readonly formatAliyahVerses = formatAliyahVerses;
+	public readonly prepareFastDayInfo = prepareFastDayInfo;
+
+	public readonly dayObj: Signal<DayObject | null>;
 	public fastDayInfo: { name: string, start?: CalEvent, end?: CalEvent } | null = null;
 	public groupedZmanim: GroupedZmanim | null = null;
-	public readonly zmanimGroupTitles: Record<string, string> = {
-		morning: 'זמני בוקר',
-		afternoon: 'זמני צהריים',
-		evening: 'זמני ערב ולילה'
-	};
-
 	public currentTime = signal(new Date());
-	private intervalId?: number;
+	private currentTimeInterval?: number;
+
+	public ZmanimMethodsData: ZmanimMethod[] = ZmanimMethodsData;
+	public ZmanimMethodType = ZmanimMethodType;
+	public defaultZmanimMethod = signal<ZmanimMethodType>(ZmanimMethodType.Gra);
+
 	public isToday = computed(() => this.checkIfToday(this.dayObj()));
 	public nextZmanKey: Signal<keyof ZmanimVisibility | null>;
+	public filteredGroupedZmanim: Signal<GroupedZmanim | null>;
+
 
 	constructor() {
 		this.dayObj = this.config.data.dayObj;
 
+		// runs whenever the day changes
 		effect(() => {
-			this.prepareFastDayInfo();
+			prepareFastDayInfo(this.dayObj());
 			const zmanim = this.dayObj()?.zmanim;
 			if (zmanim) {
 				this.groupedZmanim = groupZmanimByCategory(zmanim);
 			}
 		});
 
+		// find next upcoming zman for today
 		this.nextZmanKey = computed(() => {
 			if (!this.isToday() || !this.dayObj()?.zmanim) {
 				return null;
@@ -86,19 +94,60 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 
 			return futureZmanim.length > 0 ? futureZmanim[0].key : null;
 		});
+
+		// filter zmanim based on the user's choice (GRA vs. MGA)
+		this.filteredGroupedZmanim = computed(() => {
+			const grouped = this.groupedZmanim;
+			const selectedMethod = this.defaultZmanimMethod();
+
+			if (!grouped) {
+				return null;
+			}
+
+			const filterItems = (items: Zman[]): Zman[] => {
+			return items.filter(zman => {
+				// If name ends with MGA - show only if user picked MGA
+				if (zman.key.endsWith('MGA')) return selectedMethod === ZmanimMethodType.Mga;
+
+				// Check if THIS zman has an MGA partner
+				const hasMgaPartner = items.some(item => item.key === `${zman.key}MGA`);
+				if (hasMgaPartner) return selectedMethod === ZmanimMethodType.Gra;
+
+				// If not MGA and not GRA - always show it
+				return true;
+			});
+			};
+
+			// Apply the filter to each category and return the new filtered groups.
+			return {
+				morning: {
+					...grouped.morning,
+					items: filterItems(grouped.morning.items),
+				},
+				afternoon: {
+					...grouped.afternoon,
+					items: filterItems(grouped.afternoon.items),
+				},
+				evening: {
+					...grouped.evening,
+					items: filterItems(grouped.evening.items),
+				}
+			};
+		});
 	}
 
 	ngOnInit(): void {
 		if (this.isToday()) {
-			this.intervalId = window.setInterval(() => {
+			this.currentTimeInterval = window.setInterval(() => {
 				this.currentTime.set(new Date());
-			}, 60000); // Update every minute
+			}, 60000); // run every minute
 		}
 	}
 
 	ngOnDestroy(): void {
-		if (this.intervalId) {
-			clearInterval(this.intervalId);
+		// Clean up the interval when the component is destroyed
+		if (this.currentTimeInterval) {
+			clearInterval(this.currentTimeInterval);
 		}
 	}
 
@@ -120,6 +169,7 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 		return date;
 	}
 
+	//  CSS class for a zman item
 	public getZmanStatus(zman: Zman): string | null {
 		if (!this.isToday()) {
 			return null;
@@ -137,36 +187,9 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 		return null;
 	}
 
-	private prepareFastDayInfo(): void {
-		const day = this.dayObj();
-		if (!day || !day.events) {
-			this.fastDayInfo = null;
-			return;
-		}
-
-		const mainFastEvent = day.events.find(e =>
-			e.categories.includes('fast') &&
-			!e.desc.includes('Fast begins') &&
-			!e.desc.includes('Fast ends')
-		);
-
-		const fastStart = day.events.find(e => e.desc.includes('Fast begins'));
-		const fastEnd = day.events.find(e => e.desc.includes('Fast ends'));
-
-		if (mainFastEvent || fastStart || fastEnd) {
-			const fastName = mainFastEvent?.hebName ||
-				fastStart?.hebName.replace('תחילת הצום:', '').trim() ||
-				fastEnd?.hebName.replace('סוף צום:', '').trim() ||
-				'צום';
-
-			this.fastDayInfo = {
-				name: fastName,
-				start: fastStart,
-				end: fastEnd,
-			};
-		} else {
-			this.fastDayInfo = null;
-		}
+	toggleZmanimMethod(method: ZmanimMethodType){
+		let selectedMethod = method;
+		selectedMethod == ZmanimMethodType.Gra ?  this.defaultZmanimMethod.set(ZmanimMethodType.Mga) :  this.defaultZmanimMethod.set(ZmanimMethodType.Gra)
 	}
 
 	public hasLearningContent(): boolean {
@@ -197,6 +220,7 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 		return zmanData?.desc;
 	}
 
+	// --- Dialog Navigation --
 	public onPrevDay(): void {
 		this.dialogNavService.triggerPrevDay();
 	}
@@ -205,4 +229,3 @@ export class DayDetailsComponent implements OnInit, OnDestroy {
 		this.dialogNavService.triggerNextDay();
 	}
 }
-

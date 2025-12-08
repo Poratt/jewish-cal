@@ -44,11 +44,8 @@
 
                     <!-- Day Header (Print) -->
                     <div class="day-header">
-                        <div class="hebrew-date-container">
-                            <p class="day-hebrew-date">{{ sliceHebDate(dayObj.he.fullDate) }}</p>
-                        </div>
+                        <p class="day-hebrew-date">{{sliceHebDate(dayObj.he.fullDate)}}</p>
                         <div class="flex flex-col items-end gap-1">
-
                             @if (contentSettings().includeRoshChodesh && isRoshHodesh(dayObj.he.fullDate)) {
                             <span class="badge rosh-hodesh-badge">ר״ח</span>
                             }
@@ -99,27 +96,38 @@
                             </div>
                         </div>
 
-                        <div class="flex flex-col w-full mt-auto pr-1">
+                        <div class="flex flex-col w-full mt-auto pr-1 pb-0.5 gap-0.5">
+                            <!-- SHABBAT MEVARCHIM FIRST -->
                             @for(ev of dayObj.events; track ev) {
-                            @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
-                            <span class="badge mevarchim-badge">שבת מברכים</span>
+                                @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
+                                    <span class="badge mevarchim-badge hidden sm:flex">שבת מברכים</span>
+                                }
                             }
-                            <!-- Molad -->
-                            @if (contentSettings().showMolad && ev.categories.includes('molad')) {
-                            <span class="badge molad-badge text-center block w-full">
-                                {{extractMoladTime(ev.hebName)}}
-                            </span>
-                            }
-                            <!-- Zmanim (Candles/Havdalah) -->
-                            @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
-                            <span class="event zman -mr-1">
-                                <div class="flex gap-1">
-                                    <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
-                                    <span>{{ev.hebName | slice : 0:-5}}</span>
-                                </div>
-                                <span class="time">{{ev.hebName | slice : -5}}</span>
-                            </span>
-                            }
+
+                            <!-- OTHER EVENTS -->
+                            @for(ev of dayObj.events; track ev) {
+                                @if (contentSettings().showMolad && ev.categories.includes('molad')) {
+                                    <div class="event zman">
+                                        <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
+                                        <!-- Desktop -->
+                                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent" tooltipPosition="top" >{{extractMoladTime(ev.hebName)}}</span>
+                                        <ng-template #moladTooltipContent >
+                                            <span class="custom-tooltip">{{ev.hebName}}</span>
+                                        </ng-template>
+                                        
+                                        <!-- Mobile -->
+                                        <div class="md:hidden flex items-center gap-1">
+                                            <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
+                                    <span class="event zman -mr-1">
+                                        <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
+                                        <span class="hidden md:block">{{ev.hebName | slice : 0:-5}}</span>
+                                        <span class="time">{{ev.hebName | slice : -5}}</span>
+                                    </span>
+                                }
                             }
                         </div>
                     </div>

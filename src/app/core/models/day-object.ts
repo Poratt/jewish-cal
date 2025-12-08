@@ -1,5 +1,5 @@
 import { Leyning, LeyningWeekday } from "@hebcal/leyning";
-import { ZmanimModel } from "./zman";
+import { Zman } from "./zman";
 import { DailyLearning, Molad, OmerEvent } from "@hebcal/core";
 
 export interface CalEvent {
@@ -70,6 +70,6 @@ export interface DayObject {
     heb: string;
   };
   molad?: Molad;
-  zmanim?: ZmanimModel;
+  zmanim?: Zman[];
   learn?: DailyLearning;
 }

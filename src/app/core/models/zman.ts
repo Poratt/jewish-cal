@@ -1,14 +1,28 @@
 import { EnumData } from "./enumData";
 
 export interface Zman {
-    key: keyof ZmanimVisibility; // for easier filtering and tracking
-    name: string;
+    key: string;
     hebName: string;
+    desc?: string;
     time: string | Date;
 }
 
-export type ZmanimModel = Zman[];
+export interface GroupedZmanim {
+    morning: {
+        items: Zman[];
+        data: EnumData;
+    }
+    afternoon: {
+        items: Zman[];
+        data: EnumData;
+    }
+    evening: {
+        items: Zman[];
+        data: EnumData;
+    }
+}
 
+// Interface for managing which zmanim are visible in the UI.
 export interface ZmanimVisibility {
     [key: string]: boolean;
     alotHaShachar: boolean;
@@ -19,9 +33,13 @@ export interface ZmanimVisibility {
     sunrise: boolean;
     sofZmanShma: boolean;
     sofZmanTfilla: boolean;
+    sofZmanShmaMGA: boolean;
+    sofZmanTfillaMGA: boolean;
     chatzot: boolean;
     minchaGedola: boolean;
     minchaKetana: boolean;
+    minchaGedolaMGA: boolean;
+    minchaKetanaMGA: boolean;
     plagHaMincha: boolean;
     shkiah: boolean;
     eveningTime: boolean;
@@ -30,178 +48,65 @@ export interface ZmanimVisibility {
     chatzotNightTime: boolean;
 }
 
-export enum ZmanimEnum {
-	ChatzotNightTime = 1,
-	AlotHaShachar,
-	Misheyakir,
-	MisheyakirMachmir,
-	Dawn,
-	NeitzHaChama,
-	Sunrise,
-	SofZmanShma,
-	SofZmanTfilla,
-	Chatzot,
-	MinchaGedola,
-	MinchaKetana,
-	PlagHaMincha,
-	Shkiah,
-	Dusk,
-	TzeitHaKochavim,
-	EveningTime
-}
-
+// --- Single Source of Truth ---
 export const ZmanimEnumData: EnumData[] = [
-	{ 
-        enumValue: ZmanimEnum.ChatzotNightTime, 
-        key: 'chatzotNightTime', 
-        hebName: 'חצות הלילה', 
-        visibility: true,
-        desc: 'נקודת אמצע הלילה, 6 שעות יחסיות לאחר השקיעה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.AlotHaShachar, 
-        key: 'alotHaShachar', 
-        hebName: 'עלות השחר', 
-        visibility: true,
-        desc: 'תחילת האור הראשון בבוקר, כשהשמש עדיין מתחת לאופק.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Misheyakir, 
-        key: 'misheyakir', 
-        hebName: 'משיכיר', 
-        visibility: true,
-        desc: 'הזמן המוקדם ביותר להנחת טלית ותפילין, כשיש מספיק אור להבחין בין תכלת ללבן.'
-    },
-	{ 
-        enumValue: ZmanimEnum.MisheyakirMachmir, 
-        key: 'misheyakirMachmir', 
-        hebName: 'משיכיר (מחמיר)', 
-        visibility: true,
-        desc: 'זמן "משיכיר" לפי שיטה מחמירה יותר, עם רמת אור גבוהה יותר.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Dawn, 
-        key: 'dawn', 
-        hebName: 'אור ראשון', 
-        visibility: true,
-        desc: 'זמן תחילת הדמדומים של הבוקר, לפני הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.NeitzHaChama, 
-        key: 'neitzHaChama', 
-        hebName: 'נץ החמה', 
-        visibility: true,
-        desc: 'הרגע המדויק שבו קצה השמש מתחיל להיראות באופק. זהו שם נרדף לזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Sunrise, 
-        key: 'sunrise', 
-        hebName: 'זריחה', 
-        visibility: true,
-        desc: 'הזמן שבו הקצה העליון של השמש נראה מעל האופק.'
-    },
-	{ 
-        enumValue: ZmanimEnum.SofZmanShma, 
-        key: 'sofZmanShma', 
-        hebName: 'סו״ז ק״ש', 
-        visibility: true,
-        desc: 'השעה האחרונה שבה ניתן לקרוא קריאת שמע, 3 שעות יחסיות לאחר הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.SofZmanTfilla, 
-        key: 'sofZmanTfilla', 
-        hebName: 'סו״ז תפילה', 
-        visibility: true,
-        desc: 'השעה האחרונה שבה ניתן להתפלל שחרית, 4 שעות יחסיות לאחר הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Chatzot, 
-        key: 'chatzot', 
-        hebName: 'חצות היום', 
-        visibility: true,
-        desc: 'אמצע היום, הנקודה שבין הזריחה לשקיעה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.MinchaGedola, 
-        key: 'minchaGedola', 
-        hebName: 'מנחה גדולה', 
-        visibility: true,
-        desc: 'הזמן המוקדם ביותר שבו ניתן להתפלל מנחה, 6.5 שעות יחסיות לאחר הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.MinchaKetana, 
-        key: 'minchaKetana', 
-        hebName: 'מנחה קטנה', 
-        visibility: true,
-        desc: 'הזמן המועדף לתחילת תפילת מנחה, 9.5 שעות יחסיות לאחר הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.PlagHaMincha, 
-        key: 'plagHaMincha', 
-        hebName: 'פלג המנחה', 
-        visibility: true,
-        desc: 'נקודת זמן הנמצאת באמצע בין מנחה קטנה לסוף היום, 10.75 שעות יחסיות לאחר הזריחה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Shkiah, 
-        key: 'shkiah', 
-        hebName: 'שקיעה', 
-        visibility: true,
-        desc: 'הזמן שבו הקצה העליון של השמש נעלם מתחת לאופק.'
-    },
-	{ 
-        enumValue: ZmanimEnum.Dusk, 
-        key: 'dusk', 
-        hebName: 'בין השמשות', 
-        visibility: true,
-        desc: 'זמן הדמדומים בערב, בין השקיעה לצאת הכוכבים.'
-    },
-	{ 
-        enumValue: ZmanimEnum.TzeitHaKochavim, 
-        key: 'tzeitHaKochavim', 
-        hebName: 'צאת הכוכבים', 
-        visibility: true,
-        desc: 'הזמן שבו נראים שלושה כוכבים בינוניים, המציין את תחילת הלילה.'
-    },
-	{ 
-        enumValue: ZmanimEnum.EveningTime, 
-        key: 'eveningTime', 
-        hebName: 'זמן ערב', 
-        visibility: true,
-        desc: 'מציין את שעת השקיעה של היום הקודם.'
-    },
+  // Morning Times
+  { key: 'alotHaShachar', hebName: 'עלות השחר', desc: 'תחילת האור הראשון בבוקר, כשהשמש עדיין מתחת לאופק.', category: 'morning' },
+  { key: 'misheyakir', hebName: 'משיכיר', desc: 'הזמן המוקדם ביותר להנחת טלית ותפילין, כשיש מספיק אור להבחין בין תכלת ללבן.', category: 'morning' },
+  { key: 'misheyakirMachmir', hebName: 'משיכיר (מחמיר)', desc: 'זמן "משיכיר" לפי שיטה מחמירה יותר, עם רמת אור גבוהה יותר.', category: 'morning' },
+  { key: 'dawn', hebName: 'אור ראשון', desc: 'זמן תחילת הדמדומים של הבוקר, לפני הזריחה.', category: 'morning' },
+  { key: 'neitzHaChama', hebName: 'נץ החמה', desc: 'הרגע המדויק שבו קצה השמש מתחיל להיראות באופק. זהו שם נרדף לזריחה.', category: 'morning' },
+  { key: 'sunrise', hebName: 'זריחה', desc: 'הזמן שבו הקצה העליון של השמש נראה מעל האופק.', category: 'morning' },
+  { key: 'sofZmanShma', hebName: 'סו״ז ק״ש (גר"א)', desc: 'השעה האחרונה לקריאת שמע לפי שיטת הגר"א, 3 שעות זמניות לאחר הזריחה.', category: 'morning' },
+  { key: 'sofZmanTfilla', hebName: 'סו״ז תפילה (גר"א)', desc: 'השעה האחרונה לתפילת שחרית לפי שיטת הגר"א, 4 שעות זמניות לאחר הזריחה.', category: 'morning' },
+  { key: 'sofZmanShmaMGA', hebName: 'סו״ז ק״ש (מג"א)', desc: 'השעה האחרונה לקריאת שמע לפי שיטת המגן אברהם.', category: 'morning' },
+  { key: 'sofZmanTfillaMGA', hebName: 'סו״ז תפילה (מג"א)', desc: 'השעה האחרונה לתפילת שחרית לפי שיטת המגן אברהם.', category: 'morning' },
+
+  // Afternoon Times
+  { key: 'chatzot', hebName: 'חצות היום', desc: 'אמצע היום, הנקודה שבין הזריחה לשקיעה.', category: 'afternoon' },
+  { key: 'minchaGedola', hebName: 'מנחה גדולה (גר"א)', desc: 'הזמן המוקדם ביותר לתפילת מנחה לפי הגר"א.', category: 'afternoon' },
+  { key: 'minchaKetana', hebName: 'מנחה קטנה', desc: 'הזמן המועדף לתחילת תפילת מנחה, 9.5 שעות יחסיות לאחר הזריחה.', category: 'afternoon' },
+  { key: 'minchaGedolaMGA', hebName: 'מנחה גדולה (מג"א)', desc: 'הזמן המוקדם ביותר לתפילת מנחה לפי המגן אברהם.', category: 'afternoon' },
+  { key: 'minchaKetanaMGA', hebName: 'מנחה קטנה (מג"א)', desc: 'הזמן המועדף לתחילת תפילת מנחה לפי המגן אברהם.', category: 'afternoon' },
+  { key: 'plagHaMincha', hebName: 'פלג המנחה', desc: 'נקודת זמן באמצע בין מנחה קטנה לסוף היום, 10.75 שעות יחסיות לאחר הזריחה.', category: 'afternoon' },
+
+  // Evening Times
+  { key: 'shkiah', hebName: 'שקיעה', desc: 'הזמן שבו השמש נעלמת מתחת לאופק.', category: 'evening' },
+  { key: 'eveningTime', hebName: 'זמן ערב', desc: 'מציין את שעת השקיעה של היום הקודם.', category: 'evening' },
+  { key: 'dusk', hebName: 'בין השמשות', desc: 'זמן הדמדומים בערב, בין השקיעה לצאת הכוכבים.', category: 'evening' },
+  { key: 'tzeitHaKochavim', hebName: 'צאת הכוכבים', desc: 'הזמן שבו נראים שלושה כוכבים בינוניים, המציין את תחילת הלילה.', category: 'evening' },
+  { key: 'chatzotNightTime', hebName: 'חצות הלילה', desc: 'נקודת אמצע הלילה, 6 שעות יחסיות לאחר השקיעה.', category: 'evening' }
 ];
 
-export interface GroupedZmanim {
-    morning: Zman[];
-    afternoon: Zman[];
-    evening: Zman[];
-}
-
-export function groupZmanimByCategory(zmanim: ZmanimModel): GroupedZmanim | null {
+export function groupZmanimByCategory(zmanim: Zman[]): GroupedZmanim | null {
     if (!zmanim || zmanim.length === 0) {
         return null;
     }
 
-    const afternoonZmanimKeys: string[] = ['chatzot', 'minchaGedola', 'minchaKetana', 'plagHaMincha'];
-    const eveningZmanimKeys: string[] = ['shkiah', 'eveningTime', 'dusk', 'tzeitHaKochavim', 'chatzotNightTime'];
-
-    const result: GroupedZmanim = {
-        morning: [],
-        afternoon: [],
-        evening: []
+    const groups: GroupedZmanim = {
+        morning: {
+            items: [],
+            data: { key: 'morning', hebName: 'זמני בוקר', icon: 'pi pi-sun' }
+        },
+        afternoon: {
+            items: [],
+            data: { key: 'afternoon', hebName: 'זמני צהריים', icon: 'pi pi-bolt' }
+        },
+        evening: {
+            items: [],
+            data: { key: 'evening', hebName: 'זמני ערב ולילה', icon: 'pi pi-moon' }
+        }
     };
 
-    zmanim.forEach(zman => {
-        if (afternoonZmanimKeys.includes(zman.key as string)) {
-            result.afternoon.push(zman);
-        } else if (eveningZmanimKeys.includes(zman.key as string)) {
-            result.evening.push(zman);
-        } else {
-            // All other zmanim fall into the 'morning' category by default
-            result.morning.push(zman);
+    for (const zman of zmanim) {
+        const definition = ZmanimEnumData.find(def => def.key === zman.key);
+        if (definition && definition.category) {
+            const category = definition.category as keyof GroupedZmanim;
+            if (groups[category]) {
+                groups[category].items.push(zman);
+            }
         }
-    });
+    }
 
-    return result;
+    return groups;
 }

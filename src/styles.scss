@@ -85,19 +85,27 @@
 	}
 }
 
+.text-grey-xxs,
+.text-grey-xs,
 .text-grey-sm {
 	color: var(--grey-500);
-	font-size: 12px;
 }
-
-.text-grey-xs {
-	color: var(--grey-500);
-	font-size: 10px;
-}
+.text-grey-xxs { font-size: 8px;}
+.text-grey-xs { font-size: 10px;}
+.text-grey-sm { font-size: 12px;}
 
 strong {
 	font-weight: 500;
 	color: var(--grey-800);
 	min-width: 60px;
 	font-size: 11px;
+}
+
+.parentheses-style{
+	background-color: rgba(0, 0, 0, 0.05);
+	font-weight: 400;
+	font-size: 8px;
+	border-radius: 3px;
+	padding: 1px 2px;
+
 }

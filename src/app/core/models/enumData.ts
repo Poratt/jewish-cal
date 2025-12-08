@@ -1,5 +1,5 @@
 export interface EnumData {
-	enumValue: number;
+	enumValue?: number;
 	key: string;
 	hebName?: string,
 	visibility?: boolean,
@@ -8,6 +8,7 @@ export interface EnumData {
 	tooltip?: string;
 	tailwind?: string;
 	className?: string;
+	category?: string;
 }
 
 

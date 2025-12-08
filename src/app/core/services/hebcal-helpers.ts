@@ -12,6 +12,7 @@ import { RAMBAM_HALACHA_MAP, RAMBAM_HALACHA } from '../data/dictionaries/rambam'
 import { SHMIRAT_HALASHON, ShmiratHalashonEnum } from '../data/dictionaries/shmirat-halashon';
 import { City } from '../models/city';
 import { CITIES } from '../data/cities';
+import { CalEvent, DayObject } from '../models/day-object';
 
 export function toGematriya(n: number | string): string {
 	if (n === null || n === undefined) return '';
@@ -29,9 +30,9 @@ export function translate(str: string, locale: string = 'he'): string {
 		case !!BAVLI[str as MasechetBavli]: return BAVLI[str as MasechetBavli];
 		case !!RAMBAM_HALACHA_MAP[str] && !!RAMBAM_HALACHA[RAMBAM_HALACHA_MAP[str]]: return RAMBAM_HALACHA[RAMBAM_HALACHA_MAP[str]];
 		case !!CHOFETZ_HAIM_HALACHOT[str as ChofetzHaimHalacha]: return CHOFETZ_HAIM_HALACHOT[str as ChofetzHaimHalacha];
-		case !!SHMIRAT_HALASHON[str as ShmiratHalashonEnum ]: return SHMIRAT_HALASHON[str as ShmiratHalashonEnum ];
+		case !!SHMIRAT_HALASHON[str as ShmiratHalashonEnum]: return SHMIRAT_HALASHON[str as ShmiratHalashonEnum];
 		case !!MISHNAH[str as MishnahTractate]: return MISHNAH[str as MishnahTractate];
-		case !!ARUKH_HASHULCHAN[str as ArukhHaShulchanEnum ]: return ARUKH_HASHULCHAN[str as ArukhHaShulchanEnum ];
+		case !!ARUKH_HASHULCHAN[str as ArukhHaShulchanEnum]: return ARUKH_HASHULCHAN[str as ArukhHaShulchanEnum];
 		default: return Locale.lookupTranslation(str, locale) || str;
 	}
 }
@@ -62,7 +63,7 @@ export function formatAliyahVerses(aliyah: Aliyah): string {
 
 function formatVersesFromParts(start: string, end: string): string {
 	if (!start) return '';
-	
+
 	const [startChapter, startVerse] = start.split(':');
 	let result = `פרק ${toGematriya(startChapter)} פסוק ${toGematriya(startVerse)}`;
 
@@ -99,23 +100,23 @@ export function getLocationNames(): City[] {
 	return CITIES;
 }
 
-export function groupCitiesByCountry(cities: City[]): {countryHeb: string; items: City[] }[] {
-		const groups: { [key: string]: City[] } = {};
-		for (const city of cities) {
-			const country = city.countryHeb;
-			if (!groups[country]) {
-				groups[country] = [];
-			}
-			groups[country].push(city);
+export function groupCitiesByCountry(cities: City[]): { countryHeb: string; items: City[] }[] {
+	const groups: { [key: string]: City[] } = {};
+	for (const city of cities) {
+		const country = city.countryHeb;
+		if (!groups[country]) {
+			groups[country] = [];
 		}
-		const grouped = Object.keys(groups)
-			.sort((a, b) => a.localeCompare(b, 'he'))
-			.map(countryHeb => ({
-				countryHeb,
-				items: groups[countryHeb].sort((a, b) => a.cityHeb.localeCompare(b.cityHeb, 'he'))
-			}));
-		return grouped;
+		groups[country].push(city);
 	}
+	const grouped = Object.keys(groups)
+		.sort((a, b) => a.localeCompare(b, 'he'))
+		.map(countryHeb => ({
+			countryHeb,
+			items: groups[countryHeb].sort((a, b) => a.cityHeb.localeCompare(b.cityHeb, 'he'))
+		}));
+	return grouped;
+}
 
 export function getHebrewDate(year: number, month: number, day: number): string {
 	return new HDate(new Date(year, month, day)).renderGematriya();
@@ -131,4 +132,48 @@ export function getMonthName(month: number): string {
 
 export function getHebYear(fullDate: Date): string {
 	return gematriya(new HDate(fullDate).getFullYear());
+}
+
+
+
+type fastDayInfo = {
+	name: string;
+	start: CalEvent | undefined;
+	end: CalEvent | undefined;
+} | null
+
+export function prepareFastDayInfo(dayObj: DayObject | null): fastDayInfo | null {
+
+	let fastDayInfo;
+
+	const day = dayObj;
+	if (!day || !day.events) {
+		fastDayInfo = null;
+		return null;
+	}
+
+	const mainFastEvent = day.events.find(e =>
+		e.categories.includes('fast') &&
+		!e.desc.includes('Fast begins') &&
+		!e.desc.includes('Fast ends')
+	);
+
+	const fastStart = day.events.find(e => e.desc.includes('Fast begins'));
+	const fastEnd = day.events.find(e => e.desc.includes('Fast ends'));
+
+	if (mainFastEvent || fastStart || fastEnd) {
+		const fastName = mainFastEvent?.hebName ||
+			fastStart?.hebName.replace('תחילת הצום:', '').trim() ||
+			fastEnd?.hebName.replace('סוף צום:', '').trim() || 'צום';
+
+		fastDayInfo = {
+			name: fastName,
+			start: fastStart,
+			end: fastEnd,
+		};
+	} else {
+		fastDayInfo = null;
+	}
+
+	return fastDayInfo;
 }

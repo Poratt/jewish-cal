@@ -1,4 +1,5 @@
 @use 'variables' as *;
+@use 'animations' as *;
 
 :host {
 	display: block;
@@ -24,35 +25,28 @@
 		animation-delay: 0.4s;
 	}
 
-	.day-details-header,
-	.details-section {
-		animation: fadeIn 0.4s ease-in-out both;
-	}
 
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+	.day-details-header,
+	.details-section,
+	.event-content
+	 {
+		animation: slideDownFade 0.4s ease-in-out both;
 	}
 
 	.day-details-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 12px;
+		padding: 8px 12px;
+		margin-top: -4px;
 		position: sticky;
-		top: 0;
+		top: -16px;
 		z-index: 10;
 		background: linear-gradient(0, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 1));
 		backdrop-filter: blur(4px);
 		border-bottom: 1px solid var(--grey-100);
 
-		.header-text {
+		.header-content {
 			text-align: center;
 			display: flex;
 			flex-direction: column;
@@ -277,6 +271,60 @@
 			&:hover {
 				color: var(--primary-500);
 			}
+		}
+	}
+}
+
+.toggle-switch {
+	display: flex;
+	width: 128px;
+	height: 28px;
+	position: relative;
+	border-radius: 6px;
+	background-color: var(--grey-50);
+	border: 1px solid var(--grey-100);
+	padding: 1px;
+	overflow: hidden;
+	user-select: none;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
+
+	&::after {
+		content: '';
+		position: absolute;
+		width: calc(50% - 2px);
+		height: calc(100% - 4px);
+		top: 2px;
+		left: 2px;
+		border-radius: 4px;
+		background-color: color-mix(in srgb, var(--theme-color) 3%, var(--grey-10));
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+		z-index: 1;
+	}
+
+	&.gra::after {
+		transform: translateX(100%);
+	}
+
+	.toggle-switch-text {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2;
+		transition: color 0.3s ease, font-weight 0.3s ease;
+		cursor: pointer;
+		font-size: 9px;
+		line-height: 9px;
+		text-align: center;
+		color: var(--grey-600);
+		padding: 0 6px;
+
+		&:hover {
+			color: color-mix(in srgb, var(--theme-color) 35%, var(--grey-800));
+		}
+		&.active {
+			color: color-mix(in srgb, var(--theme-color) 55%, var(--grey-500));
 		}
 	}
 }
