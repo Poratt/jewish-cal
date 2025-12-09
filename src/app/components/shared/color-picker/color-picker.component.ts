@@ -9,49 +9,39 @@ import { ColorPickerModule } from 'primeng/colorpicker';
   selector: 'app-color-picker',
   standalone: true,
   imports: [CommonModule, FormsModule, SliderModule, ColorPickerModule],
-  templateUrl: './color-picker.component.html',
+  template: `
+  <div class="color-picker-container">
+  <div class="color-input-wrapper">
+    <label class="color-input-label" for="customColor">
+      <input id="customColor" type="color" [(ngModel)]="internalColor" (input)="colorChanged()" class="color-input-hidden">
+      <div class="color-input-display" 
+        [style.background-color]="internalColor()">
+        <i class="pi pi-palette"></i>
+      </div>
+    </label>
+  </div>
+</div>
+`,
   styleUrls: ['./color-picker.component.css']
 })
 export class ColorPickerComponent {
-  /* ---------- INPUTS ---------- */
-  value = input.required<string>();          // Color value from parent
-  size = input<number>(32);                  // Default size
-  strokeWidth = input<number>(1);            // Default stroke width
 
-  /* ---------- OUTPUTS ---------- */
+  value = input.required<string>();
   valueChange = output<string>();
-
-  /* ---------- INTERNAL SIGNALS ---------- */
   internalColor = signal('#000000');   // Internal color state
 
-  presetColors = signal([
-    '#ef4444', '#f87171', '#a78bfa', '#3b82f6',
-    '#06b6d4', '#10b981', '#facc15', '#fb923c',
-    '#a16207', '#6b7280'
-  ]);
-
   constructor() {
-    // Receive values from parent → update internal signals
-    effect(() => this.internalColor.set(this.value()));
-
-    // When internal signal changes → emit to parent
-    effect(() => this.valueChange.emit(this.internalColor()));
+    effect(() => {
+      const newValue = this.value();
+      if (newValue !== this.internalColor()) {
+        this.internalColor.set(newValue);
+      }
+    });
   }
 
-  /* ---------- METHODS ---------- */
-  
-  // Pick color from preset palette
-  pickColor(hex: string) {
-    this.internalColor.set(hex);
-  }
-
-  // Color changed via input type="color"
   colorChanged() {
     this.valueChange.emit(this.internalColor());
   }
 
-  // Reset to default color
-  reset() {
-    this.internalColor.set('#000000');
-  }
+
 }

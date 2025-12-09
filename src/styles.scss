@@ -34,6 +34,13 @@
 	}
 }
 
+.p-drawer-header {
+    padding: 0px!important;
+}
+.p-drawer-content {
+    padding: 0 4px!important;
+}
+
 .custom-datepicker-panel {
 	font-family: var(--app-font-family);
 	.p-datepicker-header {
@@ -57,6 +64,7 @@
 	.p-datepicker-header {
 		font-size: 12px !important;
 		white-space: nowrap;
+		direction: ltr;
 	}
 
 	.p-datepicker-month {

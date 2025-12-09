@@ -1,0 +1,238 @@
+<div class="settings-container">
+    <div class="setting-section-wrapper">
+        <div class="title">
+            <span class="pi pi-cog"></span>
+            <span>הגדרות כלליות</span>
+        </div>
+
+        <div class="setting-row">
+            <div class="sub-title">
+                <span class="pi pi-map-marker"></span>
+                <span>מיקום</span>
+            </div>
+            <p-select #locationDropdown
+                [ngModel]="selectedLocation()"
+                (ngModelChange)="onSettingUpdate('location', $event)"
+                [options]="groupedCities()"
+                optionLabel="cityHeb"
+                [group]="true"
+                [filter]="true"
+                filterBy="cityHeb" 
+                placeholder="בחר עיר" 
+                class="w-full">
+                <ng-template pTemplate="header">
+                    @if (showLocationResetButton()) {
+                    <div class="flex items-center justify-center">
+                        <p-button size="small" severity="secondary" type="button"  (click)="setCurrentLocation()">
+                            <span class="pi pi-compass mr-2"></span>
+                            <span>השתמש במיקום הנוכחי</span>
+                    </p-button>
+                    </div>
+                    }
+                </ng-template>
+                <ng-template pTemplate="selectedItem">
+                    @if(selectedLocation(); as location) {
+                    <div class="flex items-center gap-2">
+                        <span>{{ location.cityHeb }}</span>
+                    </div>
+                    }
+                </ng-template>
+                <ng-template let-group pTemplate="group">
+                    <div class="flex items-center country-group">
+                        <span class="flag" [class]="'flag-' + (group.items[0].countryCode | lowercase)"></span>
+                        <span>{{ group.countryHeb }}</span>
+                    </div>
+                </ng-template>
+                <ng-template let-city pTemplate="item">
+                    <div>{{ city.cityHeb }}</div>
+                </ng-template>
+            </p-select>
+        </div>
+    </div>
+
+    <div class="setting-section-wrapper min-h-[420px] max-h-[420px] h-[420px] overflow-hidden">
+        <div class="title">
+            <span class="pi pi-list"></span>
+            <span>תוכן הלוח</span>
+        </div>
+        <div class="setting-row">
+            <div class="sub-title expandable-header" (click)="toggleExpansion('events')">
+                <div class="flex items-center gap-1">
+                    <span class="pi pi-align-justify"></span>
+                    <span>אירועים</span>
+                </div>
+                <span class="pi pi-angle-down expansion-icon" [class.rotated]="expandedSection() == 'events'"></span>
+            </div>
+            <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'events'">
+                @for(item of ContentSettingsEnumData(); track item.key) {
+                <div class="filter-item animated-item"
+                    [class.active]="contentSettings()[item.key]"
+                    (click)="onContentSettingChange(contentSettings()[item.key], item.key, 'general')">
+                    <span class="label">{{ item.hebName }}</span>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="setting-row">
+            <div class="sub-title with-note expandable-header" (click)="toggleExpansion('learning')">
+                <div class="flex items-center gap-1">
+					<span class="pi pi-book"></span>
+					<span>לימוד יומי</span>
+				</div>
+                <div class="flex items-center gap-1">
+                    <small>בחר עד {{maxLearningToShow()}}</small>
+                    <span class="pi pi-angle-down expansion-icon" [class.rotated]="expandedSection() == 'learning'"></span>
+                </div>
+            </div>
+            <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'learning'">
+                @for(item of LearningEnumData(); track item.key) {
+                <div class="filter-item animated-item"
+                    [class.disabled]="!contentSettings().dailyLearningVisibility[item.key] && learningCheckedCount() >= maxLearningToShow()"
+                    [class.active]="contentSettings().dailyLearningVisibility[item.key]"
+                    (click)="onContentSettingChange(contentSettings().dailyLearningVisibility[item.key], item.key, 'dailyLearning')">
+                    <span class="label">{{ item.hebName }}</span>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="setting-row">
+             <div class="sub-title with-note expandable-header" (click)="toggleExpansion('zmanim')">
+                <div class="flex items-center gap-1">
+					<span class="pi pi-clock"></span>
+					<span>זמני היום</span>
+				</div>
+                <div class="flex items-center gap-1">
+                    <small>בחר עד {{maxZmanimToShow()}}</small>
+                    <span class="pi pi-angle-down expansion-icon" [class.rotated]="expandedSection() == 'zmanim'"></span>
+                </div>
+            </div>
+            <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'zmanim'">
+                @for(item of ZmanimEnumData(); track item.key) {
+                <div class="filter-item animated-item"
+                    [class.disabled]="!contentSettings().zmanimVisibility[item.key] && zmanimCheckedCount() >= maxZmanimToShow()"
+                    [class.active]="contentSettings().zmanimVisibility[item.key]"
+                    (click)="onContentSettingChange(contentSettings().zmanimVisibility[item.key], item.key, 'zmanim')">
+                    <span class="label">{{ item.hebName }}</span>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-section-wrapper">
+        <div class="title">
+            <span class="pi pi-palette"></span>
+            <span>עיצוב ונראות</span>
+        </div>
+        <div class="setting-row">
+            <span class="sub-title">פונט</span>
+				<p-select
+                    appendTo="body"
+                    [ngModel]="selectedFont()"
+                    (ngModelChange)="onSettingUpdate('font', $event)"
+                    [options]="fontOptions()" optionLabel="name"
+                    optionValue="value"
+                    placeholder="בחר פונט" class="w-full">
+                    <ng-template pTemplate="item" let-option>
+                        <div class="font-option">
+                            <div class="font-name">{{ option.name }}</div>
+                            <div class="font-preview" [style.fontFamily]="option.value">
+                                כ״ה אלול תשפ״ה • 25 September 2025
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="selectedItem" let-option>
+                        <div [style.fontFamily]="option.value">
+                            {{ option.name }}
+                        </div>
+                    </ng-template>
+                </p-select>
+        </div>
+		<div class="setting-row">
+            <span class="sub-title">צבע הלוח (שבת וחג)</span>
+            <div class="color-options-container">
+                @for (color of colors(); track color) {
+                <div class="color-swatch animated-item" 
+                    [style.background-color]="color"
+                    [class.selected]="themeColor() === color"
+                    (click)="onSettingUpdate('themeColor', color)">
+                </div>
+                }
+                <app-color-picker class="animated-item"
+                    [value]="themeColor()"
+                    (valueChange)="onSettingUpdate('themeColor', $event)">
+                </app-color-picker>
+            </div>
+        </div>
+        <div class="setting-row">
+            <div class="sub-title">
+            <span class="pi pi-sliders-h"></span>
+            <span class="sub-title">בהירות רקע</span>
+        </div>
+            <div class="mx-2 p-2" >
+                <p-slider [ngModel]="themeOpacity()" (onChange)="onSettingUpdate('themeOpacity', $event.value)" [min]="1" [max]="10" [step]="0.5"></p-slider>
+            </div>
+        </div>
+         <div class="setting-row">
+            <div class="sub-title">
+            <span class="pi pi-sliders-h"></span>
+            <span class="sub-title">בהירות גבול</span>
+        </div>
+            <div class="mx-2 p-2" >
+                <p-slider [ngModel]="borderBrightness()" (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-section-wrapper">
+        <div class="title">
+            <span class="pi pi-print"></span>
+            <span>הדפסה</span>
+        </div>
+        <div class="print-form">
+            <div class="form-group">
+                <span class="sub-title">מחודש:</span>
+                <div class="form-row">
+                    <p-datepicker
+                        panelStyleClass="custom-datepicker-panel"
+                        [(ngModel)]="printStartDate"
+                        view="month"
+                        dateFormat="mm/yy"
+                        [readonlyInput]="true" 
+                        (click)="$event.stopPropagation()" 
+                        />
+                </div>
+            </div>
+            <div class="form-group">
+                <span class="sub-title">עד חודש:</span>
+                <div class="form-row">
+                    <p-datepicker
+                        panelStyleClass="custom-datepicker-panel"
+                        [(ngModel)]="printEndDate"
+                        view="month"
+                        dateFormat="mm/yy"
+                        [readonlyInput]="true" 
+                        (click)="$event.stopPropagation()" />
+                </div>
+            </div>
+            <div class="form-group">
+                <span class="sub-title">העתקים:</span>
+                <div class="form-row">
+                    <p-inputnumber class="sets-input" [(ngModel)]="printSets" [min]="1"
+                        [showButtons]="true" />
+                </div>
+            </div>
+        </div>
+        @if (printRangeError()) {
+        <div class="print-error-message">
+            {{ printRangeError() }}
+        </div>
+        }
+        <div class="flex w-full justify-end animated-item" >
+            <p-button size="small" (click)="prepareAndPrint()">
+                <span class="pi pi-print mr-2"></span>
+                <span>הדפסה</span>
+            </p-button>
+        </div>
+    </div>
+</div>

@@ -1,109 +1,50 @@
 :host {
 	display: block;
+}
 
-	.color-picker-container {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
+.color-input-label {
+	cursor: pointer;
+	display: block;
+}
 
-		.preset-colors {
-			display: flex;
-			gap: 0.5rem;
-			flex-wrap: wrap;
-		}
+.color-input-hidden {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
 
-		.color-button {
-			width: 1.25rem;
-			height: 1.25rem;
-			border-radius: 0.125rem;
-			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-			cursor: pointer;
-			border: none;
-			transition: transform 0.15s ease-in-out;
 
-			&:hover {
-				transform: scale(1.1);
-			}
+.color-input-display i {
+	transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: white;
+	font-size: 0.625rem;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
 
-			&.selected {
-				outline: 2px solid #3b82f6;
-				outline-offset: 1px;
-			}
-		}
 
-		.color-input-wrapper {
-			display: flex;
-			gap: 0.5rem;
-			align-items: stretch;
+.color-input-display {
+	height: 20px;
+	width: 100%;
+	border-radius: 3px;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	
+		&:hover {
+			transform: scale(1.08);
+			border-color: rgba(255, 255, 255, 0.3);
 
-			.color-input-label {
-				cursor: pointer;
-				display: block;
-				position: relative;
-			}
 
-			.color-input-hidden {
-				position: absolute;
-				opacity: 0;
-				width: 0;
-				height: 0;
-			}
-
-			.color-input-display {
-				width: 1.25rem;
-				height: 1.25rem;
-				border-radius: 0.15rem;
-				box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: linear-gradient(
-					135deg,
-					#ff0000 0%,
-					#ff7f00 14%,
-					#ffff00 28%,
-					#00ff00 42%,
-					#0000ff 57%,
-					#4b0082 71%,
-					#9400d3 85%,
-					#ff0000 100%
-				);
-				transition: transform 0.15s ease-in-out;
-
-				i {
-					color: white;
-					font-size: 0.625rem;
-					text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-				}
-			}
-
-			.color-input-label:hover .color-input-display {
-				transform: scale(1.1);
-			}
-
-			.reset-button {
-				flex: 1;
-				padding: 0 0.5rem;
-				background-color: #f3f4f6;
-				border: none;
-				border-radius: 0.25rem;
-				cursor: pointer;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0.375rem;
-				transition: background-color 0.15s ease-in-out;
-				font-size: 0.75rem;
-				white-space: nowrap;
-
-				&:hover {
-					background-color: #e5e7eb;
-				}
-
-				i {
-					font-size: 0.75rem;
-				}
+			i {
+				transform: scale(0.94);
+				rotate: 270deg;
 			}
 		}
-	}
+
 }

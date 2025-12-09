@@ -2,10 +2,8 @@
 <div class="print-container print-preview-mode">
     @for (monthData of printMonthsData; track monthData) {
     <div class="print-month-page">
-        <div class="calender-wrapper" 
-            [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-            [style.--theme-color]="themeColor()"
-            [style.--bg-opacity]="themeOpacity() + '%'">
+        <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+            [style.--theme-color]="themeColor()" [style.--bg-opacity]="themeOpacity() + '%'">
             <!-- Calendar Header for Print -->
             <div class="header-wrapper">
                 <div class="header-contents">
@@ -99,35 +97,36 @@
                         <div class="flex flex-col w-full mt-auto pr-1 pb-0.5 gap-0.5">
                             <!-- SHABBAT MEVARCHIM FIRST -->
                             @for(ev of dayObj.events; track ev) {
-                                @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
-                                    <span class="badge mevarchim-badge hidden sm:flex">שבת מברכים</span>
-                                }
+                            @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
+                            <span class="badge mevarchim-badge hidden sm:flex">שבת מברכים</span>
+                            }
                             }
 
                             <!-- OTHER EVENTS -->
                             @for(ev of dayObj.events; track ev) {
-                                @if (contentSettings().showMolad && ev.categories.includes('molad')) {
-                                    <div class="event zman">
-                                        <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
-                                        <!-- Desktop -->
-                                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent" tooltipPosition="top" >{{extractMoladTime(ev.hebName)}}</span>
-                                        <ng-template #moladTooltipContent >
-                                            <span class="custom-tooltip">{{ev.hebName}}</span>
-                                        </ng-template>
-                                        
-                                        <!-- Mobile -->
-                                        <div class="md:hidden flex items-center gap-1">
-                                            <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
-                                        </div>
-                                    </div>
-                                }
-                                @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
-                                    <span class="event zman -mr-1">
-                                        <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
-                                        <span class="hidden md:block">{{ev.hebName | slice : 0:-5}}</span>
-                                        <span class="time">{{ev.hebName | slice : -5}}</span>
-                                    </span>
-                                }
+                            @if (contentSettings().showMolad && ev.categories.includes('molad')) {
+                            <div class="event zman">
+                                <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
+                                <!-- Desktop -->
+                                <span class="md:flex hidden" [pTooltip]="moladTooltipContent"
+                                    tooltipPosition="top">{{extractMoladTime(ev.hebName)}}</span>
+                                <ng-template #moladTooltipContent>
+                                    <span class="custom-tooltip">{{ev.hebName}}</span>
+                                </ng-template>
+
+                                <!-- Mobile -->
+                                <div class="md:hidden flex items-center gap-1">
+                                    <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
+                                </div>
+                            </div>
+                            }
+                            @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
+                            <span class="event zman -mr-1">
+                                <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
+                                <span class="hidden md:block">{{ev.hebName | slice : 0:-5}}</span>
+                                <span class="time">{{ev.hebName | slice : -5}}</span>
+                            </span>
+                            }
                             }
                         </div>
                     </div>
@@ -141,12 +140,8 @@
 }
 <!-- Main Interactive View Container -->
 @if (!isPrintingMode()) {
-<div class="calender-wrapper" 
-    [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-    [style.--theme-color]="themeColor()" 
-    [style.--theme-opacity]="themeOpacity() + '%'"
-    
-    >
+<div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+    [style.--theme-color]="themeColor()" [style.--theme-opacity]="themeOpacity() + '%'">
     <!-- Calendar Header -->
     <div class="header-wrapper" (wheel)="onMouseWheel($event)">
         <div class="header-contents">
@@ -164,8 +159,7 @@
                     icon="pi pi-calendar" (click)="goToToday()" aria-label="Go to Today"></p-button>
                 }
                 <p-button class="no-print sm-icon" severity="secondary" [rounded]="true" icon="pi pi-cog"
-                    (click)="toggleSettings()" styleClass="settings-toggle-button"
-                    aria-label="Toggle Settings">
+                    (click)="isSettingsVisible.set(true)" styleClass="settings-toggle-button" aria-label="Toggle Settings">
                 </p-button>
                 <div class="header-date-block justify-center">
                     <span class="header-item">{{ hebrewMonthRange }}</span>
@@ -176,12 +170,15 @@
             </div>
         </div>
     </div>
-    <div class="settings-menu-wrapper no-print" [class.show]="showSettings()" (mousedown)="isSliding.set(true)"
+    <!-- <div class="settings-menu-wrapper no-print" [class.show]="showSettings()" (mousedown)="isSliding.set(true)"
         (mouseup)="isSliding.set(false)">
         <app-settings-menu></app-settings-menu>
-    </div>
+    </div> -->
 
-    
+    <p-drawer #settingsDrawer [(visible)]="isSettingsVisible" [closable]="false">
+        <app-settings-drawer></app-settings-drawer>
+    </p-drawer>
+
 
     <!-- Days Names -->
     <div class="days-titles">
@@ -231,7 +228,7 @@
                     </span>
                     }
 
-                    
+
                     }
                     @if (dayObj.leyning && dayObj.ge.day == 6) {
                     <p class="event parasha">
@@ -263,35 +260,36 @@
                 <div class="flex flex-col w-full mt-auto pr-1 pb-0.5 gap-0.5">
                     <!-- SHABBAT MEVARCHIM FIRST -->
                     @for(ev of dayObj.events; track ev) {
-                        @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
-                            <span class="badge mevarchim-badge hidden sm:flex">שבת מברכים</span>
-                        }
+                    @if (contentSettings().showMevarchim && ev.categories.includes('mevarchim')) {
+                    <span class="badge mevarchim-badge hidden sm:flex">שבת מברכים</span>
+                    }
                     }
 
                     <!-- OTHER EVENTS -->
                     @for(ev of dayObj.events; track ev) {
-                        @if (contentSettings().showMolad && ev.categories.includes('molad')) {
-                            <div class="event zman">
-                                <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
-                                <!-- Desktop -->
-                                <span class="md:flex hidden" [pTooltip]="moladTooltipContent" tooltipPosition="top" >{{extractMoladTime(ev.hebName)}}</span>
-                                <ng-template #moladTooltipContent >
-                                    <span class="custom-tooltip">{{ev.hebName}}</span>
-                                </ng-template>
-                                
-                                <!-- Mobile -->
-                                <div class="md:hidden flex items-center gap-1">
-                                    <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
-                                </div>
-                            </div>
-                        }
-                        @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
-                            <span class="event zman -mr-1">
-                                <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
-                                <span class="hidden md:block">{{ev.hebName | slice : 0:-5}}</span>
-                                <span class="time">{{ev.hebName | slice : -5}}</span>
-                            </span>
-                        }
+                    @if (contentSettings().showMolad && ev.categories.includes('molad')) {
+                    <div class="event zman">
+                        <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
+                        <!-- Desktop -->
+                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent"
+                            tooltipPosition="top">{{extractMoladTime(ev.hebName)}}</span>
+                        <ng-template #moladTooltipContent>
+                            <span class="custom-tooltip">{{ev.hebName}}</span>
+                        </ng-template>
+
+                        <!-- Mobile -->
+                        <div class="md:hidden flex items-center gap-1">
+                            <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
+                        </div>
+                    </div>
+                    }
+                    @if (ev.categories.includes('candles') || ev.categories.includes('havdalah')) {
+                    <span class="event zman -mr-1">
+                        <span [class.-ml-0.5]="ev.categories.includes('candles')">{{ev.emoji}}</span>
+                        <span class="hidden md:block">{{ev.hebName | slice : 0:-5}}</span>
+                        <span class="time">{{ev.hebName | slice : -5}}</span>
+                    </span>
+                    }
                     }
                 </div>
             </div>

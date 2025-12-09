@@ -63,8 +63,9 @@
                     } 
                     @else if(event.omerEvent) {
                         <div class="omer-event">
+                            <span class="event-item-icon">🗓️</span>
                             <span class="event-item-name">{{ event.hebName }} ({{event.omerEvent.omer}})</span>
-                            <span class="text-grey-xs">{{event.omerEvent.sefira('he') }} | {{event.omerEvent.getTodayIs('he') }}</span>
+                            <span class="text-grey-sm">{{event.omerEvent.sefira('he') }} | {{event.omerEvent.getTodayIs('he') }}</span>
                         </div>
                     }
                     @else if(event.categories.includes('havdalah') || event.categories.includes('candles')) {

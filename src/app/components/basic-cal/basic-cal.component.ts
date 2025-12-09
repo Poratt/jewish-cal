@@ -21,11 +21,14 @@ import { daysNames, monthsNames, HEBREW_LOCALE } from '../../core/constants/name
 import { DayObject } from '../../core/models/day-object';
 import { PrintMonthData } from '../../core/models/print';
 import { HolidayFlags } from '../../core/constants/holiday-flags';
+import { DrawerModule } from 'primeng/drawer';
+import { SettingsDrawerComponent } from "../settings-drawer/settings-drawer.component";
+
 
 @Component({
   selector: 'app-basic-cal',
   standalone: true,
-  imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule, TooltipModule],
+  imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule, TooltipModule, DrawerModule, SettingsDrawerComponent],
   templateUrl: './basic-cal.component.html',
   styleUrls: ['./basic-cal.component.scss'],
   providers: [DialogService],
@@ -58,7 +61,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
   public currentDate = new Date();
   public calenderDate = new Date();
-  public showSettings = signal(false);
 
   public hebrewMonthRange: string = '';
   public displayedDays: DayObject[][] = [];
@@ -70,9 +72,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   public isPrintingMode = signal<boolean>(false);
   public printMonthsData: PrintMonthData[] = [];
 
-  public isSliding = signal<boolean>(false); // New state to track slider dragging
-
-  @ViewChild(SettingsMenuComponent, { read: ElementRef }) settingsMenuRef!: ElementRef;
+  public isSettingsVisible = signal<boolean>(false)
 
   constructor() {
     effect(() => {
@@ -125,25 +125,8 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!this.showSettings() || !this.settingsMenuRef || this.isSliding()) {
-      return;
-    }
+  
 
-    const toggleButton = (event.target as HTMLElement).closest('.settings-toggle-button');
-    const clickedInsideMenu = this.settingsMenuRef.nativeElement.contains(event.target);
-    const overlay = document.querySelector('.p-select-overlay, .p-datepicker-mask, .custom-datepicker-panel');
-    const clickedOnOverlay = overlay && overlay.contains(event.target as Node);
-
-    if (!toggleButton && !clickedInsideMenu && !clickedOnOverlay) {
-      this.showSettings.set(false);
-    }
-  }
-
-  public toggleSettings(): void {
-    this.showSettings.update(value => !value);
-  }
 
   isCurrentMonth(): boolean {
     const today = this.currentDate;
@@ -309,12 +292,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
   onDayClick(dayObj: DayObject): void {
     console.log(dayObj);
-
-    if (this.showSettings()) {
-      this.showSettings.set(false);
-      return
-    };
-
     this.currentDayIndex = this.displayedDays[0].findIndex(d => d.ge.fullDate.getTime() === dayObj.ge.fullDate.getTime());
     this.dayObj.set(dayObj);
     this.dialogCloseSubscription?.unsubscribe();
