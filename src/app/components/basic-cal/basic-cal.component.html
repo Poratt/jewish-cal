@@ -176,10 +176,12 @@
             </div>
         </div>
     </div>
-    <div class="settings-menu-wrapper" [class.show]="showSettings()" (mousedown)="isSliding.set(true)"
+    <div class="settings-menu-wrapper no-print" [class.show]="showSettings()" (mousedown)="isSliding.set(true)"
         (mouseup)="isSliding.set(false)">
         <app-settings-menu></app-settings-menu>
     </div>
+
+    
 
     <!-- Days Names -->
     <div class="days-titles">

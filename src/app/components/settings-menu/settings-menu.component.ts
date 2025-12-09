@@ -1,4 +1,4 @@
-import { Component, signal, effect, inject, computed, HostListener } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -7,16 +7,18 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { SliderModule } from 'primeng/slider';
-import { ButtonModule } from 'primeng/button'; // Ensure ButtonModule is imported
-import { TooltipModule } from 'primeng/tooltip'; // Ensure TooltipModule is imported
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 import { slideDown } from '../../core/constants/animations';
-import { ContentSettingsEnumData, ContentSettings, ViewSettingType, ContentSettingsSections } from '../../core/models/content-settings';
+import { ContentSettingsEnumData, ContentSettings, ContentSettingsSections } from '../../core/models/content-settings';
 import { EnumData } from '../../core/models/enumData';
 import { LearningEnumData } from '../../core/models/learning';
 import { ZmanimEnumData } from '../../core/models/zman';
 import { SettingsService } from '../../core/services/settings.service';
 import { FontOptions } from '../../core/constants/font-options';
 import { Colors } from '../../core/models/colors';
+import { ViewSettings } from '../../core/models/app-settings';
+import { City } from '../../core/models/city';
 
 interface FontOption {
   name: string;
@@ -40,9 +42,7 @@ export class SettingsMenuComponent {
 
   public contentSettings = this.settingsService.contentSettingsSignal;
   public selectedLocation = this.settingsService.selectedLocationSignal;
-  // New signal for the detected location
   public userCurrentLocation = this.settingsService.userCurrentLocationSignal; 
-  
   public groupedCities = this.settingsService.groupedCitiesSignal;
   public borderBrightness = this.settingsService.borderBrightnessSignal;
   public themeColor = this.settingsService.themeColorSignal;
@@ -60,8 +60,6 @@ export class SettingsMenuComponent {
   public readonly LearningEnumData = signal<EnumData[]>(LearningEnumData);
   public readonly ContentSettingsEnumData = signal<EnumData[]>(ContentSettingsEnumData);
 
-  public reversedBorderBrightness = computed(() => 100 - this.borderBrightness());
-
   public readonly maxLearningToShow = signal<number>(3);
   public learningCheckedCount = computed(() => {
     const visibility = this.contentSettings()?.dailyLearningVisibility;
@@ -78,17 +76,14 @@ export class SettingsMenuComponent {
     const current = this.selectedLocation();
     const detected = this.userCurrentLocation();
     
-    // If we haven't detected a location yet, show the button so user can try to trigger detection
     if (!detected) return true;
     
-    // If we have both, show only if they are different (by city name)
     if (current && detected) {
         return current.city !== detected.city;
     }
     
     return true;
   });
-
 
   constructor() {
     const today = new Date();
@@ -106,17 +101,14 @@ export class SettingsMenuComponent {
       case 'general':
         newSettings = { ...currentSettings, [settingKey]: newValue };
         break;
-
       case 'dailyLearning':
         const newLearningVisibility = { ...currentSettings.dailyLearningVisibility, [settingKey]: newValue };
         newSettings = { ...currentSettings, dailyLearningVisibility: newLearningVisibility };
         break;
-
       case 'zmanim':
         const newZmanimVisibility = { ...currentSettings.zmanimVisibility, [settingKey]: newValue };
         newSettings = { ...currentSettings, zmanimVisibility: newZmanimVisibility };
         break;
-
       default:
         console.warn('Unknown content setting group:', group);
         return;
@@ -124,9 +116,13 @@ export class SettingsMenuComponent {
 
     this.settingsService.updateContentSettings(newSettings);
   }
-
-  public onSettingUpdate(type: ViewSettingType, value: any): void {
-    this.settingsService.updateSettings(type, value)
+  
+  public onSettingUpdate(type: 'location' | keyof ViewSettings, value: any): void {
+    if (type === 'location') {
+      this.settingsService.updateLocation(value as City);
+    } else {
+      this.settingsService.updateViewSetting(type, value);
+    }
   }
 
   public setCurrentLocation(): void {
@@ -150,5 +146,4 @@ export class SettingsMenuComponent {
 
     this.settingsService.triggerPrint({ startDate, endDate, sets: this.printSets() });
   }
-
 }

@@ -3,7 +3,6 @@ import { DailyLearningVisibility } from "./learning";
 import { ZmanimVisibility } from "./zman";
 
 export type YerushalmiYomiEdition = 'vilna' | 'schottenstein';
-export type ViewSettingType = 'location' | 'borderBrightness' | 'shabbatColor' | 'shabbatOpacity' | 'font';
 export type ContentSettingsSections = 'general' | 'dailyLearning' | 'zmanim';
 
 

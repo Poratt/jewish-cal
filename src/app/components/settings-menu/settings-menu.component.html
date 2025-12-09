@@ -103,7 +103,7 @@
                 </ng-template>
                 <div class="settings-tab-content">
                     <div class="settings-section">
-                        <div class="flex w-full items-center justify-between">
+                        <div class="flex w-full items-center justify-between h-8">
                             <label class="section-label">
                                 <span class="pi pi-map-marker"></span>
                                 <span>מיקום</span>
@@ -181,7 +181,7 @@
                                     @for (color of colors(); track color) {
                                     <div class="color-swatch" [style.background-color]="color"
                                         [ngClass]="{'selected': themeColor() === color}"
-                                        (click)="onSettingUpdate('shabbatColor', color)">
+                                        (click)="onSettingUpdate('themeColor', color)">
                                     </div>
                                     }
                                 </div>
@@ -190,7 +190,7 @@
                                     <label>שקיפות רקע</label>
                                     <div class="slider-wrapper">
                                         <p-slider dir="ltr" class="my-2 mx-4" [ngModel]="themeOpacity()"
-                                            (onChange)="onSettingUpdate('shabbatOpacity', $event.value)"
+                                            (onChange)="onSettingUpdate('themeOpacity', $event.value)"
                                             [min]="1" [max]="5" [step]="0.1"></p-slider>
                                     </div>
                                 </div>

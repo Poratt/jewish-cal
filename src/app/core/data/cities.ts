@@ -32,7 +32,7 @@ export const CITIES: City[] = [
     { city: "Nazareth", country: "Israel", fullName: "", cityHeb: "נצרת", countryHeb: "ישראל", countryCode: "IL", latitude: 32.7021, longitude: 35.2979, elevation: 350 },
     { city: "Beit Shemesh", country: "Israel", fullName: "", cityHeb: "בית שמש", countryHeb: "ישראל", countryCode: "IL", latitude: 31.7230, longitude: 34.9892, elevation: 220 },
     { city: "Lod", country: "Israel", fullName: "", cityHeb: "לוד", countryHeb: "ישראל", countryCode: "IL", latitude: 31.9515, longitude: 34.8882, elevation: 65 },
-    { city: "Ramat HaSharon", country: "Israel", fullName: "", cityHeb: "רמת השרון", countryHeb: "ישראל", countryCode: "IL", latitude: 32.1444, longitude: 34.8427, elevation: 30 },
+    { city: "Ramat HaSharon", country: "Israel", fullName: "", cityHeb: "רמת השרון", countryHeb: "ישראל", countryCode: "IL", latitude: 32.1458, longitude: 34.8415, elevation: 25 },
     { city: "Ness Ziona", country: "Israel", fullName: "", cityHeb: "נס ציונה", countryHeb: "ישראל", countryCode: "IL", latitude: 31.9328, longitude: 34.7961, elevation: 35 },
     { city: "Qiryat Ata", country: "Israel", fullName: "", cityHeb: "קריית אתא", countryHeb: "ישראל", countryCode: "IL", latitude: 32.8091, longitude: 35.1102, elevation: 10 },
     { city: "Qiryat Gat", country: "Israel", fullName: "", cityHeb: "קריית גת", countryHeb: "ישראל", countryCode: "IL", latitude: 31.6099, longitude: 34.7731, elevation: 125 },

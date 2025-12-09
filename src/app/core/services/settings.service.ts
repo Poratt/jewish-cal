@@ -1,12 +1,12 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, signal, effect, WritableSignal, inject, Signal } from '@angular/core';
+import { Injectable, signal, effect, WritableSignal, inject, Signal, computed } from '@angular/core';
 import { getLocationNames, groupCitiesByCountry } from './hebcal-helpers';
 import { GeolocationService } from './geolocation.service';
 import { City, GroupedCity } from '../models/city';
-import { ContentSettings, ContentSettingsDefault, ViewSettingType } from '../models/content-settings';
-import { DailyLearningVisibility } from '../models/learning';
-import { ZmanimVisibility } from '../models/zman';
+import { ContentSettings, ContentSettingsDefault } from '../models/content-settings';
 import { ZmanimMethodType } from '../models/zmanim-methods';
+import { AppSettings, ViewSettings } from '../models/app-settings';
+import { NotificationService } from './notification.service';
 
 @Injectable({
 	providedIn: 'root'
@@ -15,82 +15,73 @@ export class SettingsService {
 
 	private geoService = inject(GeolocationService);
 	private document = inject(DOCUMENT);
+	private notificationService = inject(NotificationService);
 
-	private readonly DEFAULT_FONT = "'Fredoka', sans-serif";
-	private readonly BORDER_OPACITY = 'border_brightness';
-	private readonly THEME = 'theme_color';
-	private readonly CONTENT_SETTINGS = 'content_settings';
-	private readonly SELECTED_FONT = 'selected-font';
-	private readonly LOCATION = 'location';
-	private readonly BG_OPACITY = 'bg_opacity';
-	private readonly ZMANIM_METHOD = 'zmanim_method';
+	// This is the single name we use to save all settings in the browser's local storage.
+	private readonly SETTINGS_KEY = 'hebrew_calendar_app_settings';
 
-	private contentSettingsSource: WritableSignal<ContentSettings>;
-	private selectedLocationSource: WritableSignal<City | null>;
-	private userCurrentLocationSource: WritableSignal<City | null> = signal(null); 
-	private groupedCitiesSource: WritableSignal<GroupedCity[]>;
-	private borderBrightnessSource: WritableSignal<number>;
-	private themeColorSource: WritableSignal<string>;
-	private themeOpacitySource: WritableSignal<number>;
-	private selectedFontSource: WritableSignal<string>;
-	private zmanimMethodSource: WritableSignal<ZmanimMethodType>;
-	private printRequestSource: WritableSignal<{ startDate: Date, endDate: Date, sets: number } | null>;
+	// This is our main signal that holds all the app's settings in one object.
+	private settingsSource: WritableSignal<AppSettings>;
 
+	// These are read-only signals that components can use to get specific settings.
 	public readonly contentSettingsSignal: Signal<ContentSettings>;
 	public readonly selectedLocationSignal: Signal<City | null>;
-	public readonly userCurrentLocationSignal: Signal<City | null>;
-	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
 	public readonly borderBrightnessSignal: Signal<number>;
 	public readonly themeColorSignal: Signal<string>;
 	public readonly selectedFontSignal: Signal<string>;
 	public readonly themeOpacitySignal: Signal<number>;
 	public readonly zmanimMethodSignal: Signal<ZmanimMethodType>;
+	
+	// These signals are for temporary data and are not saved.
+	public readonly userCurrentLocationSignal: Signal<City | null>;
+	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
 	public readonly printRequestSignal: Signal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
-	constructor() {
-		this.contentSettingsSource = signal(this.loadContentSettings());
-		this.selectedLocationSource = signal(this.loadSelectedLocation());
-		this.groupedCitiesSource = signal<GroupedCity[]>([]);
-		this.borderBrightnessSource = signal(this.loadFromStorage(this.BORDER_OPACITY, 85));
-		this.themeColorSource = signal(this.loadFromStorage(this.THEME, '#3b82f6'));
-		this.selectedFontSource = signal(this.loadFromStorage(this.SELECTED_FONT, this.DEFAULT_FONT));
-		this.themeOpacitySource = signal(this.loadFromStorage(this.BG_OPACITY, 4));
-		this.zmanimMethodSource = signal(this.loadFromStorage(this.ZMANIM_METHOD, ZmanimMethodType.Gra));
-		this.printRequestSource = signal(null);
+	private userCurrentLocationSource: WritableSignal<City | null> = signal(null); 
+	private groupedCitiesSource: WritableSignal<GroupedCity[]> = signal([]);
+	private printRequestSource: WritableSignal<{ startDate: Date, endDate: Date, sets: number } | null> = signal(null);
 
-		this.contentSettingsSignal = this.contentSettingsSource.asReadonly();
-		this.selectedLocationSignal = this.selectedLocationSource.asReadonly();
-        this.userCurrentLocationSignal = this.userCurrentLocationSource.asReadonly();
+	constructor() {
+		this.settingsSource = signal(this.loadSettings());
+
+		// Create read-only signals from our main settings object.
+		this.contentSettingsSignal = computed(() => this.settingsSource().content);
+		this.selectedLocationSignal = computed(() => this.settingsSource().location);
+		this.borderBrightnessSignal = computed(() => this.settingsSource().view.borderBrightness);
+		this.themeColorSignal = computed(() => this.settingsSource().view.themeColor);
+		this.selectedFontSignal = computed(() => this.settingsSource().view.font);
+		this.themeOpacitySignal = computed(() => this.settingsSource().view.themeOpacity);
+		this.zmanimMethodSignal = computed(() => this.settingsSource().zmanimMethod);
+
+		this.userCurrentLocationSignal = this.userCurrentLocationSource.asReadonly();
 		this.groupedCitiesSignal = this.groupedCitiesSource.asReadonly();
-		this.borderBrightnessSignal = this.borderBrightnessSource.asReadonly();
-		this.themeColorSignal = this.themeColorSource.asReadonly();
-		this.selectedFontSignal = this.selectedFontSource.asReadonly();
-		this.themeOpacitySignal = this.themeOpacitySource.asReadonly();
-		this.zmanimMethodSignal = this.zmanimMethodSource.asReadonly();
 		this.printRequestSignal = this.printRequestSource.asReadonly();
 
 		this.initializeCitiesAndLocation();
-		this.setupPersistenceEffects();
+		this.setupPersistenceEffect();
 		this.setupFontEffect();
 	}
 
+	// --- Public Methods for Components to Update Settings ---
+
 	public updateContentSettings(newSettings: ContentSettings): void {
-		this.contentSettingsSource.set(newSettings);
+		this.settingsSource.update(current => ({ ...current, content: newSettings }));
 	}
 
-	public updateSettings(type: ViewSettingType, value: any): void {
-		switch (type) {
-			case 'location': this.selectedLocationSource.set(value); break;
-			case 'borderBrightness': this.borderBrightnessSource.set(value); break;
-			case 'shabbatColor': this.themeColorSource.set(value); break;
-			case 'shabbatOpacity': this.themeOpacitySource.set(value); break;
-			case 'font': this.selectedFontSource.set(value); break;
-			default: console.warn('Unknown setting type:', type); break;
-		}
+	public updateViewSetting(key: keyof ViewSettings, value: any): void {
+		this.settingsSource.update(current => ({
+			...current,
+			view: { ...current.view, [key]: value }
+		}));
 	}
 
+	public updateLocation(location: City | null): void {
+		this.settingsSource.update(current => ({ ...current, location }));
+	}
+
+	// Gra || Mra
 	public updateZmanimMethod(method: ZmanimMethodType): void {
-		this.zmanimMethodSource.set(method);
+		this.settingsSource.update(current => ({ ...current, zmanimMethod: method }));
 	}
 	
     public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {	
@@ -104,117 +95,101 @@ export class SettingsService {
     public async setCurrentLocation(): Promise<void> {
 		const allLocations = getLocationNames();
 		const userLocationResult = await this.geoService.detectUserLocation(allLocations);
+		
 		if (userLocationResult.success && userLocationResult.city) {
-			this.selectedLocationSource.set(userLocationResult.city);
-            this.userCurrentLocationSource.set(userLocationResult.city);
+			this.updateLocation(userLocationResult.city);
+      this.userCurrentLocationSource.set(userLocationResult.city);
+			this.notificationService.toast({
+				severity: 'success',
+				summary: 'מיקום עודכן',
+				detail: `המיקום שלך עודכן ל${userLocationResult.city.cityHeb}`,
+				life: 3000
+			});
 		} else {
-			console.warn('Could not detect current location');
+			console.warn('Could not detect current location:', userLocationResult.error);
+			this.notificationService.toast({
+				severity: 'error',
+				summary: 'זיהוי מיקום נכשל',
+				detail: 'יש לאפשר שירותי מיקום כדי להשתמש באפשרות זו.',
+				life: 5000
+			});
 		}
 	}
+
+	// --- Setup Methods ---
 
 	private async initializeCitiesAndLocation(): Promise<void> {
 		const allLocations = getLocationNames();
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
 
+		// Try to find user's location automatically.
         this.geoService.detectUserLocation(allLocations).then(result => {
             if (result.success && result.city) {
                 this.userCurrentLocationSource.set(result.city);
                 
-                if (!this.selectedLocationSource()) {
-                    this.selectedLocationSource.set(result.city);
+                // If no location is saved, use the one we found.
+                if (!this.selectedLocationSignal()) {
+                    this.updateLocation(result.city);
                 }
             }
         });
 
-		if (!this.selectedLocationSource()) {
+		// If we still don't have a location, use Tel Aviv as a default.
+		if (!this.selectedLocationSignal()) {
 			const telAviv = allLocations.find(c => c.city === 'Tel Aviv');
 			if (telAviv) {
-				this.selectedLocationSource.set(telAviv);
+				this.updateLocation(telAviv);
 			}
 		}
 	}
 
-	private setupPersistenceEffects(): void {
-		effect(() => this.saveToStorage(this.CONTENT_SETTINGS, this.contentSettingsSource()));
-		effect(() => this.saveToStorage(this.LOCATION, this.selectedLocationSource()));
-		effect(() => this.saveToStorage(this.BORDER_OPACITY, this.borderBrightnessSource()));
-		effect(() => this.saveToStorage(this.THEME, this.themeColorSource()));
-		effect(() => this.saveToStorage(this.SELECTED_FONT, this.selectedFontSource()));
-		effect(() => this.saveToStorage(this.BG_OPACITY, this.themeOpacitySource()));
-		effect(() => this.saveToStorage(this.ZMANIM_METHOD, this.zmanimMethodSource()));
+	private setupPersistenceEffect(): void {
+		// This `effect` automatically saves all settings to the browser's memory
+		// whenever the main `settingsSource` signal changes.
+		effect(() => {
+			const settings = this.settingsSource();
+			localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(settings));
+		});
 	}
 
 	private setupFontEffect(): void {
+		// This `effect` watches for font changes and updates the website's style accordingly.
 		effect(() => {
-			const font = this.selectedFontSource();
+			const font = this.selectedFontSignal();
 			this.document.documentElement.style.setProperty('--selected-font-family', font);
 		});
 	}
 
-	private loadContentSettings(): ContentSettings {
-		const saved = localStorage.getItem(this.CONTENT_SETTINGS);
-		const defaultSettings = this.getDefaultContentSettings();
+	// --- Loading and Saving Logic ---
 
-		if (!saved) {
-			return defaultSettings;
-		}
-
-		try {
-			const loadedSettings = JSON.parse(saved);
-			const mergedSettings = { ...defaultSettings, ...loadedSettings };
-
-
-			mergedSettings.dailyLearningVisibility = this.mergeVisibility(
-				defaultSettings.dailyLearningVisibility,
-				loadedSettings.dailyLearningVisibility || {}
-			);
-
-			mergedSettings.zmanimVisibility = this.mergeVisibility(
-				defaultSettings.zmanimVisibility,
-				loadedSettings.zmanimVisibility || {}
-			);
-
-			return mergedSettings;
-		} catch (e) {
-			console.error("Failed to parse content settings from localStorage, returning default.", e);
-			return defaultSettings;
-		}
-	}
-
-	private mergeVisibility<T extends ZmanimVisibility | DailyLearningVisibility>(defaultVis: T, loadedVis: Partial<T>): T {
-		const result: T = { ...defaultVis };
-		for (const key of Object.keys(defaultVis)) {
-			if (key in loadedVis && typeof (loadedVis as any)[key] === 'boolean') {
-				(result as any)[key] = (loadedVis as any)[key];
+	private loadSettings(): AppSettings {
+		const savedItem = localStorage.getItem(this.SETTINGS_KEY);
+		
+		if (savedItem) {
+			try {
+				// Simply parse and return the saved settings.
+				const parsedSettings = JSON.parse(savedItem);
+				return parsedSettings;
+			} catch (e) {
+				console.error("Could not read saved settings. Using defaults.", e);
 			}
 		}
-		return result;
+
+		// If nothing is saved or parsing failed, return default settings.
+		return this.getDefaultSettings();
 	}
 
-	private loadSelectedLocation(): City | null {
-		return this.loadFromStorage<City | null>(this.LOCATION, null);
-	}
-
-	private loadFromStorage<T>(key: string, defaultValue: T): T {
-		const item = localStorage.getItem(key);
-		if (item === null) return defaultValue;
-		try {
-			const parsed = JSON.parse(item);
-			// Handle case where saved value is just a string, not JSON
-			return typeof parsed === 'string' && typeof defaultValue !== 'string' ? JSON.parse(parsed) : parsed;
-		} catch(e) {
-			// If JSON.parse fails, it might be a raw string value.
-			return item as unknown as T;
-		}
-	}
-
-	private saveToStorage<T>(key: string, value: T): void {
-		if (value !== null && value !== undefined) {
-			localStorage.setItem(key, JSON.stringify(value));
-		}
-	}
-
-	private getDefaultContentSettings(): ContentSettings {
-		return JSON.parse(JSON.stringify(ContentSettingsDefault));
+	private getDefaultSettings(): AppSettings {
+		return {
+			view: {
+				borderBrightness: 85,
+				themeColor: '#3b82f6',
+				themeOpacity: 4,
+				font: "'Fredoka', sans-serif",
+			},
+			content: JSON.parse(JSON.stringify(ContentSettingsDefault)),
+			location: null,
+			zmanimMethod: ZmanimMethodType.Gra,
+		};
 	}
 }

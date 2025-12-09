@@ -1,5 +1,5 @@
 import { ZmanimMethod, ZmanimMethodsData, ZmanimMethodType } from './../../core/models/zmanim-methods';
-import { Component, inject, Signal, effect, computed, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, Signal, effect, computed, signal } from '@angular/core';
 import { CommonModule, KeyValuePipe, DatePipe } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
@@ -59,7 +59,7 @@ export class DayDetailsComponent {
 
 	public ZmanimMethodsData: ZmanimMethod[] = ZmanimMethodsData;
 	public ZmanimMethodType = ZmanimMethodType;
-	public defaultZmanimMethod = this.userSettingsService.zmanimMethodSignal;
+	public defaultZmanimMethod: Signal<ZmanimMethodType>;
 
 	public isToday = computed(() => this.checkIfToday(this.dayObj()));
 	public nextZmanKey: Signal<keyof ZmanimVisibility | null>;
@@ -68,6 +68,7 @@ export class DayDetailsComponent {
 
 	constructor() {
 		this.dayObj = this.config.data.dayObj;
+		this.defaultZmanimMethod = this.userSettingsService.zmanimMethodSignal;
 
 		effect((onCleanup) => {
 			if (this.isToday()) {

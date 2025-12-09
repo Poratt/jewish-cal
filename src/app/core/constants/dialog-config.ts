@@ -17,7 +17,7 @@ export const DialogConfig = {
 	baseZIndex: 1000,
 	showHeader: true,
 
-	position: 'top',
+	position: 'center',
 	// contentStyle: { padding: '1.25rem' },
 
 	// breakpoints: {
@@ -33,7 +33,7 @@ export const DialogConfig = {
 		'min-width': '300px',
 	},
 
-	transitionOptions: '400ms cubic-bezier(0.25, 0.8, 0.25, 1)',
+	// transitionOptions: '400ms cubic-bezier(0.25, 0.8, 0.25, 1)',
 };
 
 

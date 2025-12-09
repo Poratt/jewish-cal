@@ -90,9 +90,15 @@
 .text-grey-sm {
 	color: var(--grey-500);
 }
-.text-grey-xxs { font-size: 8px;}
-.text-grey-xs { font-size: 10px;}
-.text-grey-sm { font-size: 12px;}
+.text-grey-xxs {
+	font-size: 8px;
+}
+.text-grey-xs {
+	font-size: 10px;
+}
+.text-grey-sm {
+	font-size: 12px;
+}
 
 strong {
 	font-weight: 500;
@@ -101,11 +107,24 @@ strong {
 	font-size: 11px;
 }
 
-.parentheses-style{
+.parentheses-style {
 	background-color: rgba(0, 0, 0, 0.05);
 	font-weight: 400;
 	font-size: 8px;
 	border-radius: 3px;
 	padding: 1px 2px;
+}
 
+.expandable {
+	max-height: 0;
+	opacity: 0;
+	overflow: hidden;
+	transition: 0.5s ease-in-out all;
+
+	&.expanded {
+		transition: 0.5s ease-in-out all;
+		max-height: 400px;
+		opacity: 1;
+		overflow: visible;
+	}
 }

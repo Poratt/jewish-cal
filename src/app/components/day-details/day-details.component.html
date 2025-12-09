@@ -1,41 +1,38 @@
 @if(dayObj(); as day) {
 <div class="day-details-container" [style.--theme-color]="userSettingsService.themeColorSignal()">
-    <div class="day-details-header">
-        <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" aria-label="Previous Month" (click)="onPrevDay()"></p-button>
+    <header class="day-details-header">
+        <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" aria-label="Previous Day" (click)="onPrevDay()"></p-button>
 
         <div class="header-content">
-            <h3 class="hebrew-date">{{ day.he.fullDate }}</h3>
-            <h2 class="gregorian-date">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
+            <h3 class="header-date-hebrew">{{ day.he.fullDate }}</h3>
+            <h2 class="header-date-gregorian">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
 
             @if(userSettingsService.selectedLocationSignal(); as location) {
-            <div class="location-badge">
+            <div class="header-location-badge">
                 <i class="pi pi-map-marker"></i>
                 <span>{{ location.cityHeb }}</span>
             </div>
             }
-            
         </div>
 
-        <div class="flex gap-2 justify-end">
+        <div class="header-actions">
             @if (!isToday()) {
             <p-button @slideDown class="no-print sm-icon" severity="secondary" [rounded]="true" icon="pi pi-calendar" (click)="goToToday()" aria-label="Go to Today"></p-button>
             }
-            <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" aria-label="Next Month" (click)="onNextDay()"></p-button>
+            <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" aria-label="Next Day" (click)="onNextDay()"></p-button>
         </div>
-
-    </div>
+    </header>
 
     @if(day.events && day.events.length > 0) {
-    <div class="details-section">
-        <p class="section-header">
+    <section class="day-details-section">
+        <h4 class="section-header">
             <i class="pi pi-star-fill"></i>
-            אירועים וחגים
-        </p>
+            <span>אירועים וחגים</span>
+        </h4>
         <div class="section-content">
-            <!-- Display combined fast day info first -->
             @if(fastDayInfo) {
-            <div reading>
-                {{ fastDayInfo.name }}
+            <div class="event-item">
+                <span class="event-item-name">{{ fastDayInfo.name }}</span>
                 @if(fastDayInfo.start || fastDayInfo.end) {
                 <span class="text-grey-xs">
                     @if(fastDayInfo.start) {
@@ -52,109 +49,99 @@
             </div>
             }
 
-            <!-- Display other events-->
             @for(event of day.events; track event.desc) {
             @if(!event.categories.includes('fast')) {
-            <div class="reading-item">
-                <div class="event-item-wrapper">
-                    @if (event.url) {
-                    <a [href]="event.url" target="_blank" class="event-url-link pi pi-external-link" pTooltip="קרא עוד" tooltipPosition="top"></a>
-                    }
+            <div class="event-item">
+                <div class="event-item-wrapper" [class.justify-end]="event.categories.includes('havdalah') || event.categories.includes('candles')">
                     @if (event.categories.includes('molad')) {
-                    <div class="event-content">
-                        <span class="rotate-90 -mr-[3px] -ml-0.5">🌙</span>
-                        <span>{{ event.hebName }}</span>
-                    </div>
+                        <span class="event-item-icon ">🌙</span>
+                        <span class="event-item-name">{{ event.hebName }}</span>
+                    } 
+                    @else if (event.categories.includes('parashat')) {
+                        <span class="event-item-icon">📖</span>
+                        <span class="event-item-name">{{ event.hebName }}</span>
                     } 
                     @else if(event.omerEvent) {
-                    <div class="event-content">
-                        <div class="flex flex-col items-center">
-                            <span>{{ event.hebName }}</span>
-                            <span class="omer-details">({{event.omerEvent.omer}})</span>
+                        <div class="omer-event">
+                            <span class="event-item-name">{{ event.hebName }} ({{event.omerEvent.omer}})</span>
+                            <span class="text-grey-xs">{{event.omerEvent.sefira('he') }} | {{event.omerEvent.getTodayIs('he') }}</span>
                         </div>
-                        <div class="flex flex-col text-grey-xs">
-                            <span>{{event.omerEvent.sefira('he') }}</span>
-                            <span>{{event.omerEvent.getTodayIs('he') }}</span>
-                        </div>
-                    </div>
                     }
                     @else if(event.categories.includes('havdalah') || event.categories.includes('candles')) {
-                    <div class="event-content w-full justify-end">
-                        <span>{{ event.emoji }} {{ event.hebName }}</span>
-                    </div>
+                        <span class="event-item-icon">{{ event.emoji }}</span>
+                        <span class="event-item-name">{{ event.hebName }}</span>
                     }
                     @else {
-                    <div class="event-content">
-                        <span>{{ event.emoji }} {{ event.hebName }}</span>
-                    </div>
+                        <span class="event-item-icon">{{ event.emoji }}</span>
+                        <span class="event-item-name">{{ event.hebName }}</span>
+                    }
+                    @if (event.url) {
+                    <a [href]="event.url" target="_blank" class="event-item-link pi pi-external-link" pTooltip="קרא עוד" tooltipPosition="top"></a>
                     }
                 </div>
             </div>
             }
             }
         </div>
-    </div>
+    </section>
     }
 
     @if(day.leyning) {
-    <div class="details-section">
-        <p class="section-header">
+    <section class="day-details-section">
+        <h4 class="section-header">
             <i class="pi pi-book"></i>
-            קריאת התורה
-        </p>
-        @if(day.leyning.name.he) {
-        <p>
-            <strong>{{ isLeyningWithFullKriyah(day.leyning) ? 'פרשה' : 'קריאה' }}:</strong>
-            <span class="mb-1">{{ day.leyning.name.he }}</span>
-        </p>
-        }
-        @if(isLeyningWithFullKriyah(day.leyning) && day.leyning.haftara) {
-        <p>
-            <strong>הפטרה:</strong>
-            <span class="mb-1">{{ getHaftaraBook(day.leyning.haftara) }}</span>
-            <span class="text-grey-xs">{{ getHaftaraVerses(day.leyning.haftara) }}</span>
-        </p>
-        }
+            <span>קריאת התורה</span>
+        </h4>
+        <div class="section-content">
+            @if(day.leyning.name.he) {
+            <p class="leyning-item">
+                <strong class="leyning-item-label">{{ isLeyningWithFullKriyah(day.leyning) ? 'פרשה' : 'קריאה' }}:</strong>
+                <span class="leyning-item-value">{{ day.leyning.name.he }}</span>
+            </p>
+            }
+            @if(isLeyningWithFullKriyah(day.leyning) && day.leyning.haftara) {
+            <p class="leyning-item">
+                <strong class="leyning-item-label">הפטרה:</strong>
+                <span class="leyning-item-value">{{ getHaftaraBook(day.leyning.haftara) }} <small class="leyning-item-verses">{{ getHaftaraVerses(day.leyning.haftara) }}</small></span>
+            </p>
+            }
 
-        @if(isLeyningWithFullKriyah(day.leyning)) {
-        <div class="leyning-grid">
-            <strong>סדר קריאה</strong>
-            <div class="section-content">
+            @if(isLeyningWithFullKriyah(day.leyning)) {
+            <div class="aliyot-grid">
+                <strong class="aliyot-grid-title">סדר קריאה</strong>
                 @for(reading of day.leyning.fullkriyah | keyvalue; track reading.key) {
-                <div class="reading-item">
-                    <strong class="w-16">{{ aliyotMap[reading.key] || reading.key }}:</strong>
-                    <span class="w-16">{{ translate(reading.value.k) }}</span>
-                    <span class="text-grey-xs pr-4">{{ formatAliyahVerses(reading.value) }}</span>
+                <div class="aliyah-item">
+                    <strong class="aliyah-item-name">{{ aliyotMap[reading.key] || reading.key }}:</strong>
+                    <span class="aliyah-item-book">{{ translate(reading.value.k) }}</span>
+                    <span class="text-grey-xs">{{ formatAliyahVerses(reading.value) }}</span>
                 </div>
                 }
             </div>
-        </div>
-        }
-        @if(isLeyningWithWeekday(day.leyning)) {
-        <div class="leyning-grid">
-            <strong>סדר קריאה</strong>
-            <div class="section-content">
-                @for(reading of day.leyning.weekday | keyvalue; track reading.key) {
-                <div class="reading-item">
-                    <strong class="w-16">{{ aliyotMap[reading.key] || reading.key }}:</strong>
-                    <span class="w-16" >{{ translate(reading.value.k) }}</span>
-                    <span class="text-grey-xs pr-4">{{ formatAliyahVerses(reading.value) }}</span>
+            }
+            @if(isLeyningWithWeekday(day.leyning)) {
+            <div class="aliyot-grid">
+                <strong class="aliyot-grid-title">סדר קריאה</strong>
+                 @for(reading of day.leyning.weekday | keyvalue; track reading.key) {
+                <div class="aliyah-item">
+                    <strong class="aliyah-item-name">{{ aliyotMap[reading.key] || reading.key }}:</strong>
+                    <span class="aliyah-item-book">{{ translate(reading.value.k) }}</span>
+                    <span class="text-grey-xs">{{ formatAliyahVerses(reading.value) }}</span>
                 </div>
                 }
             </div>
+            }
         </div>
-        }
-    </div>
+    </section>
     }
 
     @if(filteredGroupedZmanim(); as groupedZmanim) {
-    <div class="details-section">
-        <div class="flex w-full items-center justify-between">
-            <p class="section-header">
+    <section class="day-details-section">
+        <div class="section-header-with-control">
+            <h4 class="section-header">
                 <i class="pi pi-clock"></i>
-                זמני היום
-            </p>
-            <div class="toggle-switch" [class.gra]="defaultZmanimMethod() === ZmanimMethodType.Gra" (click)="toggleZmanimMethod(defaultZmanimMethod())">
+                <span>זמני היום</span>
+            </h4>
+            <div class="toggle-switch" [class.right]="defaultZmanimMethod() === ZmanimMethodType.Gra" (click)="toggleZmanimMethod(defaultZmanimMethod())">
                 @for (method of ZmanimMethodsData; track $index) {
                     <span class="toggle-switch-text" [class.active]="method.key === defaultZmanimMethod()">
                         {{method.fullname}}
@@ -162,72 +149,69 @@
                 }
             </div>
         </div>
-        <div class="zmanim-grid">
-            <!-- Morning Times -->
+        <div class="section-content zmanim-grid">
             @if (groupedZmanim.morning.items.length > 0) {
             <div class="zmanim-group">
                 <span class="zmanim-group-title">{{ groupedZmanim.morning.data.hebName }}</span>
-                <div class="zmanim-row">
+                <div class="zmanim-group-row">
                     @for (zman of groupedZmanim.morning.items; track zman.key) {
                         <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
-                            <span class="zman-time">{{ zman.time }}</span>
+                            <span class="zman-item-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-item-time">{{ zman.time }}</span>
                         </div>
                     }
                 </div>
             </div>
             }
-            <!-- Afternoon Times -->
             @if (groupedZmanim.afternoon.items.length > 0) {
             <div class="zmanim-group">
                 <span class="zmanim-group-title">{{ groupedZmanim.afternoon.data.hebName }}</span>
-                <div class="zmanim-row">
+                <div class="zmanim-group-row">
                     @for (zman of groupedZmanim.afternoon.items; track zman.key) {
                         <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
-                            <span class="zman-time">{{ zman.time }}</span>
+                            <span class="zman-item-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-item-time">{{ zman.time }}</span>
                         </div>
                     }
                 </div>
             </div>
             }
-            <!-- Evening/Night Times -->
             @if (groupedZmanim.evening.items.length > 0) {
             <div class="zmanim-group">
                 <span class="zmanim-group-title">{{ groupedZmanim.evening.data.hebName }}</span>
-                <div class="zmanim-row">
+                <div class="zmanim-group-row">
                     @for (zman of groupedZmanim.evening.items; track zman.key) {
                         <div class="zman-item" tooltipPosition="bottom" [pTooltip]="getZmanDescription(zman.key)" [ngClass]="getZmanStatus(zman)">
-                            <span class="zman-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
-                            <span class="zman-time">{{ zman.time }}</span>
+                            <span class="zman-item-name" [innerHTML]="zman.hebName | parenthesesStyle"></span>
+                            <span class="zman-item-time">{{ zman.time }}</span>
                         </div>
                     }
                 </div>
             </div>
             }
-
         </div>
-    </div>
+    </section>
     }
     
-    
     @if(hasLearningContent()) {
-    <div class="details-section">
-        <p class="section-header">
+    <section class="day-details-section">
+        <h4 class="section-header">
             <i class="pi pi-graduation-cap"></i>
-            לימוד יומי
-        </p>
-        <div class="learning-grid">
-            @for (learn of LearningEnumData; track learn.key) {
-            @if (getLearning(day, learn.key)) {
-            <div class="learning-item" tooltipPosition="bottom" [pTooltip]="learn.desc">
-                <strong >{{ learn.hebName }}:</strong>
-                <span class="text-grey-xs" [innerHtml]="getLearning(day, learn.key)"> </span>
+            <span>לימוד יומי</span>
+        </h4>
+        <div class="section-content">
+            <div class="learning-grid">
+                @for (learn of LearningEnumData; track learn.key) {
+                @if (getLearning(day, learn.key)) {
+                <div class="learning-item" tooltipPosition="bottom" [pTooltip]="learn.desc">
+                    <strong class="learning-item-title">{{ learn.hebName }}:</strong>
+                    <span class="text-grey-xs" [innerHtml]="getLearning(day, learn.key)"></span>
+                </div>
+                }
+                }
             </div>
-            }
-            }
         </div>
-    </div>
+    </section>
     }
 </div>
 }
