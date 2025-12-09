@@ -34,7 +34,8 @@
 	}
 
 	.day-details-header {
-		display: flex;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		align-items: center;
 		justify-content: space-between;
 		padding: 8px 12px;

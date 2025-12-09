@@ -31,13 +31,13 @@ export interface ZmanimVisibility {
     dawn: boolean;
     neitzHaChama: boolean;
     sunrise: boolean;
-    sofZmanShma: boolean;
-    sofZmanTfilla: boolean;
+    sofZmanShmaGRA: boolean;
+    sofZmanTfillaGRA: boolean;
     sofZmanShmaMGA: boolean;
     sofZmanTfillaMGA: boolean;
     chatzot: boolean;
-    minchaGedola: boolean;
-    minchaKetana: boolean;
+    minchaGedolaGRA: boolean;
+    minchaKetanaGRA: boolean;
     minchaGedolaMGA: boolean;
     minchaKetanaMGA: boolean;
     plagHaMincha: boolean;
@@ -57,15 +57,15 @@ export const ZmanimEnumData: EnumData[] = [
   { key: 'dawn', hebName: 'אור ראשון', desc: 'זמן תחילת הדמדומים של הבוקר, לפני הזריחה.', category: 'morning' },
   { key: 'neitzHaChama', hebName: 'נץ החמה', desc: 'הרגע המדויק שבו קצה השמש מתחיל להיראות באופק. זהו שם נרדף לזריחה.', category: 'morning' },
   { key: 'sunrise', hebName: 'זריחה', desc: 'הזמן שבו הקצה העליון של השמש נראה מעל האופק.', category: 'morning' },
-  { key: 'sofZmanShma', hebName: 'סו״ז ק״ש (גר"א)', desc: 'השעה האחרונה לקריאת שמע לפי שיטת הגר"א, 3 שעות זמניות לאחר הזריחה.', category: 'morning' },
-  { key: 'sofZmanTfilla', hebName: 'סו״ז תפילה (גר"א)', desc: 'השעה האחרונה לתפילת שחרית לפי שיטת הגר"א, 4 שעות זמניות לאחר הזריחה.', category: 'morning' },
+  { key: 'sofZmanShmaGRA', hebName: 'סו״ז ק״ש (גר"א)', desc: 'השעה האחרונה לקריאת שמע לפי שיטת הגר"א, 3 שעות זמניות לאחר הזריחה.', category: 'morning' },
+  { key: 'sofZmanTfillaGRA', hebName: 'סו״ז תפילה (גר"א)', desc: 'השעה האחרונה לתפילת שחרית לפי שיטת הגר"א, 4 שעות זמניות לאחר הזריחה.', category: 'morning' },
   { key: 'sofZmanShmaMGA', hebName: 'סו״ז ק״ש (מג"א)', desc: 'השעה האחרונה לקריאת שמע לפי שיטת המגן אברהם.', category: 'morning' },
   { key: 'sofZmanTfillaMGA', hebName: 'סו״ז תפילה (מג"א)', desc: 'השעה האחרונה לתפילת שחרית לפי שיטת המגן אברהם.', category: 'morning' },
 
   // Afternoon Times
   { key: 'chatzot', hebName: 'חצות היום', desc: 'אמצע היום, הנקודה שבין הזריחה לשקיעה.', category: 'afternoon' },
-  { key: 'minchaGedola', hebName: 'מנחה גדולה (גר"א)', desc: 'הזמן המוקדם ביותר לתפילת מנחה לפי הגר"א.', category: 'afternoon' },
-  { key: 'minchaKetana', hebName: 'מנחה קטנה', desc: 'הזמן המועדף לתחילת תפילת מנחה, 9.5 שעות יחסיות לאחר הזריחה.', category: 'afternoon' },
+  { key: 'minchaGedolaGRA', hebName: 'מנחה גדולה (גר"א)', desc: 'הזמן המוקדם ביותר לתפילת מנחה לפי הגר"א.', category: 'afternoon' },
+  { key: 'minchaKetanaGRA', hebName: 'מנחה קטנה (גר"א)', desc: 'הזמן המועדף לתחילת תפילת מנחה, 9.5 שעות יחסיות לאחר הזריחה.', category: 'afternoon' },
   { key: 'minchaGedolaMGA', hebName: 'מנחה גדולה (מג"א)', desc: 'הזמן המוקדם ביותר לתפילת מנחה לפי המגן אברהם.', category: 'afternoon' },
   { key: 'minchaKetanaMGA', hebName: 'מנחה קטנה (מג"א)', desc: 'הזמן המועדף לתחילת תפילת מנחה לפי המגן אברהם.', category: 'afternoon' },
   { key: 'plagHaMincha', hebName: 'פלג המנחה', desc: 'נקודת זמן באמצע בין מנחה קטנה לסוף היום, 10.75 שעות יחסיות לאחר הזריחה.', category: 'afternoon' },

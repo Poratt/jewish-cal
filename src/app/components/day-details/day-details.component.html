@@ -15,7 +15,13 @@
             }
             
         </div>
-        <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" aria-label="Next Month" (click)="onNextDay()"></p-button>
+
+        <div class="flex gap-2 justify-end">
+            @if (!isToday()) {
+            <p-button @slideDown class="no-print sm-icon" severity="secondary" [rounded]="true" icon="pi pi-calendar" (click)="goToToday()" aria-label="Go to Today"></p-button>
+            }
+            <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-left" aria-label="Next Month" (click)="onNextDay()"></p-button>
+        </div>
 
     </div>
 

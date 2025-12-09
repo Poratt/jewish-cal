@@ -44,7 +44,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
   public readonly daysNames = daysNames;
   public readonly monthsNames = monthsNames;
-  
+
   public readonly LearningEnumData: EnumData[] = LearningEnumData;
   public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 
@@ -69,7 +69,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
   public isPrintingMode = signal<boolean>(false);
   public printMonthsData: PrintMonthData[] = [];
-  
+
   public isSliding = signal<boolean>(false); // New state to track slider dragging
 
   @ViewChild(SettingsMenuComponent, { read: ElementRef }) settingsMenuRef!: ElementRef;
@@ -85,7 +85,16 @@ export class BasicCalComponent implements OnInit, OnDestroy {
         this.navigateToPrevDay();
       }
     });
-
+    effect(() => {
+      if (this.dialogNavService.goToTodaySignal() > 0 && this.ref) {
+          this.goToToday(); // Set calendar is on the current month
+          const todayObj = this.createDayObject(new Date());
+          this.dayObj.set(todayObj); // Update the signal passed to the dialog
+          
+          // Update the index for correct prev/next navigation
+          this.currentDayIndex = this.displayedDays[0].findIndex(d => this.isToday(d));
+      }
+    });
     effect(() => {
       const location = this.selectedLocation();
       const settings = this.contentSettings();
@@ -95,7 +104,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
         this.genCal();
       }
     });
-    
+
     effect(() => {
       const request = this.settingsService.printRequestSignal();
       if (request) {
@@ -104,7 +113,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   ngOnInit() {
     this.primengConfig.setTranslation(HEBREW_LOCALE);
   }
@@ -128,10 +137,10 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     const clickedOnOverlay = overlay && overlay.contains(event.target as Node);
 
     if (!toggleButton && !clickedInsideMenu && !clickedOnOverlay) {
-        this.showSettings.set(false);
+      this.showSettings.set(false);
     }
   }
-  
+
   public toggleSettings(): void {
     this.showSettings.update(value => !value);
   }
@@ -235,11 +244,11 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   isHoliday(day: DayObject): boolean {
     return day.events?.some(e => (e.flags & HolidayFlags.CHAG)) ?? false;
   }
-  
+
   isHolidayEve(day: DayObject): boolean {
     return day.events?.some(e => (e.flags & HolidayFlags.EREV)) ?? false;
   }
-  
+
   isCholHamoed(day: DayObject): boolean {
     return day.events?.some(e => (e.flags & HolidayFlags.CHOL_HAMOED)) ?? false;
   }
@@ -280,9 +289,9 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
     if (isInsideSettings || isInsideOverlay) {
       // Don't scroll the calendar when mouse in settings menu or an overlay
-      return; 
+      return;
     }
-    
+
     this.changeMonth(event.deltaY > 0 ? 1 : -1);
   }
 
@@ -300,8 +309,8 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
   onDayClick(dayObj: DayObject): void {
     console.log(dayObj);
-    
-    if(this.showSettings()) {
+
+    if (this.showSettings()) {
       this.showSettings.set(false);
       return
     };
@@ -312,13 +321,14 @@ export class BasicCalComponent implements OnInit, OnDestroy {
 
     const dialogRef = this.dialogService.open(DayDetailsComponent, {
       ...DialogConfigWide,
+      
       data: { dayObj: this.dayObj.asReadonly() }
     });
-    
+
     if (dialogRef) {
       this.ref = dialogRef;
-      this.dialogCloseSubscription = this.ref.onClose.subscribe(() => { 
-        this.ref = undefined; 
+      this.dialogCloseSubscription = this.ref.onClose.subscribe(() => {
+        this.ref = undefined;
       });
     }
   }
@@ -390,8 +400,17 @@ export class BasicCalComponent implements OnInit, OnDestroy {
   }
 
   public getZman(day: DayObject, key: string | number): Zman | undefined {
-    if (!day.zmanim) return undefined;
-    return day.zmanim.find(z => z.key === key);
+    if (!day.zmanim) {
+      return undefined;
+    }
+
+    const allZmanim: Zman[] = [
+      ...day.zmanim.morning.items,
+      ...day.zmanim.afternoon.items,
+      ...day.zmanim.evening.items,
+    ];
+
+    return allZmanim.find((z: Zman) => z.key === key);
   }
 
   public getLearning(day: DayObject, key: string | number): any {
@@ -400,7 +419,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     return (day.learn as Learning)[stringKey];
   }
 
-extractMoladTime(moladText: string, short: boolean = false): string {
+  extractMoladTime(moladText: string, short: boolean = false): string {
     const monthMatch = moladText.match(/מוֹלָד הָלְּבָנָה\s+(\S+)/);
     const month = monthMatch ? monthMatch[1] : '';
 
@@ -417,9 +436,9 @@ extractMoladTime(moladText: string, short: boolean = false): string {
     const timeStr = `${hour}:${minutes}:${seconds.toString().padStart(2, '0')}`;
 
     if (short) {
-        return timeStr;
+      return timeStr;
     }
 
     return `מוֹלָד הָלְּבָנָה ${timeStr}`;
-}
+  }
 }

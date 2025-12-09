@@ -4,8 +4,9 @@ import { getLocationNames, groupCitiesByCountry } from './hebcal-helpers';
 import { GeolocationService } from './geolocation.service';
 import { City, GroupedCity } from '../models/city';
 import { ContentSettings, ContentSettingsDefault, ViewSettingType } from '../models/content-settings';
-import { DailyLearningVisibility, LearningEnumData } from '../models/learning';
-import { ZmanimVisibility, ZmanimEnumData } from '../models/zman';
+import { DailyLearningVisibility } from '../models/learning';
+import { ZmanimVisibility } from '../models/zman';
+import { ZmanimMethodType } from '../models/zmanim-methods';
 
 @Injectable({
 	providedIn: 'root'
@@ -15,7 +16,6 @@ export class SettingsService {
 	private geoService = inject(GeolocationService);
 	private document = inject(DOCUMENT);
 
-
 	private readonly DEFAULT_FONT = "'Fredoka', sans-serif";
 	private readonly BORDER_OPACITY = 'border_brightness';
 	private readonly THEME = 'theme_color';
@@ -23,35 +23,31 @@ export class SettingsService {
 	private readonly SELECTED_FONT = 'selected-font';
 	private readonly LOCATION = 'location';
 	private readonly BG_OPACITY = 'bg_opacity';
-
+	private readonly ZMANIM_METHOD = 'zmanim_method';
 
 	private contentSettingsSource: WritableSignal<ContentSettings>;
 	private selectedLocationSource: WritableSignal<City | null>;
-    // NEW: Stores the actual GPS location to compare against the selected one
-    private userCurrentLocationSource: WritableSignal<City | null> = signal(null); 
-	
-    private groupedCitiesSource: WritableSignal<GroupedCity[]>;
+	private userCurrentLocationSource: WritableSignal<City | null> = signal(null); 
+	private groupedCitiesSource: WritableSignal<GroupedCity[]>;
 	private borderBrightnessSource: WritableSignal<number>;
 	private themeColorSource: WritableSignal<string>;
 	private themeOpacitySource: WritableSignal<number>;
 	private selectedFontSource: WritableSignal<string>;
+	private zmanimMethodSource: WritableSignal<ZmanimMethodType>;
 	private printRequestSource: WritableSignal<{ startDate: Date, endDate: Date, sets: number } | null>;
-
 
 	public readonly contentSettingsSignal: Signal<ContentSettings>;
 	public readonly selectedLocationSignal: Signal<City | null>;
-    // NEW: Expose the real location signal
-    public readonly userCurrentLocationSignal: Signal<City | null>;
-
+	public readonly userCurrentLocationSignal: Signal<City | null>;
 	public readonly groupedCitiesSignal: Signal<GroupedCity[]>;
 	public readonly borderBrightnessSignal: Signal<number>;
 	public readonly themeColorSignal: Signal<string>;
 	public readonly selectedFontSignal: Signal<string>;
 	public readonly themeOpacitySignal: Signal<number>;
+	public readonly zmanimMethodSignal: Signal<ZmanimMethodType>;
 	public readonly printRequestSignal: Signal<{ startDate: Date, endDate: Date, sets: number } | null>;
 
 	constructor() {
-
 		this.contentSettingsSource = signal(this.loadContentSettings());
 		this.selectedLocationSource = signal(this.loadSelectedLocation());
 		this.groupedCitiesSource = signal<GroupedCity[]>([]);
@@ -59,18 +55,18 @@ export class SettingsService {
 		this.themeColorSource = signal(this.loadFromStorage(this.THEME, '#3b82f6'));
 		this.selectedFontSource = signal(this.loadFromStorage(this.SELECTED_FONT, this.DEFAULT_FONT));
 		this.themeOpacitySource = signal(this.loadFromStorage(this.BG_OPACITY, 4));
+		this.zmanimMethodSource = signal(this.loadFromStorage(this.ZMANIM_METHOD, ZmanimMethodType.Gra));
 		this.printRequestSource = signal(null);
-
 
 		this.contentSettingsSignal = this.contentSettingsSource.asReadonly();
 		this.selectedLocationSignal = this.selectedLocationSource.asReadonly();
-        this.userCurrentLocationSignal = this.userCurrentLocationSource.asReadonly(); // Expose
-
+        this.userCurrentLocationSignal = this.userCurrentLocationSource.asReadonly();
 		this.groupedCitiesSignal = this.groupedCitiesSource.asReadonly();
 		this.borderBrightnessSignal = this.borderBrightnessSource.asReadonly();
 		this.themeColorSignal = this.themeColorSource.asReadonly();
 		this.selectedFontSignal = this.selectedFontSource.asReadonly();
 		this.themeOpacitySignal = this.themeOpacitySource.asReadonly();
+		this.zmanimMethodSignal = this.zmanimMethodSource.asReadonly();
 		this.printRequestSignal = this.printRequestSource.asReadonly();
 
 		this.initializeCitiesAndLocation();
@@ -82,7 +78,6 @@ export class SettingsService {
 		this.contentSettingsSource.set(newSettings);
 	}
 
-
 	public updateSettings(type: ViewSettingType, value: any): void {
 		switch (type) {
 			case 'location': this.selectedLocationSource.set(value); break;
@@ -92,6 +87,10 @@ export class SettingsService {
 			case 'font': this.selectedFontSource.set(value); break;
 			default: console.warn('Unknown setting type:', type); break;
 		}
+	}
+
+	public updateZmanimMethod(method: ZmanimMethodType): void {
+		this.zmanimMethodSource.set(method);
 	}
 	
     public triggerPrint(data: { startDate: Date, endDate: Date, sets: number }): void {	
@@ -107,7 +106,7 @@ export class SettingsService {
 		const userLocationResult = await this.geoService.detectUserLocation(allLocations);
 		if (userLocationResult.success && userLocationResult.city) {
 			this.selectedLocationSource.set(userLocationResult.city);
-            this.userCurrentLocationSource.set(userLocationResult.city); // Update the "real" location too
+            this.userCurrentLocationSource.set(userLocationResult.city);
 		} else {
 			console.warn('Could not detect current location');
 		}
@@ -117,12 +116,10 @@ export class SettingsService {
 		const allLocations = getLocationNames();
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
 
-        // Try to detect location on init regardless, to fill the "My Location" state
         this.geoService.detectUserLocation(allLocations).then(result => {
             if (result.success && result.city) {
                 this.userCurrentLocationSource.set(result.city);
                 
-                // If no location was previously saved, set it as selected too
                 if (!this.selectedLocationSource()) {
                     this.selectedLocationSource.set(result.city);
                 }
@@ -130,15 +127,12 @@ export class SettingsService {
         });
 
 		if (!this.selectedLocationSource()) {
-            // Fallback to Tel Aviv only if detection fails AND nothing is saved
-            // Note: The async detection above might finish later, which is fine (Signals will update)
 			const telAviv = allLocations.find(c => c.city === 'Tel Aviv');
 			if (telAviv) {
 				this.selectedLocationSource.set(telAviv);
 			}
 		}
 	}
-
 
 	private setupPersistenceEffects(): void {
 		effect(() => this.saveToStorage(this.CONTENT_SETTINGS, this.contentSettingsSource()));
@@ -147,6 +141,7 @@ export class SettingsService {
 		effect(() => this.saveToStorage(this.THEME, this.themeColorSource()));
 		effect(() => this.saveToStorage(this.SELECTED_FONT, this.selectedFontSource()));
 		effect(() => this.saveToStorage(this.BG_OPACITY, this.themeOpacitySource()));
+		effect(() => this.saveToStorage(this.ZMANIM_METHOD, this.zmanimMethodSource()));
 	}
 
 	private setupFontEffect(): void {
@@ -202,7 +197,15 @@ export class SettingsService {
 
 	private loadFromStorage<T>(key: string, defaultValue: T): T {
 		const item = localStorage.getItem(key);
-		return item ? JSON.parse(item) : defaultValue;
+		if (item === null) return defaultValue;
+		try {
+			const parsed = JSON.parse(item);
+			// Handle case where saved value is just a string, not JSON
+			return typeof parsed === 'string' && typeof defaultValue !== 'string' ? JSON.parse(parsed) : parsed;
+		} catch(e) {
+			// If JSON.parse fails, it might be a raw string value.
+			return item as unknown as T;
+		}
 	}
 
 	private saveToStorage<T>(key: string, value: T): void {

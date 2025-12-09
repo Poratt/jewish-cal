@@ -141,8 +141,12 @@
 }
 <!-- Main Interactive View Container -->
 @if (!isPrintingMode()) {
-<div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-    [style.--theme-color]="themeColor()" [style.--theme-opacity]="themeOpacity() + '%'">
+<div class="calender-wrapper" 
+    [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+    [style.--theme-color]="themeColor()" 
+    [style.--theme-opacity]="themeOpacity() + '%'"
+    
+    >
     <!-- Calendar Header -->
     <div class="header-wrapper" (wheel)="onMouseWheel($event)">
         <div class="header-contents">

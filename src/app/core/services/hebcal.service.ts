@@ -58,10 +58,6 @@ export class HebcalService {
       useElevation: true,
     };
 
-    // const lightingMins = this.getCandleLightingMinutes(this.location.getName() || '');
-
-
-
     this.calendarEvents = HebrewCalendar.calendar(calenderSettings).map(ev => {
       if (ev.getFlags() & HolidayFlags.MOLAD) {
         return this.createMoladEventInfo(ev);
@@ -70,20 +66,6 @@ export class HebcalService {
     });
     return this.calendarEvents;
   }
-
-  // private getCandleLightingMinutes(cityName: string): number {
-  //   const lowerName = cityName.toLowerCase();
-  //   if (lowerName.includes('jerusalem') || lowerName.includes('ירושלים')) {
-  //       return 40;
-  //   }
-  //   if (lowerName.includes('haifa') || lowerName.includes('חיפה')) {
-  //       return 30;
-  //   }
-  //   if (lowerName.includes('petah tiqwa') || lowerName.includes('פתח תקווה')) {
-  //       return 22;
-  //   }
-  //   return 18;
-  // }
 
   private createEventInfo(ev: Event): CalEvent {
     const hdate = new HDate(ev.date);
@@ -94,10 +76,7 @@ export class HebcalService {
       hebName = hebName.replace(/\s*\(\d+.*?\)/, '');
     }
     
-    // console.log(ev)
-
     const eventInfo: CalEvent = {
-
       dateStr: date.toLocaleDateString(),
       hebDate: hdate.renderGematriya(),
       hebName,
@@ -115,8 +94,6 @@ export class HebcalService {
       eventInfo.omerEvent = omerEvent; 
     }
     return eventInfo
-
-
   }
 
   private createMoladEventInfo(ev: Event): CalEvent {
