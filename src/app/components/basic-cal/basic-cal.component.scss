@@ -170,7 +170,7 @@
 
 			.day-gregorian-date,
 			.day-hebrew-date {
-				background: linear-gradient(135deg, var(--grey-700), var(--grey-600));
+				background: linear-gradient(135deg, var(--grey-600), var(--grey-700));
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
 				background-clip: text;
@@ -263,11 +263,13 @@
 					outline: 2px solid transparent;
 					border-radius: 5px;
 				}
-				.day-gregorian-date,
-				.day-hebrew-date {
-					background: none !important;
-					-webkit-text-fill-color: unset !important;
-					color: var(--theme-color) !important;
+				&:not(.saturday, .holiday, .friday, .holiday-eve, .chol-hamoed) {
+					.day-gregorian-date,
+					.day-hebrew-date {
+						background: none !important;
+						-webkit-text-fill-color: unset !important;
+						color: var(--grey-800) !important;
+					}
 				}
 			}
 
@@ -353,7 +355,7 @@
 					white-space: normal;
 
 					&.holiday {
-						color: var(--theme-color);
+						color: color-mix(in srgb, var(--theme-color) 60%, black);
 						padding: 2px 0;
 					}
 
@@ -464,22 +466,22 @@
 	white-space: nowrap;
 	width: fit-content;
 	height: fit-content;
-	background-color: var(--grey-60);
+	background-color: rgba(0, 0, 0, 0.05);
 	color: var(--grey-600);
 	&.rosh-hodesh-badge {
-		color: var(--primary-500);
-	}
-
-	&.omer-badge {
-		color: var(--green-500);
+		color: color-mix(in srgb, var(--theme-color) 50%, black);
 	}
 
 	&.hallel-badge {
-		color: var(--secondary-500);
+		color: color-mix(in srgb, var(--theme-color) 50%, black);
 	}
 
 	&.mevarchim-badge {
-		color: var(--secondary-600);
+		color: color-mix(in srgb, var(--theme-color) 70%, black);
+	}
+
+	&.omer-badge {
+		color: color-mix(in srgb, var(--theme-color) 80%, black);
 	}
 }
 
@@ -493,4 +495,3 @@
 		box-shadow: inset 0 0 2px 5px color-mix(in srgb, var(--theme-color) 10%, white);
 	}
 }
-

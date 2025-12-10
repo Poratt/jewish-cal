@@ -43,7 +43,7 @@ export interface FontOption {
 })
 export class SettingsDrawerComponent {
 
-  private settingsService = inject(SettingsService);
+  public readonly settingsService = inject(SettingsService);
 
   public contentSettings = this.settingsService.contentSettingsSignal;
   public selectedLocation = this.settingsService.selectedLocationSignal;
@@ -55,6 +55,7 @@ export class SettingsDrawerComponent {
   public themeOpacity = this.settingsService.themeOpacitySignal;
 
   public expandedSection = signal<ExpansionSection>('events')
+  public isLocating = signal<boolean>(false);
 
   public printRangeError = signal<string | null>(null);
   public printSets = signal<number>(1);
@@ -138,8 +139,13 @@ export class SettingsDrawerComponent {
     }
   }
   
-  public setCurrentLocation(): void {
-    this.settingsService.setCurrentLocation();
+   public async setCurrentLocation(): Promise<void> {
+    this.isLocating.set(true);
+    try {
+        await this.settingsService.setCurrentLocation();
+    } finally {
+        this.isLocating.set(false);
+    }
   }
 
   public prepareAndPrint(): void {

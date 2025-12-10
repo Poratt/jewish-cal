@@ -1,5 +1,5 @@
 @if(dayObj(); as day) {
-<div class="day-details-container" [style.--theme-color]="userSettingsService.themeColorSignal()">
+<div class="day-details-container" [style.--theme-color]="settingsService.themeColorSignal()">
     <header class="day-details-header">
         <p-button severity="secondary" class="sm-icon" rounded="true" icon="pi pi-angle-right" aria-label="Previous Day" (click)="onPrevDay()"></p-button>
 
@@ -7,7 +7,7 @@
             <h3 class="header-date-hebrew">{{ day.he.fullDate }}</h3>
             <h2 class="header-date-gregorian">{{ day.ge.fullDate | date:'fullDate':'':'he' }}</h2>
 
-            @if(userSettingsService.selectedLocationSignal(); as location) {
+            @if(settingsService.selectedLocationSignal(); as location) {
             <div class="header-location-badge">
                 <i class="pi pi-map-marker"></i>
                 <span>{{ location.cityHeb }}</span>

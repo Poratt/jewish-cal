@@ -11,7 +11,6 @@ import { DialogConfigWide } from '../../core/constants/dialog-config';
 import { getHebYear } from '../../core/services/hebcal-helpers';
 import { HebcalService } from '../../core/services/hebcal.service';
 import { DayDetailsComponent } from '../day-details/day-details.component';
-import { SettingsMenuComponent } from '../settings-menu/settings-menu.component';
 import { LearningEnumData, Learning } from '../../core/models/learning';
 import { ZmanimEnumData, Zman } from '../../core/models/zman';
 import { DialogNavigationService } from '../../core/services/dialog-navigation.service';
@@ -28,7 +27,7 @@ import { SettingsDrawerComponent } from "../settings-drawer/settings-drawer.comp
 @Component({
   selector: 'app-basic-cal',
   standalone: true,
-  imports: [CommonModule, FormsModule, DynamicDialogModule, SettingsMenuComponent, ButtonModule, TooltipModule, DrawerModule, SettingsDrawerComponent],
+  imports: [CommonModule, FormsModule, DynamicDialogModule, ButtonModule, TooltipModule, DrawerModule, SettingsDrawerComponent],
   templateUrl: './basic-cal.component.html',
   styleUrls: ['./basic-cal.component.scss'],
   providers: [DialogService],

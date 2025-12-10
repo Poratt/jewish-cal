@@ -1,4 +1,4 @@
-<div class="settings-container">
+<div class="settings-container" [style.--theme-color]="settingsService.themeColorSignal()">
     <div class="setting-section-wrapper">
         <div class="title">
             <span class="pi pi-cog"></span>
@@ -22,11 +22,16 @@
                 class="w-full">
                 <ng-template pTemplate="header">
                     @if (showLocationResetButton()) {
-                    <div class="flex items-center justify-center">
-                        <p-button size="small" severity="secondary" type="button"  (click)="setCurrentLocation()">
-                            <span class="pi pi-compass mr-2"></span>
-                            <span>השתמש במיקום הנוכחי</span>
-                    </p-button>
+                    <div class="flex items-center justify-center p-2">
+                        <p-button 
+                            size="small" 
+                            severity="secondary" 
+                            type="button" 
+                            [loading]="isLocating()"
+                            icon="pi pi-compass"
+                            label="השתמש במיקום הנוכחי"
+                            (click)="setCurrentLocation()">
+                        </p-button>
                     </div>
                     }
                 </ng-template>
@@ -50,7 +55,7 @@
         </div>
     </div>
 
-    <div class="setting-section-wrapper min-h-[420px] max-h-[420px] h-[420px] overflow-hidden">
+    <div class="setting-section-wrapper min-h-96 max-h-96 h-96 overflow-hidden">
         <div class="title">
             <span class="pi pi-list"></span>
             <span>תוכן הלוח</span>
@@ -58,26 +63,26 @@
         <div class="setting-row">
             <div class="sub-title expandable-header" (click)="toggleExpansion('events')">
                 <div class="flex items-center gap-1">
-                    <span class="pi pi-align-justify"></span>
-                    <span>אירועים</span>
+                    <span class="section-icon pi pi-align-justify"></span>
+                    <span class="section-name">אירועים</span>
                 </div>
                 <span class="pi pi-angle-down expansion-icon" [class.rotated]="expandedSection() == 'events'"></span>
             </div>
             <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'events'">
                 @for(item of ContentSettingsEnumData(); track item.key) {
-                <div class="filter-item animated-item"
+                <a class="filter-item animated-item"
                     [class.active]="contentSettings()[item.key]"
                     (click)="onContentSettingChange(contentSettings()[item.key], item.key, 'general')">
                     <span class="label">{{ item.hebName }}</span>
-                </div>
+                </a>
                 }
             </div>
         </div>
         <div class="setting-row">
             <div class="sub-title with-note expandable-header" (click)="toggleExpansion('learning')">
                 <div class="flex items-center gap-1">
-					<span class="pi pi-book"></span>
-					<span>לימוד יומי</span>
+					<span class="section-icon pi pi-book"></span>
+					<span class="section-name">לימוד יומי</span>
 				</div>
                 <div class="flex items-center gap-1">
                     <small>בחר עד {{maxLearningToShow()}}</small>
@@ -86,20 +91,20 @@
             </div>
             <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'learning'">
                 @for(item of LearningEnumData(); track item.key) {
-                <div class="filter-item animated-item"
+                <a class="filter-item animated-item"
                     [class.disabled]="!contentSettings().dailyLearningVisibility[item.key] && learningCheckedCount() >= maxLearningToShow()"
                     [class.active]="contentSettings().dailyLearningVisibility[item.key]"
                     (click)="onContentSettingChange(contentSettings().dailyLearningVisibility[item.key], item.key, 'dailyLearning')">
                     <span class="label">{{ item.hebName }}</span>
-                </div>
+                </a>
                 }
             </div>
         </div>
         <div class="setting-row">
-             <div class="sub-title with-note expandable-header" (click)="toggleExpansion('zmanim')">
+            <div class="sub-title with-note expandable-header" (click)="toggleExpansion('zmanim')">
                 <div class="flex items-center gap-1">
-					<span class="pi pi-clock"></span>
-					<span>זמני היום</span>
+					<span class="section-icon pi pi-clock"></span>
+					<span class="section-name">זמני היום</span>
 				</div>
                 <div class="flex items-center gap-1">
                     <small>בחר עד {{maxZmanimToShow()}}</small>
@@ -108,12 +113,12 @@
             </div>
             <div class="filters-wrapper expandable" [class.expanded]="expandedSection() == 'zmanim'">
                 @for(item of ZmanimEnumData(); track item.key) {
-                <div class="filter-item animated-item"
+                <a class="filter-item animated-item"
                     [class.disabled]="!contentSettings().zmanimVisibility[item.key] && zmanimCheckedCount() >= maxZmanimToShow()"
                     [class.active]="contentSettings().zmanimVisibility[item.key]"
                     (click)="onContentSettingChange(contentSettings().zmanimVisibility[item.key], item.key, 'zmanim')">
                     <span class="label">{{ item.hebName }}</span>
-                </div>
+                </a>
                 }
             </div>
         </div>
@@ -167,7 +172,7 @@
         <div class="setting-row">
             <div class="sub-title">
             <span class="pi pi-sliders-h"></span>
-            <span class="sub-title">בהירות רקע</span>
+            <span class="">בהירות רקע</span>
         </div>
             <div class="mx-2 p-2" >
                 <p-slider [ngModel]="themeOpacity()" (onChange)="onSettingUpdate('themeOpacity', $event.value)" [min]="1" [max]="10" [step]="0.5"></p-slider>
@@ -176,7 +181,7 @@
          <div class="setting-row">
             <div class="sub-title">
             <span class="pi pi-sliders-h"></span>
-            <span class="sub-title">בהירות גבול</span>
+            <span class="">בהירות גבול</span>
         </div>
             <div class="mx-2 p-2" >
                 <p-slider [ngModel]="borderBrightness()" (onChange)="onSettingUpdate('borderBrightness', $event.value)" [min]="0" [max]="100"></p-slider>
@@ -230,7 +235,7 @@
         }
         <div class="flex w-full justify-end animated-item" >
             <p-button size="small" (click)="prepareAndPrint()">
-                <span class="pi pi-print mr-2"></span>
+                <span class="pi pi-print"></span>
                 <span>הדפסה</span>
             </p-button>
         </div>

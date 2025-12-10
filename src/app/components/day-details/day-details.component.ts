@@ -22,14 +22,14 @@ import { slideDown } from '../../core/constants/animations';
 	selector: 'app-day-details',
 	standalone: true,
 	imports: [
-    CommonModule,
-    DividerModule,
-    KeyValuePipe,
-    TooltipModule,
-    ButtonModule,
-    DatePipe,
-    ParenthesesStylePipe
-],
+		CommonModule,
+		DividerModule,
+		KeyValuePipe,
+		TooltipModule,
+		ButtonModule,
+		DatePipe,
+		ParenthesesStylePipe
+	],
 	templateUrl: './day-details.component.html',
 	styleUrls: ['./day-details.component.scss'],
 	animations: [slideDown]
@@ -40,7 +40,7 @@ export class DayDetailsComponent {
 	public readonly config = inject(DynamicDialogConfig);
 	public readonly hebcalService = inject(HebcalService);
 	private readonly dialogNavService = inject(DialogNavigationService);
-	public readonly userSettingsService = inject(SettingsService);
+	public settingsService = inject(SettingsService);
 
 	public readonly ZmanimEnumData: EnumData[] = ZmanimEnumData;
 	public readonly LearningEnumData: EnumData[] = LearningEnumData;
@@ -68,13 +68,15 @@ export class DayDetailsComponent {
 
 	constructor() {
 		this.dayObj = this.config.data.dayObj;
-		this.defaultZmanimMethod = this.userSettingsService.zmanimMethodSignal;
+		this.defaultZmanimMethod = this.settingsService.zmanimMethodSignal;
 
+
+		console.log(this.dayObj())
 		effect((onCleanup) => {
 			if (this.isToday()) {
 				const intervalId = window.setInterval(() => {
 					this.currentTime.set(new Date());
-				}, 60000); 
+				}, 60000);
 
 				onCleanup(() => {
 					clearInterval(intervalId);
@@ -127,7 +129,7 @@ export class DayDetailsComponent {
 			if (!this.isToday()) {
 				return null;
 			}
-			
+
 			const filteredGroups = this.filteredGroupedZmanim();
 			if (!filteredGroups) {
 				return null;
@@ -191,9 +193,9 @@ export class DayDetailsComponent {
 		return null;
 	}
 
-	toggleZmanimMethod(method: ZmanimMethodType){
+	toggleZmanimMethod(method: ZmanimMethodType) {
 		const newMethod = method === ZmanimMethodType.Gra ? ZmanimMethodType.Mga : ZmanimMethodType.Gra;
-		this.userSettingsService.updateZmanimMethod(newMethod);
+		this.settingsService.updateZmanimMethod(newMethod);
 	}
 
 	public hasLearningContent(): boolean {
