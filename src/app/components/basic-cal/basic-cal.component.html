@@ -175,7 +175,9 @@
 
         <p-drawer #settingsDrawer [(visible)]="isSettingsVisible" [closable]="false">
             <ng-template #header>
+            <div class="px-1 py-2">
                 <p-button class="no-print sm-icon" severity="secondary" [rounded]="true" icon="pi pi-times" (click)="settingsDrawer.close($event)" aria-label="Close menu"></p-button>
+            </div>
         </ng-template>
             <app-settings-drawer></app-settings-drawer>
         </p-drawer>
