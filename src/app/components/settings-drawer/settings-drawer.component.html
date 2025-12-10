@@ -58,7 +58,7 @@
     <div class="setting-section-wrapper min-h-96 max-h-96 h-96 overflow-hidden">
         <div class="title">
             <span class="pi pi-list"></span>
-            <span>תוכן הלוח</span>
+            <span>תוכן</span>
         </div>
         <div class="setting-row">
             <div class="sub-title expandable-header" (click)="toggleExpansion('events')">
@@ -127,7 +127,7 @@
     <div class="setting-section-wrapper">
         <div class="title">
             <span class="pi pi-palette"></span>
-            <span>עיצוב ונראות</span>
+            <span>עיצוב</span>
         </div>
         <div class="setting-row">
             <span class="sub-title">פונט</span>
@@ -154,7 +154,7 @@
                 </p-select>
         </div>
 		<div class="setting-row">
-            <span class="sub-title">צבע הלוח (שבת וחג)</span>
+            <span class="sub-title">ערכת צבעים</span>
             <div class="color-options-container">
                 @for (color of colors(); track color) {
                 <div class="color-swatch animated-item" 
@@ -195,48 +195,40 @@
             <span>הדפסה</span>
         </div>
         <div class="print-form">
-            <div class="form-group">
+            <div class="form-field">
                 <span class="sub-title">מחודש:</span>
-                <div class="form-row">
-                    <p-datepicker
-                        panelStyleClass="custom-datepicker-panel"
-                        [(ngModel)]="printStartDate"
-                        view="month"
-                        dateFormat="mm/yy"
-                        [readonlyInput]="true" 
-                        (click)="$event.stopPropagation()" 
-                        />
-                </div>
+                <p-datepicker
+                    panelStyleClass="custom-datepicker-panel"
+                    [(ngModel)]="printStartDate"
+                    view="month"
+                    dateFormat="mm/yy"
+                    [readonlyInput]="true" 
+                    (click)="$event.stopPropagation()" 
+                />
             </div>
-            <div class="form-group">
+            <div class="form-field">
                 <span class="sub-title">עד חודש:</span>
-                <div class="form-row">
-                    <p-datepicker
-                        panelStyleClass="custom-datepicker-panel"
-                        [(ngModel)]="printEndDate"
-                        view="month"
-                        dateFormat="mm/yy"
-                        [readonlyInput]="true" 
-                        (click)="$event.stopPropagation()" />
-                </div>
+                <p-datepicker
+                    panelStyleClass="custom-datepicker-panel"
+                    [(ngModel)]="printEndDate"
+                    view="month"
+                    dateFormat="mm/yy"
+                    [readonlyInput]="true" 
+                    [minDate]="printStartDate()"
+                    (click)="$event.stopPropagation()" 
+                />
             </div>
-            <div class="form-group">
+            <div class="form-field col-start-2">
                 <span class="sub-title">העתקים:</span>
-                <div class="form-row">
-                    <p-inputnumber class="sets-input" [(ngModel)]="printSets" [min]="1"
-                        [showButtons]="true" />
-                </div>
+                <p-inputnumber class="sets-input" [(ngModel)]="printSets" [min]="1" [showButtons]="true" />
             </div>
         </div>
-        @if (printRangeError()) {
-        <div class="print-error-message">
-            {{ printRangeError() }}
-        </div>
-        }
-        <div class="flex w-full justify-end animated-item" >
+
+
+        <div class="flex w-full h-full justify-end items-end" >
             <p-button size="small" (click)="prepareAndPrint()">
                 <span class="pi pi-print"></span>
-                <span>הדפסה</span>
+                <span>שלח להדפסה</span>
             </p-button>
         </div>
     </div>

@@ -30,7 +30,6 @@ import { SettingsDrawerComponent } from "../settings-drawer/settings-drawer.comp
   imports: [CommonModule, FormsModule, DynamicDialogModule, ButtonModule, TooltipModule, DrawerModule, SettingsDrawerComponent],
   templateUrl: './basic-cal.component.html',
   styleUrls: ['./basic-cal.component.scss'],
-  providers: [DialogService],
   animations: [slideDown]
 })
 export class BasicCalComponent implements OnInit, OnDestroy {
@@ -162,7 +161,7 @@ export class BasicCalComponent implements OnInit, OnDestroy {
       this.printMonthsData.push(...singleSetData);
     }
     this.renderer.addClass(document.body, 'is-printing');
-    setTimeout(() => window.print(), 0);
+    setTimeout(() => window.print(), 500);
   }
 
   @HostListener('window:afterprint')
@@ -264,15 +263,6 @@ export class BasicCalComponent implements OnInit, OnDestroy {
     if (this.isPrintingMode() || this.ref) return;
 
     const target = event.target as HTMLElement;
-
-    // Check if the wheel event occurred inside the settings menu or a PrimeNG overlay
-    const isInsideSettings = target.closest('.settings-menu-wrapper');
-    const isInsideOverlay = target.closest('.p-select-overlay, .p-datepicker-mask, .custom-datepicker-panel');
-
-    if (isInsideSettings || isInsideOverlay) {
-      // Don't scroll the calendar when mouse in settings menu or an overlay
-      return;
-    }
 
     this.changeMonth(event.deltaY > 0 ? 1 : -1);
   }

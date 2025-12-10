@@ -34,9 +34,7 @@
 	}
 }
 
-.p-drawer-header {
-    padding: 0px!important;
-}
+
 .p-drawer-content {
     padding: 0 4px!important;
 }
@@ -135,4 +133,16 @@ strong {
 		opacity: 1;
 		overflow: visible;
 	}
+}
+
+
+@media print {
+    /* Hide PrimeNG Drawer (Menu) and its mask (overlay) */
+    .p-drawer, 
+    .p-drawer-mask,
+    .p-drawer-overlay,
+    /* Also hide Toasts if they appear */
+    .p-toast {
+        display: none !important;
+    }
 }

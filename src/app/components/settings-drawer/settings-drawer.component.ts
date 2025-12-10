@@ -57,7 +57,6 @@ export class SettingsDrawerComponent {
   public expandedSection = signal<ExpansionSection>('events')
   public isLocating = signal<boolean>(false);
 
-  public printRangeError = signal<string | null>(null);
   public printSets = signal<number>(1);
   public printStartDate = signal<Date>(new Date());
   public printEndDate = signal<Date>(new Date());
@@ -149,19 +148,12 @@ export class SettingsDrawerComponent {
   }
 
   public prepareAndPrint(): void {
-    this.printRangeError.set(null);
     const sets = this.printSets();
     if (sets < 1) {
       this.printSets.set(1);
     }
-
     const startDate = new Date(this.printStartDate().getFullYear(), this.printStartDate().getMonth(), 1);
     const endDate = new Date(this.printEndDate().getFullYear(), this.printEndDate().getMonth(), 1);
-
-    if (startDate > endDate) {
-      this.printRangeError.set('תאריך ההתחלה חייב להיות לפני תאריך הסיום');
-      return;
-    }
 
     this.settingsService.triggerPrint({ startDate, endDate, sets: this.printSets() });
   }

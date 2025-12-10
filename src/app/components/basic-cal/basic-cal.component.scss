@@ -355,12 +355,12 @@
 					white-space: normal;
 
 					&.holiday {
-						color: color-mix(in srgb, var(--theme-color) 60%, black);
+						color: color-mix(in srgb, var(--theme-color) 70%, black);
 						padding: 2px 0;
 					}
 
 					&.parasha {
-						color: color-mix(in srgb, var(--theme-color) 80%, black);
+						color: color-mix(in srgb, var(--theme-color) 50%, black);
 					}
 
 					&.zman {
@@ -454,6 +454,19 @@
 
 	.days .day .day-header > .hidden {
 		display: flex !important;
+	}
+
+	.saturday,
+	.holiday,
+	.friday,
+	.holiday-eve,
+	.chol-hamoed {
+		.day-gregorian-date,
+		.day-hebrew-date {
+			background: none !important;
+			-webkit-text-fill-color: unset !important;
+			color: var(--theme-color) !important;
+		}
 	}
 }
 

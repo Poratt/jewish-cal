@@ -2,8 +2,10 @@
 <div class="print-container print-preview-mode">
     @for (monthData of printMonthsData; track monthData) {
     <div class="print-month-page">
-        <div class="calender-wrapper" [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
-            [style.--theme-color]="themeColor()" [style.--bg-opacity]="themeOpacity() + '%'">
+        <div class="calender-wrapper" 
+            [style.--grid-border-color]="'hsl(0, 0%, ' + borderBrightness() + '%)'"
+            [style.--theme-color]="themeColor()" 
+            [style.--theme-opacity]="themeOpacity() + '%'">
             <!-- Calendar Header for Print -->
             <div class="header-wrapper">
                 <div class="header-contents">
@@ -170,14 +172,13 @@
             </div>
         </div>
     </div>
-    <!-- <div class="settings-menu-wrapper no-print" [class.show]="showSettings()" (mousedown)="isSliding.set(true)"
-        (mouseup)="isSliding.set(false)">
-        <app-settings-menu></app-settings-menu>
-    </div> -->
 
-    <p-drawer #settingsDrawer [(visible)]="isSettingsVisible" [closable]="false">
-        <app-settings-drawer></app-settings-drawer>
-    </p-drawer>
+        <p-drawer #settingsDrawer [(visible)]="isSettingsVisible" [closable]="false">
+            <ng-template #header>
+                <p-button class="no-print sm-icon" severity="secondary" [rounded]="true" icon="pi pi-times" (click)="settingsDrawer.close($event)" aria-label="Close menu"></p-button>
+        </ng-template>
+            <app-settings-drawer></app-settings-drawer>
+        </p-drawer>
 
 
     <!-- Days Names -->
@@ -271,15 +272,14 @@
                     <div class="event zman">
                         <div class="rotate-90 -mr-[5px] ml-px">🌙</div>
                         <!-- Desktop -->
-                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent"
-                            tooltipPosition="top">{{extractMoladTime(ev.hebName)}}</span>
+                        <span class="md:flex hidden" [pTooltip]="moladTooltipContent" tooltipPosition="top">{{extractMoladTime(ev.hebName)}}</span>
                         <ng-template #moladTooltipContent>
                             <span class="custom-tooltip">{{ev.hebName}}</span>
                         </ng-template>
 
                         <!-- Mobile -->
                         <div class="md:hidden flex items-center gap-1">
-                            <span class="hidden sm:block">{{extractMoladTime(ev.hebName, true)}}</span>
+                            <span class="">{{extractMoladTime(ev.hebName, true) | slice :0:-3}}</span>
                         </div>
                     </div>
                     }

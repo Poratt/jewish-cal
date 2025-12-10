@@ -3,6 +3,7 @@ export const DialogConfig = {
 	// height: 'fit-content',
 	modal: true,
 	draggable: true,
+	keepInViewport: true,
 	// resizable: true,
 	closable: true,
 	dismissableMask: true,
