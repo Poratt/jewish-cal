@@ -17,7 +17,6 @@ export class SettingsService {
 	private document = inject(DOCUMENT);
 	private notificationService = inject(NotificationService);
 
-	// This is the single name we use to save all settings in the browser's local storage.
 	private readonly SETTINGS_KEY = 'hebrew_calendar_app_settings';
 
 	// This is our main signal that holds all the app's settings in one object.
@@ -98,7 +97,7 @@ export class SettingsService {
 		
 		if (userLocationResult.success && userLocationResult.city) {
 			this.updateLocation(userLocationResult.city);
-      this.userCurrentLocationSource.set(userLocationResult.city);
+            this.userCurrentLocationSource.set(userLocationResult.city);
 			this.notificationService.toast({
 				severity: 'success',
 				summary: 'מיקום עודכן',
@@ -122,19 +121,11 @@ export class SettingsService {
 		const allLocations = getLocationNames();
 		this.groupedCitiesSource.set(groupCitiesByCountry(allLocations));
 
-		// Try to find user's location automatically.
-        this.geoService.detectUserLocation(allLocations).then(result => {
-            if (result.success && result.city) {
-                this.userCurrentLocationSource.set(result.city);
-                
-                // If no location is saved, use the one we found.
-                if (!this.selectedLocationSignal()) {
-                    this.updateLocation(result.city);
-                }
-            }
-        });
+        // FIX: Removed automatic geolocation on startup to satisfy Lighthouse "Best Practices".
+        // Instead, we just set a default fallback if no location is saved.
+        // User can still manually click "Use Current Location" in settings.
 
-		// If we still don't have a location, use Tel Aviv as a default.
+		// If no location is saved in LocalStorage, use Tel Aviv as a default.
 		if (!this.selectedLocationSignal()) {
 			const telAviv = allLocations.find(c => c.city === 'Tel Aviv');
 			if (telAviv) {
